@@ -1,0 +1,23 @@
+# Object files
+*.o
+
+# Libraries
+*.a
+
+# Executables
+*.out
+doon
+a.out
+unit_tests
+vgcore.*
+
+# Garbage
+*~
+compile_commands.json
+compile_flags.txt
+.clangd/
+
+# Dependencies
+.deps/
+*.d
+
