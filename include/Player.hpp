@@ -1,6 +1,9 @@
 #ifndef _PLAYER_HPP_
 #define _PLAYER_HPP_
 
+#include <map>
+#include "Map.hpp"
+
 class Player {
     public:
         enum class Move {
@@ -12,6 +15,8 @@ class Player {
         ~Player();
         void rotate(const float r);
         void move(const Player::Move dir);
+        template<typename T>
+        Coords<T> getPlayerPos()const;
 
     public:
         float x;

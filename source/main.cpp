@@ -41,12 +41,12 @@ int main()
                         case sf::Keyboard::D: player.rotate(0.1f); break;
                         case sf::Keyboard::Z: {
                             player.move(Player::Move::Forward);
-                            if (map.at(player.y * map.height + player.x) == '#')
+                            if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Backward);
                         } break;
                         case sf::Keyboard::S: {
                             player.move(Player::Move::Backward);
-                            if (map.at(player.y * map.height + player.x) == '#')
+                            if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Forward);
                         } break;
                         default: break;
