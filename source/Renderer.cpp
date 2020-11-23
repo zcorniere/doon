@@ -5,6 +5,8 @@
 constexpr float fFOV = M_PI / 4.0f;
 constexpr float fDepth = 24;
 
+constexpr float fRayResolution = 0.01f;
+
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size) :
     IThreaded(), size(std::move(size)), player(player), map(map)
 {
@@ -26,7 +28,7 @@ void Renderer::run() {
 
             bool isEdge = false;
             while(1) {
-                fDistanceToWall += 0.1f;
+                fDistanceToWall += fRayResolution;
 
                 unsigned nTestX = (int)(player.x + fEyeX * fDistanceToWall);
                 unsigned nTestY = (int)(player.y + fEyeY * fDistanceToWall);
