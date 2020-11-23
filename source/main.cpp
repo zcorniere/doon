@@ -29,13 +29,13 @@ int main()
     rendy.run_threaded();
 
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
+
     auto tp1 = std::chrono::system_clock::now();
     auto tp2 = std::chrono::system_clock::now();
 
+    bool bUpdate = true;
     while (window.isOpen())
     {
-        bool bUpdate = false;
-
         tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
@@ -46,41 +46,50 @@ int main()
         while (window.pollEvent(event))
         {
             switch (event.type) {
-                case sf::Event::Closed: window.close(); break;
+                case sf::Event::Closed: window.close(); bUpdate = false; break;
                 case sf::Event::KeyPressed: {
                     switch (event.key.code) {
-                        case sf::Keyboard::A: player.rotate(-fRotationSpeed, fElapsedTime); break;
-                        case sf::Keyboard::E: player.rotate(fRotationSpeed, fElapsedTime); break;
+                        case sf::Keyboard::A: {
+                            player.rotate(-fRotationSpeed, fElapsedTime);
+                            bUpdate = true;
+                        } break;
+                        case sf::Keyboard::E: {
+                            player.rotate(fRotationSpeed, fElapsedTime);
+                            bUpdate = true;
+                        } break;
                         case sf::Keyboard::Z: {
                             player.move(Player::Move::Forward, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Backward, fElapsedTime);
+                            bUpdate = true;
                         } break;
                         case sf::Keyboard::S: {
                             player.move(Player::Move::Backward, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Forward, fElapsedTime);
+                            bUpdate = true;
                         } break;
                         case sf::Keyboard::Q: {
                             player.move(Player::Move::Left, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Right, fElapsedTime);
+                            bUpdate = true;
                         } break;
                         case sf::Keyboard::D: {
                             player.move(Player::Move::Right, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Left, fElapsedTime);
+                            bUpdate = true;
                         } break;
                         default: break;
                     }
                 } break;
                 default: break;
             }
-            bUpdate = true;
-            rendy.update();
         }
 
         if (bUpdate) {
+            rendy.update();
             sf::Texture texture;
             texture.loadFromImage(rendy.getImage(true));
             sf::Sprite sprite(texture);
@@ -89,6 +98,7 @@ int main()
             window.display();
         }
         limiter.sleep();
+        bUpdate = false;
     }
 
     return 0;

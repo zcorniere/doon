@@ -6,15 +6,14 @@ constexpr float fFOV = M_PI / 4.0f;
 constexpr float fDepth = 24;
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size) :
-    size(std::move(size)), player(player), map(map)
+    IThreaded(), size(std::move(size)), player(player), map(map)
 {
     img.create(size.x, size.y);
 }
 
-Renderer::~Renderer()
-{
+Renderer::~Renderer() {
     this->stop();
-};
+}
 
 void Renderer::run() {
     while(!bQuit) {
@@ -96,25 +95,9 @@ void Renderer::run() {
     }
 }
 
-void Renderer::run_threaded() {
-    try {
-        rendy_thread = std::thread([this]() { this->run(); });
-    } catch (const std::exception &e) {
-        Snitch::err() << e.what() << Snitch::endl;
-    }
-}
-
 void Renderer::stop() {
     bQuit = true;
-    this->update();
-    if (rendy_thread.joinable()) {
-        rendy_thread.join();
-    }
-}
-
-void Renderer::update() {
-    std::unique_lock<std::mutex> ul(mVariable);
-    vBlocking.notify_one();
+    this->IThreaded::stop();
 }
 
 const sf::Image &Renderer::getImage(const bool &bWait) {
@@ -125,7 +108,3 @@ const sf::Image &Renderer::getImage(const bool &bWait) {
     return img;
 }
 
-void Renderer::wait() {
-    std::unique_lock<std::mutex> ul(mVariable);
-    vBlocking.wait(ul);
-}

@@ -1,6 +1,7 @@
 #ifndef _RENDERER_HPP_
 #define _RENDERER_HPP_
 
+#include "interface/IThreaded.hpp"
 #include "Player.hpp"
 #include "Map.hpp"
 #include <thread>
@@ -9,19 +10,14 @@
 #include <condition_variable>
 #include <SFML/Graphics.hpp>
 
-class Renderer {
+class Renderer: public IThreaded {
     public:
         Renderer(const Player &player, const Map &map, Coords<unsigned> size);
         Renderer(const Renderer &) = delete;
         ~Renderer();
-        void run();
-        void run_threaded();
-        void stop();
-        void update();
+        virtual void run()final;
+        virtual void stop()final;
         const sf::Image &getImage(const bool &bWait = false);
-
-    private:
-        void wait();
 
     private:
         std::atomic_bool bQuit = false;
@@ -30,11 +26,6 @@ class Renderer {
         Coords<unsigned> size;
         const Player &player;
         const Map &map;
-
-        std::thread rendy_thread;
-
-        std::mutex mVariable;
-        std::condition_variable vBlocking;
 
         std::mutex mRendy;
         std::condition_variable vRendy;
