@@ -1,7 +1,6 @@
 #ifndef _PLAYER_HPP_
 #define _PLAYER_HPP_
 
-#include <map>
 #include "Map.hpp"
 
 class Player {
@@ -13,14 +12,14 @@ class Player {
     public:
         Player(const float x, const float y);
         ~Player();
-        void rotate(const float r);
-        void move(const Player::Move dir);
+        void rotate(const float r, const float &fElapsedTime);
+        void move(const Player::Move dir, const float &fElapsedTime);
         template<typename T>
         Coords<T> getPlayerPos()const;
 
     public:
-        float x;
-        float y;
+        float x = 0.0f;
+        float y = 0.0f;
         float angle = 0.0f;
 };
 

@@ -15,6 +15,8 @@ class Map {
         char operator[](const std::size_t idx);
         char at(const std::size_t idx);
         char at(const Coords<unsigned> &idx);
+        char at(const std::size_t idx)const;
+        char at(const Coords<unsigned> &idx)const;
 
     public:
         std::string map;

@@ -8,38 +8,38 @@ Player::Player(const float x, const float y) :
 
 Player::~Player() {}
 
-void Player::rotate(const float r) {
-    angle += r;
+
+void Player::rotate(const float r, const float &fElapsedTime) {
+    angle += (r * fElapsedTime);
 }
 
-void Player::move(const Player::Move dir) {
+void Player::move(const Player::Move dir, const float &fElapsedTime) {
     switch (dir) {
         case Move::Forward: {
-            Snitch::debug() << "Forward" << Snitch::endl;
-            x += sinf(angle) * 1.0f;
-            y += cosf(angle) * 1.0f;
+            x += sinf(angle) * 10.0f * fElapsedTime;
+            y += cosf(angle) * 10.0f * fElapsedTime;
         } break;
         case Move::Backward: {
-            Snitch::debug() << "Backward" << Snitch::endl;
-            x -= sinf(angle) * 1.0f;
-            y -= cosf(angle) * 1.0f;
+            x -= sinf(angle) * 10.0f * fElapsedTime;
+            y -= cosf(angle) * 10.0f * fElapsedTime;
         } break;
         case Move::Left: {
-
+            x -= sinf(angle) * 10.0f * fElapsedTime;
+            y += cosf(angle) * 10.0f * fElapsedTime;
         } break;
         case Move::Right: {
-
+            x += sinf(angle) * 10.0f * fElapsedTime;
+            y -= cosf(angle) * 10.0f * fElapsedTime;
         } break;
     }
 }
 
 template<>
 Coords<unsigned> Player::getPlayerPos()const {
-    return Coords<unsigned> { .x = static_cast<unsigned>(x),
-                              .y = static_cast<unsigned>(y) };
+    return { static_cast<unsigned>(x), static_cast<unsigned>(y)};
 }
 
 template<>
 Coords<float> Player::getPlayerPos()const {
-    return Coords<float> { .x = x, .y = y };
+    return { x, y };
 }

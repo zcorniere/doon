@@ -36,6 +36,13 @@ char Map::at(const std::size_t idx) {
 char Map::at(const Coords<unsigned> &idx) {
     return map.at(idx.y * width + idx.x);
 }
+char Map::at(const std::size_t idx)const  {
+    return map.at(idx);
+}
+
+char Map::at(const Coords<unsigned> &idx)const {
+    return map.at(idx.y * width + idx.x);
+}
 
 std::ostream &operator<<(std::ostream &os, const Map &other) {
     for (unsigned i = 0; i < other.map.size(); i++) {
