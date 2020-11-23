@@ -11,18 +11,13 @@ Map::Map(const std::filesystem::path path) {
     }
     map = std::string(std::istreambuf_iterator<char>(file),
                       std::istreambuf_iterator<char>());
+    if ((width = map.find_first_of('\n')) == std::string::npos) {
+        throw std::runtime_error("Bad format");
+    };
 
-    for (std::size_t it = map.find('\n');
-         it != std::string::npos; it = map.find('\n')) {
-        map.erase(it, 1);
-    }
+    map.erase(std::remove(map.begin(), map.end(), '\n'), map.end());
 
-    file.seekg(0, file.beg);
-    std::string line;
-    std::getline(file, line);
-    width = line.size();
-
-    if (line.size() % width != 0) {
+    if (map.size() % width != 0) {
         throw std::runtime_error("Not a Cube");
     }
     height = map.size() / width;
