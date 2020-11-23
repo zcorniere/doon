@@ -12,7 +12,7 @@ Player::~Player() {}
 
 
 void Player::rotate(const float r, const float &fElapsedTime) {
-    angle += (r * fElapsedTime);
+    angle += r * fElapsedTime;
 }
 
 void Player::move(const Player::Move dir, const float &fElapsedTime) {

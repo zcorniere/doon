@@ -13,7 +13,7 @@
 constexpr int WindowWidth = 500;
 constexpr int WindowHeight = 500;
 
-constexpr float fRotationSpeed = 4.0f;
+constexpr float fRotationSpeed = 10.0f;
 
 int main()
 {
@@ -31,12 +31,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
 
     auto tp1 = std::chrono::system_clock::now();
-    auto tp2 = std::chrono::system_clock::now();
 
     bool bUpdate = true;
     while (window.isOpen())
     {
-        tp2 = std::chrono::system_clock::now();
+        auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
         float fElapsedTime = elapsedTime.count();

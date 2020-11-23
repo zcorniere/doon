@@ -53,7 +53,6 @@ void Renderer::run() {
                         float fBound = 0.01;
                         if (acos(p.at(0).second) < fBound) isEdge = true;
                         if (acos(p.at(1).second) < fBound) isEdge = true;
-
                         break;
                     }
                 }
