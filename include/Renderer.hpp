@@ -5,6 +5,7 @@
 #include "Player.hpp"
 #include "Map.hpp"
 #include <thread>
+#include <memory>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
@@ -17,18 +18,19 @@ class Renderer: public IThreaded {
         ~Renderer();
         virtual void run()final;
         virtual void stop()final;
-        const sf::Image &getImage(const bool &bWait = false);
+        const std::shared_ptr<sf::Image> getImage(const bool &bWait = false);
 
     private:
         std::atomic_bool bQuit = false;
 
-        sf::Image img;
+        std::mutex mRendy;
+        std::condition_variable vRendy;
+        std::shared_ptr<sf::Image> lastImg;
+        std::shared_ptr<sf::Image> img;
+
         Coords<unsigned> size;
         const Player &player;
         const Map &map;
-
-        std::mutex mRendy;
-        std::condition_variable vRendy;
 };
 
 #endif //_RENDERER_HPP_

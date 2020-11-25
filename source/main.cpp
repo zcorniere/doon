@@ -13,8 +13,6 @@
 constexpr int WindowWidth = 1280;
 constexpr int WindowHeight = 960;
 
-constexpr float fRotationSpeed = 10.0f;
-
 int main()
 {
     Map map("./map");
@@ -49,11 +47,11 @@ int main()
                 case sf::Event::KeyPressed: {
                     switch (event.key.code) {
                         case sf::Keyboard::A: {
-                            player.rotate(-fRotationSpeed, fElapsedTime);
+                            player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
                             bUpdate = true;
                         } break;
                         case sf::Keyboard::E: {
-                            player.rotate(fRotationSpeed, fElapsedTime);
+                            player.rotate(Player::Rotation::Clockwise, fElapsedTime);
                             bUpdate = true;
                         } break;
                         case sf::Keyboard::Z: {
@@ -89,13 +87,13 @@ int main()
 
         if (bUpdate) {
             rendy.update();
-            sf::Texture texture;
-            texture.loadFromImage(rendy.getImage(true));
-            sf::Sprite sprite(texture);
-            window.clear();
-            window.draw(sprite);
-            window.display();
         }
+        sf::Texture texture;
+        texture.loadFromImage(*(rendy.getImage(false)));
+        sf::Sprite sprite(texture);
+        window.clear();
+        window.draw(sprite);
+        window.display();
         limiter.sleep();
         bUpdate = false;
     }

@@ -4,14 +4,17 @@
 #include <iostream>
 
 constexpr float fFOV = M_PI / 4.0f;
-constexpr float fDepth = 24;
+constexpr float fDepth = 32;
 
 constexpr float fRayResolution = 0.01f;
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size) :
     IThreaded(), size(std::move(size)), player(player), map(map)
 {
-    img.create(size.x, size.y);
+    img = std::make_shared<sf::Image>();
+    img->create(size.x, size.y);
+    lastImg = std::make_shared<sf::Image>();
+    lastImg->create(size.x, size.y);
 }
 
 Renderer::~Renderer() {
@@ -21,7 +24,7 @@ Renderer::~Renderer() {
 void Renderer::run() {
     while(!bQuit) {
         for (unsigned x = 0; x < size.x; x++) {
-            float fRayAngle = (player.angle - fFOV / 2.0f) + ((float)x / (float)size.x) * fFOV;
+            float fRayAngle = (player.angle - fFOV / 2.0f) + (float(x) / size.x) * fFOV;
             float fDistanceToWall = 0;
 
             Coords<float> fEye = { .x = sinf(fRayAngle), .y = cosf(fRayAngle) };
@@ -58,8 +61,8 @@ void Renderer::run() {
                     }
                 }
             }
-            unsigned nCeiling = (float)(size.y / 2.0) - size.y / ((float)fDistanceToWall);
-            unsigned nFloor = size.y - nCeiling;
+            float fCeiling = (float(size.y) / 2.0) - (float(size.y) / fDistanceToWall);
+            float fFloor = size.y - fCeiling;
 
             sf::Color floor = sf::Color::Green;
             sf::Color shade = sf::Color::White;
@@ -74,23 +77,23 @@ void Renderer::run() {
                 else shade = sf::Color::Black;
             }
             for (unsigned y = 0; y < size.y; y++) {
-                if (y < nCeiling)
-                    img.setPixel(x, y, sf::Color::Blue);
-                else if (y > nCeiling && y <= nFloor)
-                    img.setPixel(x, y, shade);
+                if (y <= unsigned(fCeiling))
+                    img->setPixel(x, y, sf::Color::Blue);
+                else if (y > unsigned(fCeiling) && y <= unsigned(fFloor))
+                    img->setPixel(x, y, shade);
                 else {
                     const float b = 1.0f - (((float)y - size.y / 2.0f) / ((float)size.y / 2.0f));
                     if (b < 0.25) floor = sf::Color::Green;
                     else if (b < 0.5) floor = sf::Color(0x2a, 0xb5, 0x2c);
                     else if (b < 0.75) floor = sf::Color(0x2d, 0xa1, 0x2f);
-                    else if (b < 0.9) floor = sf::Color(0x32, 0x70, 0x34);
-                    else floor = sf::Color::Black;
-                    img.setPixel(x, y, floor);
+                    else floor = sf::Color(0x32, 0x70, 0x34);
+                    img->setPixel(x, y, floor);
                 }
             }
         }
         {
             std::unique_lock<std::mutex> ul(mRendy);
+            std::swap(img, lastImg);
             vRendy.notify_one();
         }
         this->wait();
@@ -102,11 +105,11 @@ void Renderer::stop() {
     this->IThreaded::stop();
 }
 
-const sf::Image &Renderer::getImage(const bool &bWait) {
+const std::shared_ptr<sf::Image> Renderer::getImage(const bool &bWait) {
+    std::unique_lock<std::mutex> ul(mRendy);
     if (bWait) {
-        std::unique_lock<std::mutex> ul(mRendy);
         vRendy.wait(ul);
     }
-    return img;
+    return lastImg;
 }
 
