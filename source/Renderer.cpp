@@ -42,15 +42,16 @@ void Renderer::run() {
                         std::array<std::pair<float, float>, 4> p;
                         for (unsigned tx = 0; tx < 2; tx++)
                             for (unsigned ty = 0; ty < 2; ty++) {
-                                float vy = (float)nTest.y + ty - player.y;
-                                float vx = (float)nTest.x + tx - player.x;
-                                float d = sqrt(vx*vx + vy*vy);
-                                float dot = (fEye.x * vx / d) + (fEye.y * vy / d);
+                                Coords<float> v = {static_cast<float>(tx), static_cast<float>(ty)};
+                                v += static_cast<Coords<float>>(nTest) - player.getPlayerPos<float>();
+                                float d = v.mag();
+                                v /= d;
+                                float dot = v.dot(fEye);
                                 p.at(tx + ty) = std::make_pair(d, dot);
                             }
                         std::sort(p.begin(), p.end(), [](const auto &left, const auto &right) { return left.first < right.first; });
 
-                        float fBound = 0.01;
+                        float fBound = 0.005;
                         if (acos(p.at(0).second) < fBound) isEdge = true;
                         if (acos(p.at(1).second) < fBound) isEdge = true;
                         break;
