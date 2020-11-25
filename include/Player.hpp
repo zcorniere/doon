@@ -15,7 +15,9 @@ class Player {
         void rotate(const float r, const float &fElapsedTime);
         void move(const Player::Move dir, const float &fElapsedTime);
         template<typename T>
-        Coords<T> getPlayerPos()const;
+        Coords<T> getPlayerPos()const {
+            return { static_cast<T>(x), static_cast<T>(y) };
+        };
 
     public:
         float x = 0.0f;

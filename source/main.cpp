@@ -10,8 +10,8 @@
 #include "Snitch.hpp"
 #include "Renderer.hpp"
 
-constexpr int WindowWidth = 500;
-constexpr int WindowHeight = 500;
+constexpr int WindowWidth = 1280;
+constexpr int WindowHeight = 960;
 
 constexpr float fRotationSpeed = 10.0f;
 

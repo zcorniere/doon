@@ -36,12 +36,3 @@ void Player::move(const Player::Move dir, const float &fElapsedTime) {
     }
 }
 
-template<>
-Coords<unsigned> Player::getPlayerPos()const {
-    return { static_cast<unsigned>(x), static_cast<unsigned>(y)};
-}
-
-template<>
-Coords<float> Player::getPlayerPos()const {
-    return { x, y };
-}

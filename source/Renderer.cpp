@@ -1,6 +1,7 @@
 #include "Snitch.hpp"
 #include "Renderer.hpp"
 #include <math.h>
+#include <iostream>
 
 constexpr float fFOV = M_PI / 4.0f;
 constexpr float fDepth = 24;
@@ -23,29 +24,28 @@ void Renderer::run() {
             float fRayAngle = (player.angle - fFOV / 2.0f) + ((float)x / (float)size.x) * fFOV;
             float fDistanceToWall = 0;
 
-            float fEyeX = sinf(fRayAngle);
-            float fEyeY = cosf(fRayAngle);
+            Coords<float> fEye = { .x = sinf(fRayAngle), .y = cosf(fRayAngle) };
 
             bool isEdge = false;
             while(1) {
                 fDistanceToWall += fRayResolution;
 
-                unsigned nTestX = (int)(player.x + fEyeX * fDistanceToWall);
-                unsigned nTestY = (int)(player.y + fEyeY * fDistanceToWall);
+                Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
+
                 if (fDistanceToWall >= fDepth ||
-                    nTestX >= map.width ||
-                    nTestY >= map.height) {
+                    nTest.x >= map.width ||
+                    nTest.y >= map.height) {
                     fDistanceToWall = fDepth;
                     break;
                 } else {
-                    if (map.at(nTestY * map.width + nTestX) == '#') {
+                    if (map.at(nTest) == '#') {
                         std::array<std::pair<float, float>, 4> p;
                         for (unsigned tx = 0; tx < 2; tx++)
                             for (unsigned ty = 0; ty < 2; ty++) {
-                                float vy = (float)nTestY + ty - player.y;
-                                float vx = (float)nTestX + tx - player.x;
+                                float vy = (float)nTest.y + ty - player.y;
+                                float vx = (float)nTest.x + tx - player.x;
                                 float d = sqrt(vx*vx + vy*vy);
-                                float dot = (fEyeX * vx / d) + (fEyeY * vy / d);
+                                float dot = (fEye.x * vx / d) + (fEye.y * vy / d);
                                 p.at(tx + ty) = std::make_pair(d, dot);
                             }
                         std::sort(p.begin(), p.end(), [](const auto &left, const auto &right) { return left.first < right.first; });
