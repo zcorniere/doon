@@ -26,12 +26,12 @@ void Player::move(const Player::Move dir, const float &fElapsedTime) {
             y -= cosf(angle) * fMovementSpeed * fElapsedTime;
         } break;
         case Move::Left: {
-            x -= sinf(angle) * fMovementSpeed * fElapsedTime;
-            y += cosf(angle) * fMovementSpeed * fElapsedTime;
+            x -= cosf(angle) * fMovementSpeed * fElapsedTime;
+            y += sinf(angle) * fMovementSpeed * fElapsedTime;
         } break;
         case Move::Right: {
-            x += sinf(angle) * fMovementSpeed * fElapsedTime;
-            y -= cosf(angle) * fMovementSpeed * fElapsedTime;
+            x += cosf(angle) * fMovementSpeed * fElapsedTime;
+            y -= sinf(angle) * fMovementSpeed * fElapsedTime;
         } break;
     }
 }
