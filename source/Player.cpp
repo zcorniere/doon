@@ -2,7 +2,8 @@
 #include "Player.hpp"
 #include "Snitch.hpp"
 
-constexpr float fMovementSpeed = 20.0f;
+constexpr float fMovementSpeed = 25.0f;
+constexpr float fRotationSpeed = 4.0f;
 
 Player::Player(const float x, const float y) :
     x(x), y(y)
@@ -11,8 +12,15 @@ Player::Player(const float x, const float y) :
 Player::~Player() {}
 
 
-void Player::rotate(const float r, const float &fElapsedTime) {
-    angle += r * fElapsedTime;
+void Player::rotate(const Player::Rotation dir, const float &fElapsedTime) {
+    switch (dir) {
+        case Rotation::Clockwise: {
+            angle += fRotationSpeed * fElapsedTime;
+        } break;
+        case Rotation::CounterClockwise: {
+            angle -= fRotationSpeed * fElapsedTime;
+        } break;
+    }
 }
 
 void Player::move(const Player::Move dir, const float &fElapsedTime) {

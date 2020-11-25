@@ -8,11 +8,14 @@ class Player {
         enum class Move {
             Forward, Backward, Left, Right
         };
+        enum class Rotation {
+            Clockwise, CounterClockwise
+        };
 
     public:
         Player(const float x, const float y);
         ~Player();
-        void rotate(const float r, const float &fElapsedTime);
+        void rotate(const Player::Rotation dir, const float &fElapsedTime);
         void move(const Player::Move dir, const float &fElapsedTime);
         template<typename T>
         Coords<T> getPlayerPos()const {
