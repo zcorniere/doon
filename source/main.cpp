@@ -13,6 +13,8 @@
 constexpr int WindowWidth = 1280;
 constexpr int WindowHeight = 960;
 
+const std::string assets_path = "./assets/";
+
 int main()
 {
     Map map("./map");
@@ -23,7 +25,7 @@ int main()
     Snitch::msg() << "Map width :" << map.width << Snitch::endl;
     std::cerr << map << std::endl;
 
-    Renderer rendy(player, map, {WindowWidth, WindowHeight});;
+    Renderer rendy(player, map, {WindowWidth, WindowHeight}, assets_path);
     rendy.run_threaded();
 
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
@@ -89,7 +91,7 @@ int main()
             rendy.update();
         }
         sf::Texture texture;
-        texture.loadFromImage(*(rendy.getImage(false)));
+        texture.loadFromImage(*(rendy.getImage()));
         sf::Sprite sprite(texture);
         window.clear();
         window.draw(sprite);

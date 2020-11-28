@@ -8,9 +8,15 @@ constexpr float fDepth = 32;
 
 constexpr float fRayResolution = 0.01f;
 
-Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size) :
+Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, const std::string &assets) :
     IThreaded(), size(std::move(size)), player(player), map(map)
 {
+    for (auto &f: std::filesystem::directory_iterator(assets)) {
+        if (f.path().extension() != ".jpg") continue;
+        sf::Image img;
+        img.loadFromFile(f.path());
+        sprite_list.insert({f.path().stem(), std::move(img)});
+    }
     img = std::make_shared<sf::Image>();
     img->create(size.x, size.y);
     lastImg = std::make_shared<sf::Image>();
@@ -24,12 +30,12 @@ Renderer::~Renderer() {
 void Renderer::run() {
     while(!bQuit) {
         for (unsigned x = 0; x < size.x; x++) {
-            float fRayAngle = (player.angle - fFOV / 2.0f) + (float(x) / size.x) * fFOV;
+            float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
             float fDistanceToWall = 0;
+            float fSampleX = 0.0f;
 
             Coords<float> fEye = { .x = sinf(fRayAngle), .y = cosf(fRayAngle) };
 
-            bool isEdge = false;
             while(1) {
                 fDistanceToWall += fRayResolution;
 
@@ -42,51 +48,46 @@ void Renderer::run() {
                     break;
                 } else {
                     if (map.at(nTest) == '#') {
-                        std::array<std::pair<float, float>, 4> p;
-                        for (unsigned tx = 0; tx < 2; tx++)
-                            for (unsigned ty = 0; ty < 2; ty++) {
-                                Coords<float> v = {static_cast<float>(tx), static_cast<float>(ty)};
-                                v += static_cast<Coords<float>>(nTest) - player.getPlayerPos<float>();
-                                float d = v.mag();
-                                v /= d;
-                                float dot = v.dot(fEye);
-                                p.at(tx + ty) = std::make_pair(d, dot);
-                            }
-                        std::sort(p.begin(), p.end(), [](const auto &left, const auto &right) { return left.first < right.first; });
-
-                        float fBound = 0.005;
-                        if (acos(p.at(0).second) < fBound) isEdge = true;
-                        if (acos(p.at(1).second) < fBound) isEdge = true;
+                        Coords<float> fBlockMid = static_cast<Coords<float>>(nTest) + 0.5f;
+                        Coords<float> fTestPoint = player.getPlayerPos<float>() + fEye * fDistanceToWall;
+                        float fTestAngle = atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
+                        if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
+                            fSampleX = fTestPoint.y - float(nTest.y);
+                        if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
+                            fSampleX = fTestPoint.x - float(nTest.x);
+                        if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
+                            fSampleX = fTestPoint.x - float(nTest.x);
+                        if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
+                            fSampleX = fTestPoint.y - float(nTest.y);
                         break;
                     }
                 }
             }
-            float fCeiling = (float(size.y) / 2.0) - (float(size.y) / fDistanceToWall);
+            float fCeiling = float(size.y / 2.0) - size.y / fDistanceToWall;
             float fFloor = size.y - fCeiling;
 
-            sf::Color floor = sf::Color::Green;
-            sf::Color shade = sf::Color::White;
+            sf::Color floor = sf::Color(0x32, 0x70, 0x34);
 
-            if (isEdge)
-                shade = sf::Color::Black;
-            else {
-                if (fDistanceToWall <= fDepth / 4.0f) shade = sf::Color::White;
-                else if (fDistanceToWall < fDepth / 3.0f) shade = sf::Color(0xc4, 0xc4, 0xc4);
-                else if (fDistanceToWall < fDepth / 2.0f) shade = sf::Color(0x8c, 0x8c, 0x8c);
-                else if (fDistanceToWall < fDepth) shade = sf::Color(0x52, 0x52, 0x52);
-                else shade = sf::Color::Black;
-            }
             for (unsigned y = 0; y < size.y; y++) {
-                if (y <= unsigned(fCeiling))
+                if (y <= unsigned(fCeiling)) {
                     img->setPixel(x, y, sf::Color::Blue);
-                else if (y > unsigned(fCeiling) && y <= unsigned(fFloor))
-                    img->setPixel(x, y, shade);
-                else {
-                    const float b = 1.0f - (((float)y - size.y / 2.0f) / ((float)size.y / 2.0f));
-                    if (b < 0.25) floor = sf::Color::Green;
-                    else if (b < 0.5) floor = sf::Color(0x2a, 0xb5, 0x2c);
-                    else if (b < 0.75) floor = sf::Color(0x2d, 0xa1, 0x2f);
-                    else floor = sf::Color(0x32, 0x70, 0x34);
+                } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
+                    if (fDistanceToWall < fDepth)
+                    {
+                        sf::Image &wall = sprite_list.at("wall");
+                        sf::Vector2u wall_size = wall.getSize();
+
+                        float fSampleY = (float(y) - fCeiling) / (fFloor - fCeiling);
+
+                        Coords<unsigned> uSample = {
+                            std::min(unsigned(fSampleX * float(wall_size.x)), wall_size.x - 1),
+                            std::min(unsigned(fSampleY * float(wall_size.y)), wall_size.y - 1)
+                        };
+                        img->setPixel(x, y, wall.getPixel(uSample.x, uSample.y));
+                    } else {
+                        img->setPixel(x, y, sf::Color::Black);
+                    }
+                } else {
                     img->setPixel(x, y, floor);
                 }
             }
@@ -112,4 +113,3 @@ const std::shared_ptr<sf::Image> Renderer::getImage(const bool &bWait) {
     }
     return lastImg;
 }
-
