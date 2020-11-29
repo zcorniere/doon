@@ -29,27 +29,28 @@ Renderer::~Renderer() {
 
 void Renderer::run() {
     while(!bQuit) {
-        for (unsigned x = 0; x < size.x; x++) {
+        for (unsigned x = 0; x < size.x; ++x) {
             float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
             float fDistanceToWall = 0;
             float fSampleX = 0.0f;
 
-            Coords<float> fEye = { .x = sinf(fRayAngle), .y = cosf(fRayAngle) };
+            Coords<float> fEye(sinf(fRayAngle), cosf(fRayAngle));
 
             while(1) {
                 fDistanceToWall += fRayResolution;
 
                 Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
 
-                if (fDistanceToWall >= fDepth ||
-                    nTest.x >= map.width ||
-                    nTest.y >= map.height) {
+                if (fDistanceToWall >= fDepth)
+                    break;
+                if (nTest.x >= map.width || nTest.y >= map.height) {
                     fDistanceToWall = fDepth;
                     break;
                 } else {
                     if (map.at(nTest) == '#') {
-                        Coords<float> fBlockMid = static_cast<Coords<float>>(nTest) + 0.5f;
-                        Coords<float> fTestPoint = player.getPlayerPos<float>() + fEye * fDistanceToWall;
+                        Coords<float> fBlockMid(nTest);
+                        fBlockMid += 0.5f;
+                        Coords<float> fTestPoint(player.getPlayerPos<float>() + fEye * fDistanceToWall);
                         float fTestAngle = atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
                         if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
                             fSampleX = fTestPoint.y - float(nTest.y);
@@ -68,7 +69,7 @@ void Renderer::run() {
 
             sf::Color floor = sf::Color(0x32, 0x70, 0x34);
 
-            for (unsigned y = 0; y < size.y; y++) {
+            for (unsigned y = 0; y < size.y; ++y) {
                 if (y <= unsigned(fCeiling)) {
                     img->setPixel(x, y, sf::Color::Blue);
                 } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
@@ -79,10 +80,10 @@ void Renderer::run() {
 
                         float fSampleY = (float(y) - fCeiling) / (fFloor - fCeiling);
 
-                        Coords<unsigned> uSample = {
+                        Coords<unsigned> uSample(
                             std::min(unsigned(fSampleX * float(wall_size.x)), wall_size.x - 1),
                             std::min(unsigned(fSampleY * float(wall_size.y)), wall_size.y - 1)
-                        };
+                        );
                         img->setPixel(x, y, wall.getPixel(uSample.x, uSample.y));
                     } else {
                         img->setPixel(x, y, sf::Color::Black);

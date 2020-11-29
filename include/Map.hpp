@@ -8,6 +8,20 @@
 
 template<class T>
 struct Coords {
+    Coords() = default;
+    Coords(T x, T y) : x(x), y(y){};
+    Coords(Coords<T> &other) = default;
+    Coords(Coords<T> &&other)
+    {
+        x = std::move(other.x);
+        y = std::move(other.y);
+    }
+    Coords &operator=(Coords other)
+    {
+        std::swap(x, other.x);
+        std::swap(x, other.y);
+        return *this;
+    }
     T x = 0;
     T y = 0;
     T mag()const { return T(std::sqrt(x*x + y*y)); };
@@ -60,7 +74,7 @@ class Map {
         std::string map;
         unsigned width;
         unsigned height;
-        Coords<unsigned> coord = { .x = width, .y = height};
+        Coords<unsigned> coord;
 };
 
 std::ostream &operator<<(std::ostream &os, const Map &other);

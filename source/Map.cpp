@@ -11,7 +11,8 @@ Map::Map(const std::filesystem::path path) {
     }
     map = std::string(std::istreambuf_iterator<char>(file),
                       std::istreambuf_iterator<char>());
-    if ((width = map.find_first_of('\n')) == std::string::npos) {
+    width = map.find_first_of('\n');
+    if (map.size() < width) {
         throw std::runtime_error("Bad format");
     };
 
@@ -21,6 +22,7 @@ Map::Map(const std::filesystem::path path) {
         throw std::runtime_error("Not a Cube");
     }
     height = map.size() / width;
+    coord = {width, height};
 }
 
 Map::~Map() {}

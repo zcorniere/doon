@@ -19,7 +19,7 @@ int main()
 {
     Map map("./map");
     Player player(map.width / 2, map.height / 2);
-    FrameLimiter<120> limiter;
+    FrameLimiter<60> limiter;
 
     Snitch::msg() << "Map height :" << map.height << Snitch::endl;
     Snitch::msg() << "Map width :" << map.width << Snitch::endl;
@@ -29,6 +29,7 @@ int main()
     rendy.run_threaded();
 
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
+    window.setVerticalSyncEnabled(true);
 
     auto tp1 = std::chrono::system_clock::now();
 
