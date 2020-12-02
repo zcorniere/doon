@@ -26,38 +26,38 @@ struct Coords {
     T y = 0;
     T mag()const { return T(std::sqrt(x*x + y*y)); };
     T dot(const Coords &other)const { return T(this->x * other.x + this->y * other.y); };
-    Coords operator+(const Coords &other)const { return {this->x + other.x, this->y + other.y }; };
-    Coords operator-(const Coords &other)const { return {this->x - other.x, this->y - other.y }; };
-    Coords operator*(const Coords &other)const { return {this->x * other.x, this->y * other.y }; };
-    Coords operator/(const Coords &other)const { return {this->x / other.x, this->y / other.y }; };
-    Coords operator+(const T &other)const { return {this->x + other, this->y + other };};
-    Coords operator-(const T &other)const { return {this->x - other, this->y - other };};
-    Coords operator*(const T &other)const { return {this->x * other, this->y * other };};
-    Coords operator/(const T &other)const { return {this->x / other, this->y / other };};
-    Coords &operator+=(const Coords &other) { this->x += other.x; this->y += other.y; return *this; };
-    Coords &operator-=(const Coords &other) { this->x -= other.x; this->y -= other.y; return *this; };
-    Coords &operator*=(const Coords &other) { this->x *= other.x; this->y *= other.y; return *this; };
-    Coords &operator/=(const Coords &other) { this->x /= other.x; this->y /= other.y; return *this; };
-    Coords &operator+=(const T &other) { this->x += other; this->y += other; return *this; };
-    Coords &operator-=(const T &other) { this->x -= other; this->y -= other; return *this; };
-    Coords &operator*=(const T &other) { this->x *= other; this->y *= other; return *this; };
-    Coords &operator/=(const T &other) { this->x /= other; this->y /= other; return *this; };
-    bool operator== (const Coords &other)const { return {this->x == other.x, this->y == other.y }; };
-    bool operator!= (const Coords &other)const { return {this->x != other.x, this->y != other.y }; };
-    bool operator> (const Coords &other)const { return (this->x > other.x && this->y > other.y); };
-    bool operator< (const Coords &other)const { return (this->x < other.x && this->y < other.y); };
-    bool operator>= (const Coords &other)const { return (this->x >= other.x && this->y >= other.y); };
-    bool operator<= (const Coords &other)const { return (this->x <= other.x && this->y <= other.y); };
-    bool operator== (const T &other)const { return {this->x == other, this->y == other }; };
-    bool operator!= (const T &other)const { return {this->x != other, this->y != other }; };
-    bool operator> (const T &other)const { return (this->x > other && this->y > other); };
-    bool operator< (const T &other)const { return (this->x < other && this->y < other); };
-    bool operator>= (const T &other)const { return (this->x >= other && this->y >= other); };
-    bool operator<= (const T &other)const { return (this->x <= other && this->y <= other); };
+    inline Coords operator+(const Coords &other)const { return {this->x + other.x, this->y + other.y }; };
+    inline Coords operator-(const Coords &other)const { return {this->x - other.x, this->y - other.y }; };
+    inline Coords operator*(const Coords &other)const { return {this->x * other.x, this->y * other.y }; };
+    inline Coords operator/(const Coords &other)const { return {this->x / other.x, this->y / other.y }; };
+    inline Coords operator+(const T &other)const { return {this->x + other, this->y + other };};
+    inline Coords operator-(const T &other)const { return {this->x - other, this->y - other };};
+    inline Coords operator*(const T &other)const { return {this->x * other, this->y * other };};
+    inline Coords operator/(const T &other)const { return {this->x / other, this->y / other };};
+    inline Coords &operator+=(const Coords &other) { this->x += other.x; this->y += other.y; return *this; };
+    inline Coords &operator-=(const Coords &other) { this->x -= other.x; this->y -= other.y; return *this; };
+    inline Coords &operator*=(const Coords &other) { this->x *= other.x; this->y *= other.y; return *this; };
+    inline Coords &operator/=(const Coords &other) { this->x /= other.x; this->y /= other.y; return *this; };
+    inline Coords &operator+=(const T &other) { this->x += other; this->y += other; return *this; };
+    inline Coords &operator-=(const T &other) { this->x -= other; this->y -= other; return *this; };
+    inline Coords &operator*=(const T &other) { this->x *= other; this->y *= other; return *this; };
+    inline Coords &operator/=(const T &other) { this->x /= other; this->y /= other; return *this; };
+    inline bool operator== (const Coords &other)const { return {this->x == other.x, this->y == other.y }; };
+    inline bool operator!= (const Coords &other)const { return {this->x != other.x, this->y != other.y }; };
+    inline bool operator> (const Coords &other)const { return (this->x > other.x && this->y > other.y); };
+    inline bool operator< (const Coords &other)const { return (this->x < other.x && this->y < other.y); };
+    inline bool operator>= (const Coords &other)const { return (this->x >= other.x && this->y >= other.y); };
+    inline bool operator<= (const Coords &other)const { return (this->x <= other.x && this->y <= other.y); };
+    inline bool operator== (const T &other)const { return {this->x == other, this->y == other }; };
+    inline bool operator!= (const T &other)const { return {this->x != other, this->y != other }; };
+    inline bool operator> (const T &other)const { return (this->x > other && this->y > other); };
+    inline bool operator< (const T &other)const { return (this->x < other && this->y < other); };
+    inline bool operator>= (const T &other)const { return (this->x >= other && this->y >= other); };
+    inline bool operator<= (const T &other)const { return (this->x <= other && this->y <= other); };
     static T add(const Coords &co) { return co.x + co.y; };
 
     template<class E>
-    operator Coords<E>()const { return { static_cast<E>(this->x), static_cast<E>(this->y)}; }
+    inline operator Coords<E>()const { return { static_cast<E>(this->x), static_cast<E>(this->y)}; }
 };
 
 class Map {

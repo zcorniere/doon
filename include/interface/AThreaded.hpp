@@ -3,14 +3,14 @@
 #include <condition_variable>
 #include "Snitch.hpp"
 
-#ifndef _ITHREADED_HPP_
-#define _ITHREADED_HPP_
+#ifndef _ATHREADED_HPP_
+#define _ATHREADED_HPP_
 
-class IThreaded {
+class AThreaded {
     public:
-        IThreaded() = default;
-        IThreaded(const IThreaded &) = delete;
-        virtual ~IThreaded() {};
+        AThreaded() = default;
+        AThreaded(const AThreaded &) = delete;
+        virtual ~AThreaded() {};
         virtual void run() = 0;
         virtual void stop() {
             this->update();
@@ -43,4 +43,4 @@ class IThreaded {
         std::condition_variable vBlocking;
 };
 
-#endif //_ITHREADED_HPP_
+#endif //_ATHREADED_HPP_

@@ -92,7 +92,7 @@ int main()
             rendy.update();
         }
         sf::Texture texture;
-        texture.loadFromImage(*(rendy.getImage()));
+        texture.loadFromImage(rendy.getImage());
         sf::Sprite sprite(texture);
         window.clear();
         window.draw(sprite);
