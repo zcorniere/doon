@@ -21,6 +21,9 @@ class Renderer: public AThreaded {
         const sf::Image &getImage(const bool &bWait = false);
 
     private:
+        const sf::Color sampleTexture(const Coords<float> &fSample, const std::string &texture);
+
+    private:
         std::atomic_bool bQuit = false;
 
         std::mutex mRendy;

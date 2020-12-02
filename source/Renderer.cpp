@@ -15,9 +15,13 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, 
 {
     for (auto &f: std::filesystem::directory_iterator(assets)) {
         if (f.path().extension() != ".jpg") continue;
-        sf::Image img;
-        img.loadFromFile(f.path());
-        sprite_list.insert({f.path().stem(), std::move(img)});
+        try {
+            sf::Image img;
+            img.loadFromFile(f.path());
+            sprite_list.insert({f.path().stem(), std::move(img)});
+        } catch (const std::exception &e) {
+            Snitch::warn("RENDERER") << e.what() << Snitch::endl;
+        }
     }
     img.create(size.x, size.y);
     lastImg.create(size.x, size.y);
@@ -32,8 +36,8 @@ void Renderer::run() {
         for (unsigned x = 0; x < size.x; ++x) {
             float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
             float fDistanceToWall = 0;
-            float fSampleX = 0.0f;
 
+            Coords<float> fSample;
             Coords<float> fEye(sinf(fRayAngle), cosf(fRayAngle));
 
             while(fDistanceToWall < fDepth) {
@@ -51,13 +55,13 @@ void Renderer::run() {
                         Coords<float> fTestPoint(player.getPlayerPos<float>() + fEye * fDistanceToWall);
                         float fTestAngle = atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
                         if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-                            fSampleX = fTestPoint.y - float(nTest.y);
+                            fSample.x = fTestPoint.y - nTest.y;
                         else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-                            fSampleX = fTestPoint.x - float(nTest.x);
+                            fSample.x = fTestPoint.x - nTest.x;
                         else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-                            fSampleX = fTestPoint.x - float(nTest.x);
+                            fSample.x = fTestPoint.x - nTest.x;
                         else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-                            fSampleX = fTestPoint.y - float(nTest.y);
+                            fSample.x = fTestPoint.y - nTest.y;
                         break;
                     }
                 }
@@ -71,16 +75,8 @@ void Renderer::run() {
                 } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
                     if (fDistanceToWall < fDepth)
                     {
-                        sf::Image &wall = sprite_list.at(sWallTexture);
-                        sf::Vector2u wall_size = wall.getSize();
-
-                        float fSampleY = (float(y) - fCeiling) / (fFloor - fCeiling);
-
-                        Coords<unsigned> uSample(
-                            std::min(unsigned(fSampleX * float(wall_size.x)), wall_size.x - 1),
-                            std::min(unsigned(fSampleY * float(wall_size.y)), wall_size.y - 1)
-                        );
-                        img.setPixel(x, y, wall.getPixel(uSample.x, uSample.y));
+                        fSample.y = (y - fCeiling) / (fFloor - fCeiling);
+                        img.setPixel(x, y, this->sampleTexture(fSample, "wall"));
                     } else {
                         img.setPixel(x, y, sf::Color::Black);
                     }
@@ -109,4 +105,19 @@ const sf::Image &Renderer::getImage(const bool &bWait) {
         vRendy.wait(ul);
     }
     return lastImg;
+}
+
+const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std::string &texture) {
+    try {
+        const sf::Image &img = sprite_list.at(texture);
+        const sf::Vector2u imgSize = img.getSize();
+        const Coords<unsigned> uSample(
+            std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
+            std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1)
+        );
+        return img.getPixel(uSample.x, uSample.y);
+    } catch (const std::out_of_range &oor) {
+        Snitch::err("RENDERER") << "Missing texture ! " << texture << Snitch::endl;
+        return sf::Color::Black;
+    }
 }
