@@ -13,17 +13,20 @@
 
 class Renderer: public AThreaded {
     public:
-        Renderer(const Player &player, const Map &map, Coords<unsigned> size, const std::string &assets);
+        Renderer(const Player &, const Map &, Coords<unsigned> ,const std::string &);
         Renderer(const Renderer &) = delete;
         ~Renderer();
         virtual void run()final;
         virtual void stop()final;
-        const sf::Image &getImage(const bool &bWait = false);
+        const sf::Image &getImage(const bool & = false);
+        const float &getElapsedTime()const;
 
     private:
-        const sf::Color sampleTexture(const Coords<float> &fSample, const std::string &texture);
+        const sf::Color sampleTexture(const Coords<float> &, const std::string &)const;
 
     private:
+        std::chrono::system_clock::time_point t1;
+        float fElapsedTime = 0.0f;
         std::atomic_bool bQuit = false;
 
         std::mutex mRendy;

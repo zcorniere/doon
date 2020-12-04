@@ -24,8 +24,8 @@ struct Coords {
     }
     T x = 0;
     T y = 0;
-    T mag()const { return T(std::sqrt(x*x + y*y)); };
-    T dot(const Coords &other)const { return T(this->x * other.x + this->y * other.y); };
+    inline T mag()const { return T(std::sqrt(x*x + y*y)); };
+    inline T dot(const Coords &other)const { return T(this->x * other.x + this->y * other.y); };
     inline Coords operator+(const Coords &other)const { return {this->x + other.x, this->y + other.y }; };
     inline Coords operator-(const Coords &other)const { return {this->x - other.x, this->y - other.y }; };
     inline Coords operator*(const Coords &other)const { return {this->x * other.x, this->y * other.y }; };
@@ -54,7 +54,7 @@ struct Coords {
     inline bool operator< (const T &other)const { return (this->x < other && this->y < other); };
     inline bool operator>= (const T &other)const { return (this->x >= other && this->y >= other); };
     inline bool operator<= (const T &other)const { return (this->x <= other && this->y <= other); };
-    static T add(const Coords &co) { return co.x + co.y; };
+    static inline T add(const Coords &co) { return co.x + co.y; };
 
     template<class E>
     inline operator Coords<E>()const { return { static_cast<E>(this->x), static_cast<E>(this->y)}; }
@@ -62,13 +62,13 @@ struct Coords {
 
 class Map {
     public:
-        Map(const std::filesystem::path path);
+        Map(const std::filesystem::path);
         ~Map();
-        char operator[](const std::size_t idx);
-        char at(const std::size_t idx);
-        char at(const Coords<unsigned> &idx);
-        char at(const std::size_t idx)const;
-        char at(const Coords<unsigned> &idx)const;
+        char operator[](const std::size_t);
+        char at(const std::size_t);
+        char at(const Coords<unsigned> &);
+        char at(const std::size_t)const;
+        char at(const Coords<unsigned> &)const;
 
     public:
         std::string map;
@@ -77,6 +77,6 @@ class Map {
         Coords<unsigned> coord;
 };
 
-std::ostream &operator<<(std::ostream &os, const Map &other);
+std::ostream &operator<<(std::ostream &, const Map &);
 
 #endif //_MAP_HPP_

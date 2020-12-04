@@ -11,7 +11,8 @@ const std::string sWallTexture("wall");
 const sf::Color cFloor(0x32, 0x70, 0x34);
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, const std::string &assets) :
-    AThreaded(), size(std::move(size)), player(player), map(map)
+    AThreaded(), t1(std::chrono::system_clock::now()),
+    size(std::move(size)), player(player), map(map)
 {
     for (auto &f: std::filesystem::directory_iterator(assets)) {
         if (f.path().extension() != ".jpg") continue;
@@ -33,10 +34,15 @@ Renderer::~Renderer() {
 
 void Renderer::run() {
     while(!bQuit) {
+        auto t2 = std::chrono::system_clock::now();
+        std::chrono::duration<float> elapsedTime = t2 - t1;
+        t1 = std::move(t2);
+        fElapsedTime = elapsedTime.count();
+
         for (unsigned x = 0; x < size.x; ++x) {
             float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
-            float fDistanceToWall = 0;
 
+            float fDistanceToWall = 0;
             Coords<float> fSample;
             Coords<float> fEye(sinf(fRayAngle), cosf(fRayAngle));
 
@@ -107,7 +113,7 @@ const sf::Image &Renderer::getImage(const bool &bWait) {
     return lastImg;
 }
 
-const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std::string &texture) {
+const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std::string &texture)const {
     try {
         const sf::Image &img = sprite_list.at(texture);
         const sf::Vector2u imgSize = img.getSize();
@@ -117,7 +123,11 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std:
         );
         return img.getPixel(uSample.x, uSample.y);
     } catch (const std::out_of_range &oor) {
-        Snitch::err("RENDERER") << "Missing texture ! " << texture << Snitch::endl;
+        Snitch::err("RENDERER") << "Missing texture : " << texture << "!" << Snitch::endl;
         return sf::Color::Black;
     }
+}
+
+const float &Renderer::getElapsedTime()const {
+    return fElapsedTime;
 }

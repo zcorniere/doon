@@ -13,10 +13,10 @@ class Player {
         };
 
     public:
-        Player(const float x, const float y);
+        Player(const float, const float);
         ~Player();
-        void rotate(const Player::Rotation dir, const float &fElapsedTime);
-        void move(const Player::Move dir, const float &fElapsedTime);
+        void rotate(const Player::Rotation, const float &);
+        void move(const Player::Move, const float &);
         template<typename T>
         Coords<T> getPlayerPos()const {
             return { static_cast<T>(x), static_cast<T>(y) };
