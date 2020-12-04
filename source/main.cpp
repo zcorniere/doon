@@ -1,14 +1,14 @@
-#include <math.h>
-#include <array>
-#include <iostream>
-#include <chrono>
 #include <SFML/Graphics.hpp>
+#include <array>
+#include <chrono>
+#include <iostream>
+#include <math.h>
 
 #include "FrameLimiter.hpp"
-#include "Player.hpp"
 #include "Map.hpp"
-#include "Snitch.hpp"
+#include "Player.hpp"
 #include "Renderer.hpp"
+#include "Snitch.hpp"
 
 constexpr int WindowWidth = 1280;
 constexpr int WindowHeight = 960;
@@ -35,8 +35,7 @@ int main()
     auto tp1 = std::chrono::system_clock::now();
 
     bool bUpdate = true;
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
@@ -45,10 +44,12 @@ int main()
         window.setTitle(std::to_string(1.0f / fElapsedTime));
 
         sf::Event event;
-        while (window.pollEvent(event))
-        {
+        while (window.pollEvent(event)) {
             switch (event.type) {
-                case sf::Event::Closed: window.close(); bUpdate = false; break;
+                case sf::Event::Closed: {
+                    window.close();
+                    bUpdate = false;
+                } break;
                 case sf::Event::KeyPressed: {
                     switch (event.key.code) {
                         case sf::Keyboard::A: {
@@ -90,9 +91,7 @@ int main()
             }
         }
 
-        if (bUpdate) {
-            rendy.update();
-        }
+        if (bUpdate) { rendy.update(); }
         sf::Texture texture;
         texture.loadFromImage(rendy.getImage());
         sf::Sprite sprite(texture);

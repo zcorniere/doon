@@ -1,5 +1,5 @@
-#include "Snitch.hpp"
 #include "Renderer.hpp"
+#include "Snitch.hpp"
 #include <math.h>
 
 constexpr float fFOV = M_PI / 4.0f;
@@ -10,9 +10,13 @@ const std::string sWallTexture("wall");
 
 const sf::Color cFloor(0x32, 0x70, 0x34);
 
-Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, const std::string &assets) :
-    AThreaded(), t1(std::chrono::system_clock::now()),
-    size(std::move(size)), player(player), map(map)
+Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
+                   const std::string &assets)
+    : AThreaded(),
+      t1(std::chrono::system_clock::now()),
+      size(std::move(size)),
+      player(player),
+      map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -32,12 +36,11 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, 
     lastImg.create(size.x, size.y);
 }
 
-Renderer::~Renderer() {
-    this->stop();
-}
+Renderer::~Renderer() { this->stop(); }
 
-void Renderer::run() {
-    while(!bQuit) {
+void Renderer::run()
+{
+    while (!bQuit) {
         auto t2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = t2 - t1;
         t1 = std::move(t2);
@@ -50,7 +53,7 @@ void Renderer::run() {
             Coords<float> fSample;
             Coords<float> fEye(sinf(fRayAngle), cosf(fRayAngle));
 
-            while(fDistanceToWall < fDepth) {
+            while (fDistanceToWall < fDepth) {
                 fDistanceToWall += fRayResolution;
 
                 Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
@@ -62,8 +65,10 @@ void Renderer::run() {
                     if (map.at(nTest) == '#') {
                         Coords<float> fBlockMid(nTest);
                         fBlockMid += 0.5f;
-                        Coords<float> fTestPoint(player.getPlayerPos<float>() + fEye * fDistanceToWall);
-                        float fTestAngle = atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
+                        Coords<float> fTestPoint(player.getPlayerPos<float>() +
+                                                 fEye * fDistanceToWall);
+                        float fTestAngle =
+                            atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
                         if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
                             fSample.x = fTestPoint.y - nTest.y;
                         else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
@@ -83,8 +88,7 @@ void Renderer::run() {
                 if (y <= unsigned(fCeiling)) {
                     img.setPixel(x, y, sf::Color::Blue);
                 } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
-                    if (fDistanceToWall < fDepth)
-                    {
+                    if (fDistanceToWall < fDepth) {
                         fSample.y = (y - fCeiling) / (fFloor - fCeiling);
                         img.setPixel(x, y, this->sampleTexture(fSample, "wall"));
                     } else {
@@ -104,27 +108,27 @@ void Renderer::run() {
     }
 }
 
-void Renderer::stop() {
+void Renderer::stop()
+{
     bQuit = true;
     this->AThreaded::stop();
 }
 
-const sf::Image &Renderer::getImage(const bool &bWait) {
+const sf::Image &Renderer::getImage(const bool &bWait)
+{
     std::unique_lock<std::mutex> ul(mRendy);
-    if (bWait) {
-        vRendy.wait(ul);
-    }
+    if (bWait) { vRendy.wait(ul); }
     return lastImg;
 }
 
-const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std::string &texture)const {
+const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
+                                        const std::string &texture) const
+{
     try {
         const sf::Image &img = sprite_list.at(texture);
         const sf::Vector2u imgSize = img.getSize();
-        const Coords<unsigned> uSample(
-            std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
-            std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1)
-        );
+        const Coords<unsigned> uSample(std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
+                                       std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
         return img.getPixel(uSample.x, uSample.y);
     } catch (const std::out_of_range &oor) {
         Snitch::err("RENDERER") << "Missing texture : " << texture << "!" << Snitch::endl;
@@ -132,6 +136,4 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample, const std:
     }
 }
 
-const float &Renderer::getElapsedTime()const {
-    return fElapsedTime;
-}
+const float &Renderer::getElapsedTime() const { return fElapsedTime; }

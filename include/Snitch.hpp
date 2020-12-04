@@ -4,7 +4,8 @@
 #include <iostream>
 #include <string>
 
-class Snitch {
+class Snitch
+{
 public:
     static std::ostream &output;
     static std::string endl;
