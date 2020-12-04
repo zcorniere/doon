@@ -14,15 +14,19 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size, 
     AThreaded(), t1(std::chrono::system_clock::now()),
     size(std::move(size)), player(player), map(map)
 {
-    for (auto &f: std::filesystem::directory_iterator(assets)) {
-        if (f.path().extension() != ".jpg") continue;
-        try {
-            sf::Image img;
-            img.loadFromFile(f.path());
-            sprite_list.insert({f.path().stem(), std::move(img)});
-        } catch (const std::exception &e) {
-            Snitch::warn("RENDERER") << e.what() << Snitch::endl;
+    try {
+        for (auto &f: std::filesystem::directory_iterator(assets)) {
+            if (f.path().extension() != ".jpg") continue;
+            try {
+                sf::Image img;
+                img.loadFromFile(f.path());
+                sprite_list.insert({f.path().stem(), std::move(img)});
+            } catch (const std::exception &e) {
+                Snitch::warn("RENDERER") << e.what() << Snitch::endl;
+            }
         }
+    } catch (const std::filesystem::filesystem_error &fe) {
+        Snitch::err("RENDERER") << fe.what() << Snitch::endl;
     }
     img.create(size.x, size.y);
     lastImg.create(size.x, size.y);

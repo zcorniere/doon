@@ -13,11 +13,12 @@
 constexpr int WindowWidth = 1280;
 constexpr int WindowHeight = 960;
 
-const std::string assets_path = "./assets/";
+constexpr char sAssetsPath[] = "./assets/";
+constexpr char sMapPath[] = "./map";
 
 int main()
 {
-    Map map("./map");
+    const Map map(sMapPath);
     Player player(map.width / 2, map.height / 2);
     FrameLimiter<60> limiter;
 
@@ -25,7 +26,7 @@ int main()
     Snitch::msg() << "Map width :" << map.width << Snitch::endl;
     std::cerr << map << std::endl;
 
-    Renderer rendy(player, map, {WindowWidth, WindowHeight}, assets_path);
+    Renderer rendy(player, map, {WindowWidth, WindowHeight}, sAssetsPath);
     rendy.run_threaded();
 
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
@@ -39,7 +40,8 @@ int main()
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
-        float fElapsedTime = elapsedTime.count();
+
+        const float fElapsedTime = elapsedTime.count();
         window.setTitle(std::to_string(1.0f / fElapsedTime));
 
         sf::Event event;
