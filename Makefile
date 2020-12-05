@@ -8,7 +8,6 @@ HEADP := ./include/
 
 SRC_FOLDER := source
 OBJ_FOLDER := .object
-TEST_FOLDER := tests
 
 CC := clang++
 LANG := .cpp
@@ -16,11 +15,6 @@ VPATH := $(SRC_FOLDER)
 SRC := $(notdir $(shell find $(SRC_FOLDER) -name '*$(LANG)'))
 OBJ := $(addprefix $(OBJ_FOLDER)/,$(SRC:$(LANG)=.o))
 OBJM := $(filter-out $(OBJ_FOLDER)/main.o, $(OBJ))
-
-VPATH += $(TEST_FOLDER)
-TEST_SRC := $(notdir $(shell find $(TEST_FOLDER) -name '*$(LANG)'))
-TEST_OBJ := $(addprefix $(OBJ_FOLDER)/, $(TEST_SRC:$(LANG)=.o))
-TFLAGS := -lcriterion
 
 DEP_FOLDER := .deps
 DEPS := $(addprefix $(DEP_FOLDER), $(SRC:$(LANG)=.d))
@@ -39,10 +33,10 @@ MAKEFLAGS += --no-print-directory --silent
 
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
+-include $(DEPS)
+
 all: $(NAME)
 .PHONY: all
-
--include $(DEPS) $(TEST_DEPS)
 
 start_compile:
 	printf "$(SAY) Praise for the almighty $(CYAN)binary$(END)$(BOLD) !$(END)\n"
@@ -52,15 +46,9 @@ $(NAME): start_compile $(OBJ)
 	$(CC) -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) $(SFML_LIBS) -lpthread
 	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
-tests_run: $(OBJ) $(TEST_OBJ)
-	printf "$(SAY) Are you doubting my faith ?$(END)\n"
-	$(CC) -o unit_tests $(OBJM) $(TEST_OBJ) $(TFLAGS) $(CFLAGS)
-	./unit_tests -j4 $(VERBOSE)
-.PHONY: tests_run
-
-unit_tests: $(OBJM) $(TEST_OBJ)
-	$(CC) -o unit_tests $(OBJM) $(TEST_OBJ) $(TFLAGS) $(CFLAGS)
-.PHONY: unit_tests
+format:
+	find . -regex '.*\.\(cpp\|hpp\)' -exec clang-format -style=file -i {} \;
+.PHONY: format
 
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
 
@@ -86,31 +74,17 @@ clean:
 	printf "$(SAY) What ? I am just \"rewriting\" the holy book.$(END)\n\n"
 .PHONY: clean
 
-fclean: tclean clean
+fclean: clean
 	printf "$(BOLD)Deleting $(NAME)$(END)\n"
 	rm -f $(NAME)
 	printf "$(SAY) It is a false god. In such, it has been \"deleted\"$(END)\n\n"
 .PHONY: fclean
-
-tclean:
-	printf "$(BOLD)Deleting your skepticism.\n"
-	rm -f $(TEST_DEPS)
-	rm -vf $(TEST_OBJ)
-	rm -vf tests_run
-	printf "$(CYAN)* * * * * SKEPTICISM REMOVED * * * * *$(END)\n\n"
-.PHONY: tclean
 
 re:
 	make clear
 	make fclean
 	make all
 .PHONY: re
-
-$(TEST_OBJ): $(OBJ_FOLDER)/%.o: %$(LANG)
-	$(CC) $(CFLAGS) $(TFLAGS) -c -o $@ $< \
-	&& printf "$(BOLD)$(CYAN)$< $(END)$(BOLD)is ready.$(END)\n"    \
-	|| printf "$(BOLD)$(RED) $< $(END)$(BOLD)is not ready.$(END)\n"
-	$(CC) $(CFLAGS) -MM -MP -MT $@ $< > $(DEP_FOLDER)/$*.d
 
 hello:
 	printf "$(SAY) I am Hu, a wandering believer. My praise are currently to $(NAME).$(END)\n"
