@@ -2,6 +2,8 @@
 #define _RENDERER_HPP_
 
 #include "Map.hpp"
+#include "Coords.hpp"
+#include "ThreadedQ.hpp"
 #include "Player.hpp"
 #include "interface/AThreaded.hpp"
 #include <SFML/Graphics.hpp>
@@ -19,21 +21,16 @@ public:
     ~Renderer();
     virtual void run() final;
     virtual void stop() final;
-    const sf::Image &getImage(const bool & = false);
-    const float &getElapsedTime() const;
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
 
+public:
+    ThreadedQ<sf::Image> rendered;
+
 private:
-    std::chrono::system_clock::time_point t1;
-    float fElapsedTime = 0.0f;
     std::atomic_bool bQuit = false;
 
-    std::mutex mRendy;
-    std::condition_variable vRendy;
-    sf::Image lastImg;
-    sf::Image img;
     std::unordered_map<std::string, sf::Image> sprite_list;
 
     Coords<unsigned> size;

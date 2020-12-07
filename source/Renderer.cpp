@@ -12,11 +12,7 @@ const sf::Color cFloor(0x32, 0x70, 0x34);
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : AThreaded(),
-      t1(std::chrono::system_clock::now()),
-      size(std::move(size)),
-      player(player),
-      map(map)
+    : AThreaded(), size(std::move(size)), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -32,8 +28,6 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
     } catch (const std::filesystem::filesystem_error &fe) {
         Snitch::err("RENDERER") << fe.what() << Snitch::endl;
     }
-    img.create(size.x, size.y);
-    lastImg.create(size.x, size.y);
 }
 
 Renderer::~Renderer() { this->stop(); }
@@ -41,10 +35,8 @@ Renderer::~Renderer() { this->stop(); }
 void Renderer::run()
 {
     while (!bQuit) {
-        auto t2 = std::chrono::system_clock::now();
-        std::chrono::duration<float> elapsedTime = t2 - t1;
-        t1 = std::move(t2);
-        fElapsedTime = elapsedTime.count();
+        sf::Image img;
+        img.create(size.x, size.y);
 
         for (unsigned x = 0; x < size.x; ++x) {
             float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
@@ -99,11 +91,7 @@ void Renderer::run()
                 }
             }
         }
-        {
-            std::unique_lock<std::mutex> ul(mRendy);
-            std::swap(img, lastImg);
-            vRendy.notify_one();
-        }
+        rendered.push_back(img);
         this->wait();
     }
 }
@@ -112,13 +100,6 @@ void Renderer::stop()
 {
     bQuit = true;
     this->AThreaded::stop();
-}
-
-const sf::Image &Renderer::getImage(const bool &bWait)
-{
-    std::unique_lock<std::mutex> ul(mRendy);
-    if (bWait) { vRendy.wait(ul); }
-    return lastImg;
 }
 
 const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
@@ -135,5 +116,3 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
         return sf::Color::Black;
     }
 }
-
-const float &Renderer::getElapsedTime() const { return fElapsedTime; }

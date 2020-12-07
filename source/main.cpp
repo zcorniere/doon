@@ -18,6 +18,7 @@ constexpr char sMapPath[] = "./map";
 
 int main()
 {
+    sf::Image img;
     const Map map(sMapPath);
     Player player(map.width / 2, map.height / 2);
     FrameLimiter<60> limiter;
@@ -29,6 +30,8 @@ int main()
     Renderer rendy(player, map, {WindowWidth, WindowHeight}, sAssetsPath);
     rendy.run_threaded();
 
+    sf::Texture texture;
+    sf::Sprite sprite;
     sf::RenderWindow window(sf::VideoMode(WindowWidth, WindowHeight), "N/A");
     window.setVerticalSyncEnabled(true);
 
@@ -48,43 +51,37 @@ int main()
             switch (event.type) {
                 case sf::Event::Closed: {
                     window.close();
-                    bUpdate = false;
                 } break;
                 case sf::Event::KeyPressed: {
+                    bUpdate = true;
                     switch (event.key.code) {
                         case sf::Keyboard::A: {
                             player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
-                            bUpdate = true;
                         } break;
                         case sf::Keyboard::E: {
                             player.rotate(Player::Rotation::Clockwise, fElapsedTime);
-                            bUpdate = true;
                         } break;
                         case sf::Keyboard::Z: {
                             player.move(Player::Move::Forward, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Backward, fElapsedTime);
-                            bUpdate = true;
                         } break;
                         case sf::Keyboard::S: {
                             player.move(Player::Move::Backward, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Forward, fElapsedTime);
-                            bUpdate = true;
                         } break;
                         case sf::Keyboard::Q: {
                             player.move(Player::Move::Left, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Right, fElapsedTime);
-                            bUpdate = true;
                         } break;
                         case sf::Keyboard::D: {
                             player.move(Player::Move::Right, fElapsedTime);
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Left, fElapsedTime);
-                            bUpdate = true;
                         } break;
-                        default: break;
+                        default: bUpdate = false; break;
                     }
                 } break;
                 default: break;
@@ -92,10 +89,10 @@ int main()
         }
 
         if (bUpdate) { rendy.update(); }
-        sf::Texture texture;
-        texture.loadFromImage(rendy.getImage());
-        sf::Sprite sprite(texture);
-        window.clear();
+        if (!rendy.rendered.empty()) { img = rendy.rendered.pop_back(); }
+        texture.loadFromImage(img);
+        sprite.setTexture(texture);
+
         window.draw(sprite);
         window.display();
         limiter.sleep();

@@ -1,7 +1,7 @@
 #ifndef _PLAYER_HPP_
 #define _PLAYER_HPP_
 
-#include "Map.hpp"
+#include "Coords.hpp"
 
 class Player
 {
