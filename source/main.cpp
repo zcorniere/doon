@@ -28,7 +28,7 @@ int main()
     std::cerr << map << std::endl;
 
     Renderer rendy(player, map, {WindowWidth, WindowHeight}, sAssetsPath);
-    rendy.run_threaded();
+    rendy.run_threaded(false);
 
     sf::Texture texture;
     sf::Sprite sprite;
