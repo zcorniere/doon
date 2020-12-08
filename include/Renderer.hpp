@@ -1,16 +1,13 @@
 #ifndef _RENDERER_HPP_
 #define _RENDERER_HPP_
 
-#include "Map.hpp"
 #include "Coords.hpp"
-#include "ThreadedQ.hpp"
+#include "Map.hpp"
 #include "Player.hpp"
+#include "ThreadedQ.hpp"
 #include "interface/AThreaded.hpp"
 #include <SFML/Graphics.hpp>
 #include <atomic>
-#include <condition_variable>
-#include <memory>
-#include <mutex>
 #include <unordered_map>
 
 class Renderer : public AThreaded
@@ -22,7 +19,7 @@ public:
     virtual void run() final;
     virtual void stop() final;
 
-private:
+protected:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
 
 public:

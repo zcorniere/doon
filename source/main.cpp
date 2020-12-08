@@ -53,7 +53,6 @@ int main()
                     window.close();
                 } break;
                 case sf::Event::KeyPressed: {
-                    bUpdate = true;
                     switch (event.key.code) {
                         case sf::Keyboard::A: {
                             player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
@@ -81,22 +80,24 @@ int main()
                             if (map.at(player.getPlayerPos<unsigned>()) == '#')
                                 player.move(Player::Move::Left, fElapsedTime);
                         } break;
-                        default: bUpdate = false; break;
+                        default: break;
                     }
                 } break;
                 default: break;
             }
         }
 
-        if (bUpdate) { rendy.update(); }
-        if (!rendy.rendered.empty()) { img = rendy.rendered.pop_back(); }
+        if (bUpdate) {
+            rendy.update();
+            rendy.rendered.wait();
+            img = rendy.rendered.pop_back();
+        }
         texture.loadFromImage(img);
         sprite.setTexture(texture);
 
         window.draw(sprite);
         window.display();
         limiter.sleep();
-        bUpdate = false;
     }
 
     return 0;

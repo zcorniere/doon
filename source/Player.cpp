@@ -2,10 +2,11 @@
 #include "Snitch.hpp"
 #include <math.h>
 
-constexpr float fMovementSpeed = 25.0f;
-constexpr float fRotationSpeed = 4.0f;
+constexpr float fMovementSpeed = 10.0f;
+constexpr float fRotationSpeed = 1.0f;
 
-Player::Player(const float x, const float y): x(x), y(y) {}
+Player::Player(Coords<float> pos): pos(std::move(pos)) {}
+Player::Player(const float x, const float y): pos(x, y) {}
 
 Player::~Player() {}
 
@@ -25,20 +26,26 @@ void Player::move(const Player::Move dir, const float &fElapsedTime)
 {
     switch (dir) {
         case Move::Forward: {
-            x += sinf(angle) * fMovementSpeed * fElapsedTime;
-            y += cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x += sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.y += cosf(angle) * fMovementSpeed * fElapsedTime;
         } break;
         case Move::Backward: {
-            x -= sinf(angle) * fMovementSpeed * fElapsedTime;
-            y -= cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x -= sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.y -= cosf(angle) * fMovementSpeed * fElapsedTime;
         } break;
         case Move::Left: {
-            x -= cosf(angle) * fMovementSpeed * fElapsedTime;
-            y += sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x -= cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.y += sinf(angle) * fMovementSpeed * fElapsedTime;
         } break;
         case Move::Right: {
-            x += cosf(angle) * fMovementSpeed * fElapsedTime;
-            y -= sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x += cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.y -= sinf(angle) * fMovementSpeed * fElapsedTime;
         } break;
     }
 }
+
+template <>
+Coords<float> Player::getPlayerPos() const
+{
+    return pos;
+};

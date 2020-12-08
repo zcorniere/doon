@@ -10,6 +10,7 @@ public:
     enum class Rotation { Clockwise, CounterClockwise };
 
 public:
+    Player(Coords<float>);
     Player(const float, const float);
     ~Player();
     void rotate(const Player::Rotation, const float &);
@@ -17,12 +18,11 @@ public:
     template <typename T>
     Coords<T> getPlayerPos() const
     {
-        return {static_cast<T>(x), static_cast<T>(y)};
+        return static_cast<Coords<T>>(pos);
     };
 
 public:
-    float x = 0.0f;
-    float y = 0.0f;
+    Coords<float> pos;
     float angle = 0.0f;
 };
 

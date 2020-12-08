@@ -2,8 +2,8 @@
 #include <deque>
 #include <mutex>
 
-#ifndef _MSGQUEUE_HPP_
-#define _MSGQUEUE_HPP_
+#ifndef _THREADEDQ_HPP_
+#define _THREADEDQ_HPP_
 
 #include "Snitch.hpp"
 
@@ -91,4 +91,4 @@ protected:
     std::mutex mutBlocking;
     std::condition_variable vBlocking;
 };
-#endif    //_MSGQUEUE_HPP_
+#endif    //_THREADEDQ_HPP_

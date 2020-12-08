@@ -2,14 +2,14 @@
 #define _COORDS_HPP_
 
 #include <algorithm>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 template <class T>
 struct Coords {
     Coords() = default;
     Coords(T x, T y): x(x), y(y){};
-    Coords(Coords<T> &other) = default;
+    Coords(const Coords<T> &other) = default;
     Coords(Coords<T> &&other)
     {
         x = std::move(other.x);
@@ -131,11 +131,12 @@ struct Coords {
         return {static_cast<E>(this->x), static_cast<E>(this->y)};
     }
 };
-template<typename T>
-std::ostream &operator<<(std::ostream &os, const Coords<T> &other) {
-    os << "Coords<" << typeid(other.x).name() << "> { x = " << other.x << ", y = " << other.y << "}";
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const Coords<T> &other)
+{
+    os << "Coords<" << typeid(other.x).name() << "> { x = " << other.x << ", y = " << other.y
+       << "}";
     return os;
 }
 
-
-#endif //_COORDS_HPP_
+#endif    //_COORDS_HPP_
