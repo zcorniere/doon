@@ -9,7 +9,8 @@ HEADP := ./include/
 SRC_FOLDER := source
 OBJ_FOLDER := .object
 
-CC := clang++
+    CC := clang++-10
+
 LANG := .cpp
 VPATH := $(SRC_FOLDER)
 SRC := $(notdir $(shell find $(SRC_FOLDER) -name '*$(LANG)'))
