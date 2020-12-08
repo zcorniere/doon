@@ -28,7 +28,7 @@ int main()
     std::cerr << map << std::endl;
 
     Renderer rendy(player, map, {WindowWidth, WindowHeight}, sAssetsPath);
-    rendy.run_threaded(false);
+    rendy.run_threaded();
 
     sf::Texture texture;
     sf::Sprite sprite;
@@ -37,8 +37,8 @@ int main()
 
     auto tp1 = std::chrono::system_clock::now();
 
-    bool bUpdate = true;
     while (window.isOpen()) {
+        rendy.update();
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
@@ -87,14 +87,12 @@ int main()
             }
         }
 
-        if (bUpdate) {
-            rendy.update();
-            rendy.rendered.wait();
-            img = rendy.rendered.pop_back();
-        }
+        rendy.rendered.wait();
+        img = rendy.rendered.pop_back();
         texture.loadFromImage(img);
         sprite.setTexture(texture);
 
+        window.clear();
         window.draw(sprite);
         window.display();
         limiter.sleep();
