@@ -23,8 +23,9 @@ public:
         std::unique_lock<std::mutex> ul(mVariable);
         vBlocking.notify_one();
     }
-    virtual void run_threaded()
+    virtual void run_threaded(const bool _bSleep = true)
     {
+        bSleep = _bSleep;
         try {
             thread = std::thread([this]() { this->run(); });
         } catch (const std::exception &e) {
@@ -35,11 +36,14 @@ public:
 protected:
     virtual void wait()
     {
-        std::unique_lock<std::mutex> ul(mVariable);
-        vBlocking.wait(ul);
+        if (bSleep) {
+            std::unique_lock<std::mutex> ul(mVariable);
+            vBlocking.wait(ul);
+        }
     }
 
 protected:
+    bool bSleep = true;
     std::thread thread;
 
     std::mutex mVariable;
