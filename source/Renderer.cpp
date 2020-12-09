@@ -67,15 +67,14 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
         Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
 
         if (nTest.x >= map.width || nTest.y >= map.height) {
-            fDistanceToWall = fDepth;
-            break;
+            return fDepth;
         } else {
             if (map.at(nTest) == '#') {
                 Coords<float> fBlockMid(nTest);
                 fBlockMid += 0.5f;
                 Coords<float> fTestPoint(player.getPlayerPos<float>() + fEye * fDistanceToWall);
                 float fTestAngle =
-                    atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
+                    std::atan2((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
                 if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
                     fSample.x = fTestPoint.y - nTest.y;
                 else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
