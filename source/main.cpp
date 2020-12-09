@@ -20,7 +20,7 @@ int main()
 {
     sf::Image img;
     const Map map(sMapPath);
-    Player player(map.width / 2, map.height / 2);
+    Player player(map.getSize() / 2);
     FrameLimiter<60> limiter;
 
     Snitch::msg() << "Map height :" << map.height << Snitch::endl;

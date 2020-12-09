@@ -1,6 +1,6 @@
 #include "Renderer.hpp"
 #include "Snitch.hpp"
-#include <math.h>
+#include <cmath>
 
 constexpr float fFOV = M_PI / 4.0f;
 constexpr float fDepth = 32;
@@ -39,40 +39,9 @@ void Renderer::run()
         img.create(size.x, size.y);
 
         for (unsigned x = 0; x < size.x; ++x) {
-            float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
-
-            float fDistanceToWall = 0;
             Coords<float> fSample;
-            Coords<float> fEye(sinf(fRayAngle), cosf(fRayAngle));
+            float fDistanceToWall = this->computeColumn(x, fSample);
 
-            while (fDistanceToWall < fDepth) {
-                fDistanceToWall += fRayResolution;
-
-                Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
-
-                if (nTest.x >= map.width || nTest.y >= map.height) {
-                    fDistanceToWall = fDepth;
-                    break;
-                } else {
-                    if (map.at(nTest) == '#') {
-                        Coords<float> fBlockMid(nTest);
-                        fBlockMid += 0.5f;
-                        Coords<float> fTestPoint(player.getPlayerPos<float>() +
-                                                 fEye * fDistanceToWall);
-                        float fTestAngle =
-                            atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
-                        if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-                            fSample.x = fTestPoint.y - nTest.y;
-                        else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-                            fSample.x = fTestPoint.x - nTest.x;
-                        else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-                            fSample.x = fTestPoint.x - nTest.x;
-                        else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-                            fSample.x = fTestPoint.y - nTest.y;
-                        break;
-                    }
-                }
-            }
             float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
             float fFloor = size.y - fCeiling;
 
@@ -105,6 +74,43 @@ void Renderer::stop()
 {
     bQuit = true;
     this->AThreaded::stop();
+}
+
+float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
+{
+    float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
+
+    float fDistanceToWall = 0;
+    Coords<float> fEye(std::sin(fRayAngle), std::cos(fRayAngle));
+
+    while (fDistanceToWall < fDepth) {
+        fDistanceToWall += fRayResolution;
+
+        Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
+
+        if (nTest.x >= map.width || nTest.y >= map.height) {
+            fDistanceToWall = fDepth;
+            break;
+        } else {
+            if (map.at(nTest) == '#') {
+                Coords<float> fBlockMid(nTest);
+                fBlockMid += 0.5f;
+                Coords<float> fTestPoint(player.getPlayerPos<float>() + fEye * fDistanceToWall);
+                float fTestAngle =
+                    atan2f((fTestPoint.y - fBlockMid.y), (fTestPoint.x - fBlockMid.x));
+                if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
+                    fSample.x = fTestPoint.y - nTest.y;
+                else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
+                    fSample.x = fTestPoint.x - nTest.x;
+                else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
+                    fSample.x = fTestPoint.x - nTest.x;
+                else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
+                    fSample.x = fTestPoint.y - nTest.y;
+                break;
+            }
+        }
+    }
+    return fDistanceToWall;
 }
 
 const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,

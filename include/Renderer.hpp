@@ -19,8 +19,9 @@ public:
     virtual void run() final;
     virtual void stop() final;
 
-protected:
+private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
+    float computeColumn(const unsigned &, Coords<float> &);
 
 public:
     ThreadedQ<sf::Image> rendered;
