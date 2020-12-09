@@ -22,6 +22,7 @@ public:
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
     float computeColumn(const unsigned &, Coords<float> &);
+    void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
 
 public:
     ThreadedQ<sf::Image> rendered;

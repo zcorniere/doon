@@ -41,29 +41,7 @@ void Renderer::run()
         for (unsigned x = 0; x < size.x; ++x) {
             Coords<float> fSample;
             float fDistanceToWall = this->computeColumn(x, fSample);
-
-            float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
-            float fFloor = size.y - fCeiling;
-
-            float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
-            for (unsigned y = 0; y < size.y; ++y) {
-                if (y <= unsigned(fCeiling)) {
-                    img.setPixel(x, y, sf::Color::Blue);
-                } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
-                    if (fDistanceToWall <= fDepth) {
-                        fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-                        sf::Color sampled = this->sampleTexture(fSample, "wall");
-                        sampled.b = uint8_t(float(sampled.b) * fShade);
-                        sampled.r = uint8_t(float(sampled.r) * fShade);
-                        sampled.g = uint8_t(float(sampled.g) * fShade);
-                        img.setPixel(x, y, sampled);
-                    } else {
-                        img.setPixel(x, y, sf::Color::Black);
-                    }
-                } else {
-                    img.setPixel(x, y, cFloor);
-                }
-            }
+            this->drawColumn(fDistanceToWall, x, fSample, img);
         }
         rendered.push_back(img);
         this->wait();
@@ -111,6 +89,33 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
         }
     }
     return fDistanceToWall;
+}
+
+void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x, Coords<float> &fSample,
+                          sf::Image &img)
+{
+    float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
+    float fFloor = size.y - fCeiling;
+
+    float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
+    for (unsigned y = 0; y < size.y; ++y) {
+        if (y <= unsigned(fCeiling)) {
+            img.setPixel(x, y, sf::Color::Blue);
+        } else if (y > unsigned(fCeiling) && y <= unsigned(fFloor)) {
+            if (fDistanceToWall <= fDepth) {
+                fSample.y = (y - fCeiling) / (fFloor - fCeiling);
+                sf::Color sampled = this->sampleTexture(fSample, "wall");
+                sampled.b = uint8_t(float(sampled.b) * fShade);
+                sampled.r = uint8_t(float(sampled.r) * fShade);
+                sampled.g = uint8_t(float(sampled.g) * fShade);
+                img.setPixel(x, y, sampled);
+            } else {
+                img.setPixel(x, y, sf::Color::Black);
+            }
+        } else {
+            img.setPixel(x, y, cFloor);
+        }
+    }
 }
 
 const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
