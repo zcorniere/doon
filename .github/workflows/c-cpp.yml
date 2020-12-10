@@ -15,7 +15,7 @@ jobs:
       - name: Get Package
         uses: mstksg/get-package@v1
         with:
-         apt-get: libsfml-dev  clang-10
+         apt-get: libsfml-dev  clang-11
       - uses: actions/checkout@v2
       - name: make
         run: make
