@@ -7,22 +7,22 @@
 
 template <class T>
 struct Coords {
-    Coords() = default;
-    Coords(T x, T y): x(x), y(y){};
-    Coords(const Coords<T> &other) = default;
-    Coords(Coords<T> &&other)
+    T x = 0;
+    T y = 0;
+    inline Coords() = default;
+    inline Coords(T x, T y): x(x), y(y){};
+    inline Coords(const Coords<T> &other) = default;
+    inline Coords(Coords<T> &&other)
     {
         x = std::move(other.x);
         y = std::move(other.y);
     }
-    Coords &operator=(Coords other)
+    inline Coords &operator=(Coords other)
     {
         std::swap(x, other.x);
         std::swap(x, other.y);
         return *this;
     }
-    T x = 0;
-    T y = 0;
     inline T mag() const { return T(std::sqrt(x * x + y * y)); };
     inline T dot(const Coords &other) const { return T(this->x * other.x + this->y * other.y); };
     inline Coords operator+(const Coords &other) const
@@ -131,6 +131,7 @@ struct Coords {
         return {static_cast<E>(this->x), static_cast<E>(this->y)};
     }
 };
+
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Coords<T> &other)
 {

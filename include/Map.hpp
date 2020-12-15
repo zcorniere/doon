@@ -11,13 +11,13 @@ public:
     Map(const std::filesystem::path);
     ~Map();
     Coords<unsigned> getSize() const;
-    char operator[](const std::size_t);
-    char at(const std::size_t);
-    char at(const Coords<unsigned> &);
+    inline char operator[](const std::size_t idx) { return map[idx]; }
+    inline char at(const std::size_t idx) { return map.at(idx); }
+    inline char at(const Coords<unsigned> &idx) { return map.at(idx.y * width + idx.x); }
 
-    char operator[](const std::size_t) const;
-    char at(const std::size_t) const;
-    char at(const Coords<unsigned> &) const;
+    inline char operator[](const std::size_t idx) const { return map[idx]; }
+    inline char at(const std::size_t idx) const { return map.at(idx); }
+    inline char at(const Coords<unsigned> &idx) const { return map.at(idx.y * width + idx.x); }
 
 public:
     std::string map;

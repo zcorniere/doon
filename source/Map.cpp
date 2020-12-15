@@ -22,14 +22,6 @@ Map::~Map() {}
 
 Coords<unsigned> Map::getSize() const { return Coords(width, height); };
 
-char Map::operator[](const std::size_t idx) { return map[idx]; }
-char Map::at(const std::size_t idx) { return map.at(idx); }
-char Map::at(const Coords<unsigned> &idx) { return map.at(idx.y * width + idx.x); }
-
-char Map::operator[](const std::size_t idx) const { return map[idx]; }
-char Map::at(const std::size_t idx) const { return map.at(idx); }
-char Map::at(const Coords<unsigned> &idx) const { return map.at(idx.y * width + idx.x); }
-
 std::ostream &operator<<(std::ostream &os, const Map &other)
 {
     for (unsigned i = 0; i < other.map.size(); i++) {
