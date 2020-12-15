@@ -8,7 +8,8 @@ Map::Map(const std::filesystem::path path)
     std::ifstream file(path);
 
     if (!file.is_open()) { throw std::runtime_error("Can't open file"); }
-    map = std::string(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
+    map = std::string(std::istreambuf_iterator<char>(file),
+                      std::istreambuf_iterator<char>());
     width = map.find_first_of('\n');
     if (map.size() < width) { throw std::runtime_error("Bad format"); };
 

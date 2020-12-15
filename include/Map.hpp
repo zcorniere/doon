@@ -17,7 +17,10 @@ public:
 
     inline char operator[](const std::size_t idx) const { return map[idx]; }
     inline char at(const std::size_t idx) const { return map.at(idx); }
-    inline char at(const Coords<unsigned> &idx) const { return map.at(idx.y * width + idx.x); }
+    inline char at(const Coords<unsigned> &idx) const
+    {
+        return map.at(idx.y * width + idx.x);
+    }
 
 public:
     std::string map;

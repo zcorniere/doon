@@ -17,9 +17,10 @@ GameInstance::~GameInstance(){};
 
 void GameInstance::init()
 {
+    rendy.run_threaded(false);
     win.setVerticalSyncEnabled(true);
     win.clear(sf::Color::Black);
-    rendy.run_threaded(false);
+    win.display();
 }
 
 void GameInstance::run()
@@ -65,6 +66,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
             default: break;
         }
     }
+    if (!win.hasFocus()) return;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
     }
