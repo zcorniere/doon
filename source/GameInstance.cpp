@@ -63,6 +63,14 @@ void GameInstance::handleInput(const float &fElapsedTime)
             case sf::Event::Closed: {
                 win.close();
             } break;
+            case sf::Event::KeyPressed: {
+                switch (event.key.code) {
+                    case sf::Keyboard::P:
+                        Snitch::msg("PLAYER") << player.pos << Snitch::endl;
+                        break;
+                    default: break;
+                }
+            } break;
             default: break;
         }
     }

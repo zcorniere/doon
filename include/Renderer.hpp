@@ -37,6 +37,7 @@ private:
 
     std::unordered_map<std::string, sf::Image> sprite_list;
     std::deque<Object> qObject;
+    std::deque<float> qDepthBuffer;
 
     const Player &player;
     const Map &map;

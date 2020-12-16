@@ -14,7 +14,7 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : AThreaded(), size(std::move(size)), player(player), map(map)
+    : AThreaded(), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -27,9 +27,8 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                 Snitch::warn("RENDERER") << e.what() << Snitch::endl;
             }
         }
-        qObject.push_back({{8.5f, 8.5f}, "pogger"});
-        // qObject.push_back({{7.5f, 7.5f}, "pogger"});
-        // qObject.push_back({{10.5f, 3.5f}, "pogger"});
+        qObject.push_back({{47.5f, 22.5f}, "pogger"});
+        qObject.push_back({{47.5f, 19.5f}, "pogger"});
     } catch (const std::exception &e) {
         Snitch::err("RENDERER") << e.what() << Snitch::endl;
     }
@@ -46,6 +45,7 @@ void Renderer::run()
 
         for (unsigned x = 0; x < size.x; ++x) {
             float fDistanceToWall = this->computeColumn(x, fSample);
+            qDepthBuffer.at(x) = fDistanceToWall;
             this->drawColumn(fDistanceToWall, x, fSample, img);
         }
         for (auto &i: qObject) { this->drawObject(i, img); }
@@ -125,31 +125,28 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
 
 void Renderer::drawObject(Object &obj, sf::Image &img)
 {
+    if (obj.bRemove) return;
     if (!sprite_list.contains(obj.sTexture)) {
         Snitch::err("RENDERER") << "Texture not found : " << obj.sTexture << Snitch::endl;
         return;
     }
-    if (obj.bRemove) return;
     Coords<float> fVec(obj.fPos - player.getPlayerPos<float>());
     float fDistanceToPlayer(fVec.mag());
 
     Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
     float fObjectAngle(fEye.atan() - fVec.atan());
-    if (fObjectAngle < -M_PI)
-        fObjectAngle += 2.0f * M_PI;
-    else if (fObjectAngle > M_PI)
-        fObjectAngle -= 2.f * M_PI;
 
     if (!(fabs(fObjectAngle) < fFOV / 2.0f) && fDistanceToPlayer < 0.5f &&
         fDistanceToPlayer >= fDepth) {
         return;
     }
     const sf::Image &iSprite = sprite_list.at(obj.sTexture);
-    const auto imgSize = iSprite.getSize();
-    const Coords<float> fImgSize(imgSize.x, imgSize.y);
+    const sf::Vector2u imgSize = iSprite.getSize();
+    Coords<float> fImgSize(imgSize.x, imgSize.y);
     float fObjCeiling = size.y / 2.0f - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;
 
+    if (fObjCeiling < 0 || fObjFloor < 0) return;
     Coords<float> fObject;
     fObject.y = fObjFloor - fObjCeiling;
     fObject.x = fObject.y / (imgSize.y / imgSize.x);
@@ -161,9 +158,14 @@ void Renderer::drawObject(Object &obj, sf::Image &img)
         for (fObj.y = 0; fObj.y < fObject.y; fObj.y++) {
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
-                sf::Color sample = this->sampleTexture(fObj / fObject, obj.sTexture);
-                if (sample.a > 0)
+                Coords<unsigned> uSample =
+                    this->sampleTextureCoords(fObj / fObject, Coords(imgSize));
+                sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
+                if (sample.a != 0 &&
+                    qDepthBuffer.at(uObjectColumn) >= fDistanceToPlayer) {
                     img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
+                    qDepthBuffer.at(uObjectColumn) = fDistanceToPlayer;
+                }
             }
         }
     }
