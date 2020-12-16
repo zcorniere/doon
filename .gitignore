@@ -18,6 +18,8 @@ compile_flags.txt
 .clangd/
 .cache/
 gmon.out
+gmon.sum
+capture.png
 
 # Dependencies
 .deps/

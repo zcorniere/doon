@@ -3,6 +3,7 @@
 
 #include "Coords.hpp"
 #include "Map.hpp"
+#include "Object.hpp"
 #include "Player.hpp"
 #include "ThreadedQ.hpp"
 #include "interface/AThreaded.hpp"
@@ -21,18 +22,22 @@ public:
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
+    const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
+                                               const Coords<float> &) const;
     float computeColumn(const unsigned &, Coords<float> &);
     void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
+    void drawObject(Object &, sf::Image &);
 
 public:
+    Coords<unsigned> size;
     ThreadedQ<sf::Image> rendered;
 
 private:
     std::atomic_bool bQuit = false;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
+    std::deque<Object> qObject;
 
-    Coords<unsigned> size;
     const Player &player;
     const Map &map;
 };

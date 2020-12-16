@@ -11,6 +11,7 @@ struct Coords {
     T y = 0;
     inline Coords() = default;
     inline Coords(T x, T y): x(x), y(y){};
+    inline Coords(T x): x(x), y(x){};
     inline Coords(const Coords<T> &other) = default;
     inline Coords(Coords<T> &&other)
     {
@@ -23,7 +24,9 @@ struct Coords {
         std::swap(x, other.y);
         return *this;
     }
-    inline T mag() const { return T(std::sqrt(x * x + y * y)); };
+    inline T atan() const { return std::atan2(y, x); }
+    inline T mag() const { return std::sqrt(x * x + y * y); };
+    inline T ratio() const { return x / y; };
     inline T dot(const Coords &other) const
     {
         return T(this->x * other.x + this->y * other.y);

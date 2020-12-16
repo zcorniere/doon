@@ -28,7 +28,7 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
-CFLAGS := -std=c++20 -O3 -I $(HEADP) -Wall -Wextra -Werror
+CFLAGS := -std=c++20 -O3 -I $(HEADP) -Wall -Wextra
 
 MAKEFLAGS += --no-print-directory --silent
 

@@ -16,7 +16,7 @@ public:
     void rotate(const Player::Rotation, const float &);
     void move(const Player::Move, const float &);
     template <typename T>
-    Coords<T> getPlayerPos() const
+    inline Coords<T> getPlayerPos() const
     {
         return static_cast<Coords<T>>(pos);
     };
