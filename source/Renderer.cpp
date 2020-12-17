@@ -38,15 +38,30 @@ Renderer::~Renderer() { this->stop(); }
 
 void Renderer::run()
 {
-    while (!bQuit) {
+    std::array<std::thread, 2> thread_pool;
+    auto computeCo = [this](sf::Image &img, unsigned x) {
         Coords<float> fSample;
-        sf::Image img;
-        img.create(size.x, size.y);
-
-        for (unsigned x = 0; x < size.x; ++x) {
+        for (; x < size.x; x += 2) {
             float fDistanceToWall = this->computeColumn(x, fSample);
             qDepthBuffer.at(x) = fDistanceToWall;
             this->drawColumn(fDistanceToWall, x, fSample, img);
+        }
+    };
+
+    while (!bQuit) {
+        sf::Image img;
+        img.create(size.x, size.y);
+        unsigned i = 0;
+        for (; i < thread_pool.size(); i ++) {
+            thread_pool.at(i) = std::thread(computeCo, std::ref(img), i);
+        }
+        while (i > 0) {
+            for (auto &t : thread_pool) {
+                if (t.joinable()) {
+                    t.join();
+                    i--;
+                }
+            }
         }
         for (auto &i: qObject) { this->drawObject(i, img); }
         rendered.push_back(img);
@@ -159,7 +174,7 @@ void Renderer::drawObject(Object &obj, sf::Image &img)
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample =
-                    this->sampleTextureCoords(fObj / fObject, Coords(imgSize));
+                    this->sampleTextureCoords(fObj / fObject, imgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
                 if (sample.a != 0 &&
                     qDepthBuffer.at(uObjectColumn) >= fDistanceToPlayer) {
@@ -189,6 +204,13 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
 
 const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
                                                      const Coords<float> &fSize) const
+{
+    return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
+            std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
+}
+
+const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
+                                                     const sf::Vector2u &fSize) const
 {
     return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
             std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};

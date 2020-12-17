@@ -24,6 +24,8 @@ private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
                                                const Coords<float> &) const;
+    const Coords<unsigned> sampleTextureCoords(const Coords<float> &fSample,
+                                               const sf::Vector2u &fSize) const;
     float computeColumn(const unsigned &, Coords<float> &);
     void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
     void drawObject(Object &, sf::Image &);
