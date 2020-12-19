@@ -110,9 +110,9 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
             if (fDistanceToWall < fDepth && fShade > 0) {
                 fSample.y = (y - fCeiling) / (fFloor - fCeiling);
                 sf::Color sampled = this->sampleTexture(fSample, sWallTexture);
-                sampled.b = sampled.b * fShade;
-                sampled.r = sampled.r * fShade;
-                sampled.g = sampled.g * fShade;
+                sampled.b *= fShade;
+                sampled.r *= fShade;
+                sampled.g *= fShade;
                 img.setPixel(x, y, sampled);
             } else {
                 img.setPixel(x, y, sf::Color::Black);
@@ -140,6 +140,7 @@ void Renderer::drawObject(Object &obj, sf::Image &img)
         fDistanceToPlayer >= fDepth) {
         return;
     }
+    const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
     const sf::Image &iSprite = sprite_list.at(obj.sTexture);
     const sf::Vector2u imgSize = iSprite.getSize();
     Coords<float> fImgSize(imgSize.x, imgSize.y);
@@ -160,7 +161,11 @@ void Renderer::drawObject(Object &obj, sf::Image &img)
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample =
                     this->sampleTextureCoords(fObj / fObject, Coords(imgSize));
+
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
+                sample.b *= fShade;
+                sample.r *= fShade;
+                sample.g *= fShade;
                 if (sample.a != 0 &&
                     qDepthBuffer.at(uObjectColumn) >= fDistanceToPlayer) {
                     img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
