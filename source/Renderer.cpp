@@ -14,7 +14,12 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : AThreaded(), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
+    : AThreaded(),
+      size(std::move(size)),
+      pool(4),
+      qDepthBuffer(size.x),
+      player(player),
+      map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -38,8 +43,7 @@ Renderer::~Renderer() { this->stop(); }
 
 void Renderer::run()
 {
-    std::array<std::thread, 2> thread_pool;
-    auto computeCo = [this](sf::Image &img, unsigned x) {
+    auto computeCo = [this](int, sf::Image &img, unsigned x) {
         Coords<float> fSample;
         for (; x < size.x; x += 2) {
             float fDistanceToWall = this->computeColumn(x, fSample);
@@ -47,21 +51,17 @@ void Renderer::run()
             this->drawColumn(fDistanceToWall, x, fSample, img);
         }
     };
+    std::deque<std::future<void(int, sf::Image &, unsigned)>> task;
 
     while (!bQuit) {
         sf::Image img;
         img.create(size.x, size.y);
         unsigned i = 0;
-        for (; i < thread_pool.size(); i ++) {
-            thread_pool.at(i) = std::thread(computeCo, std::ref(img), i);
+        for (; i < pool.size(); i++) {
+            task.push_back(pool.push(computeCo, std::ref(img), i));
         }
-        while (i > 0) {
-            for (auto &t : thread_pool) {
-                if (t.joinable()) {
-                    t.join();
-                    i--;
-                }
-            }
+        for (auto &i: task) {
+            i.wait();
         }
         for (auto &i: qObject) { this->drawObject(i, img); }
         rendered.push_back(img);

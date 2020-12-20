@@ -5,6 +5,7 @@
 #include "Map.hpp"
 #include "Object.hpp"
 #include "Player.hpp"
+#include "ThreadPool.hpp"
 #include "ThreadedQ.hpp"
 #include "interface/AThreaded.hpp"
 #include <SFML/Graphics.hpp>
@@ -35,6 +36,7 @@ public:
     ThreadedQ<sf::Image> rendered;
 
 private:
+    ThreadPool pool;
     std::atomic_bool bQuit = false;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
