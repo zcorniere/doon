@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "Snitch.hpp"
+#include "objects/Poggers.hpp"
 #include <cmath>
 #include <unordered_set>
 
@@ -27,8 +28,8 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                 Snitch::warn("RENDERER") << e.what() << Snitch::endl;
             }
         }
-        qObject.push_back({{47.5f, 22.5f}, "pogger"});
-        qObject.push_back({{47.5f, 19.5f}, "pogger"});
+        qObject.push_back(std::make_unique<Poggers>(47.5f, 22.5f));
+        qObject.push_back(std::make_unique<Poggers>(47.5f, 19.5f));
     } catch (const std::exception &e) {
         Snitch::err("RENDERER") << e.what() << Snitch::endl;
     }
@@ -123,14 +124,15 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(Object &obj, sf::Image &img)
+void Renderer::drawObject(std::unique_ptr<IObject> &obj, sf::Image &img)
 {
-    if (obj.bRemove) return;
-    if (!sprite_list.contains(obj.sTexture)) {
-        Snitch::err("RENDERER") << "Texture not found : " << obj.sTexture << Snitch::endl;
+    if (obj->isDrawable()) return;
+    if (!sprite_list.contains(obj->getTextureName())) {
+        Snitch::err("RENDERER")
+            << "Texture not found : " << obj->getTextureName() << Snitch::endl;
         return;
     }
-    Coords<float> fVec(obj.fPos - player.getPlayerPos<float>());
+    Coords<float> fVec(obj->getPosition() - player.getPlayerPos<float>());
     float fDistanceToPlayer(fVec.mag());
 
     Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
@@ -141,7 +143,7 @@ void Renderer::drawObject(Object &obj, sf::Image &img)
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const sf::Image &iSprite = sprite_list.at(obj.sTexture);
+    const sf::Image &iSprite = sprite_list.at(obj->getTextureName());
     const sf::Vector2u imgSize = iSprite.getSize();
     Coords<float> fImgSize(imgSize.x, imgSize.y);
     float fObjCeiling = size.y / 2.0f - size.y / fDistanceToPlayer;

@@ -12,14 +12,12 @@ OBJ_FOLDER := .object
 CC := clang++-11
 
 LANG := .cpp
-VPATH := $(SRC_FOLDER)
+VPATH := $(SRC_FOLDER) $(SRC_FOLDER)/objects
 SRC := $(notdir $(shell find $(SRC_FOLDER) -name '*$(LANG)'))
 OBJ := $(addprefix $(OBJ_FOLDER)/,$(SRC:$(LANG)=.o))
-OBJM := $(filter-out $(OBJ_FOLDER)/main.o, $(OBJ))
 
 DEP_FOLDER := .deps
 DEPS := $(addprefix $(DEP_FOLDER), $(SRC:$(LANG)=.d))
-TEST_DEPS := $(addprefix $(DEP_FOLDER), $(TEST_SRC:$(LANG)=.d))
 
 END := \033[0m
 BOLD := \033[1m
