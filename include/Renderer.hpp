@@ -5,7 +5,7 @@
 #include "Map.hpp"
 #include "Player.hpp"
 #include "ThreadedQ.hpp"
-#include "interface/AThreaded.hpp"
+#include "abstract/AThreaded.hpp"
 #include "interface/IObject.hpp"
 #include <SFML/Graphics.hpp>
 #include <atomic>

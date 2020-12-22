@@ -6,6 +6,6 @@ Poggers::Poggers(float x, float y): fPos(x, y) {}
 
 Poggers::~Poggers() {}
 
-const bool &Poggers::isDrawable() { return bRemove; }
+bool Poggers::isDrawable() { return bRemove && this->isVisible(); }
 
 void Poggers::update() {}

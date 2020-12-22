@@ -11,7 +11,7 @@ public:
     ~Poggers();
     virtual const std::string &getTextureName() final { return sTexture; };
     virtual const Coords<float> &getPosition() final { return fPos; };
-    virtual const bool &isDrawable() final;
+    virtual bool isDrawable() final;
     virtual void update() final;
 
 private:
