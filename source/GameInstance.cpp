@@ -17,7 +17,6 @@ GameInstance::~GameInstance(){};
 
 void GameInstance::init()
 {
-    rendy.run_threaded(false);
     win.setVerticalSyncEnabled(true);
     win.clear(sf::Color::Black);
     win.display();
@@ -26,14 +25,12 @@ void GameInstance::init()
 void GameInstance::run()
 {
     FrameLimiter<60> limiter;
-    sf::Image img;
     sf::Texture texture;
     sf::Sprite sprite;
 
     auto tp1 = std::chrono::system_clock::now();
 
     while (win.isOpen()) {
-        rendy.update();
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
@@ -42,9 +39,7 @@ void GameInstance::run()
         win.setTitle(std::to_string(1.0f / fElapsedTime));
 
         this->handleInput(fElapsedTime);
-        rendy.rendered.wait();
-        img = rendy.rendered.pop_back();
-        texture.loadFromImage(img);
+        texture.loadFromImage(rendy.update());
         sprite.setTexture(texture);
 
         win.clear();

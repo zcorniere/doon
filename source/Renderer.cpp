@@ -2,6 +2,7 @@
 #include "Snitch.hpp"
 #include "objects/Poggers.hpp"
 #include <cmath>
+#include <execution>
 #include <unordered_set>
 
 constexpr float fFOV = M_PI / 4.0f;
@@ -15,7 +16,7 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : AThreaded(), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
+    : pool(2), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -33,32 +34,29 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
     } catch (const std::exception &e) {
         Snitch::err("RENDERER") << e.what() << Snitch::endl;
     }
+    img.create(size.x, size.y);
 }
 
-Renderer::~Renderer() { this->stop(); }
+Renderer::~Renderer() {}
 
-void Renderer::run()
+const sf::Image &Renderer::update()
 {
-    while (!bQuit) {
+    auto computeCo = [this](int, unsigned x) {
         Coords<float> fSample;
-        sf::Image img;
-        img.create(size.x, size.y);
-
-        for (unsigned x = 0; x < size.x; ++x) {
+        for (; x < size.x; x += 2) {
             float fDistanceToWall = this->computeColumn(x, fSample);
             qDepthBuffer.at(x) = fDistanceToWall;
-            this->drawColumn(fDistanceToWall, x, fSample, img);
+            this->drawColumn(fDistanceToWall, x, fSample);
         }
-        for (auto &i: qObject) { this->drawObject(i, img); }
-        rendered.push_back(img);
-        this->wait();
-    }
-}
+    };
 
-void Renderer::stop()
-{
-    bQuit = true;
-    this->AThreaded::stop();
+    std::deque<std::future<void>> fur;
+    fur.resize(pool.size());
+    for (unsigned i = 0; i < pool.size(); i++) { fur.at(i) = pool.push(computeCo, i); }
+    std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
+    std::for_each(qObject.begin(), qObject.end(),
+                  [this](auto &i) { this->drawObject(i); });
+    return img;
 }
 
 float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
@@ -98,7 +96,7 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
 }
 
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
-                          Coords<float> &fSample, sf::Image &img)
+                          Coords<float> &fSample)
 {
     const float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
     const float fFloor = size.y - fCeiling;
@@ -123,6 +121,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
         }
     }
 }
+
 
 void Renderer::drawObject(std::unique_ptr<IObject> &obj, sf::Image &img)
 {
@@ -162,8 +161,7 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj, sf::Image &img)
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample =
-                    this->sampleTextureCoords(fObj / fObject, Coords(imgSize));
-
+                    this->sampleTextureCoords(fObj / fObject, imgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
                 sample.b *= fShade;
                 sample.r *= fShade;
@@ -196,6 +194,13 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
 
 const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
                                                      const Coords<float> &fSize) const
+{
+    return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
+            std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
+}
+
+const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
+                                                     const sf::Vector2u &fSize) const
 {
     return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
             std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};

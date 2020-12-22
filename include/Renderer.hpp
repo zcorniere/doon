@@ -4,6 +4,7 @@
 #include "Coords.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
+#include "ThreadPool.hpp"
 #include "ThreadedQ.hpp"
 #include "abstract/AThreaded.hpp"
 #include "interface/IObject.hpp"
@@ -12,19 +13,19 @@
 #include <memory>
 #include <unordered_map>
 
-class Renderer : public AThreaded
+class Renderer
 {
 public:
     Renderer(const Player &, const Map &, Coords<unsigned>, const std::string &);
-    Renderer(const Renderer &) = delete;
     ~Renderer();
-    virtual void run() final;
-    virtual void stop() final;
+    const sf::Image &update();
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
                                                const Coords<float> &) const;
+    const Coords<unsigned> sampleTextureCoords(const Coords<float> &fSample,
+                                               const sf::Vector2u &fSize) const;
     float computeColumn(const unsigned &, Coords<float> &);
     void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
     void drawObject(std::unique_ptr<IObject> &, sf::Image &);
@@ -34,7 +35,8 @@ public:
     ThreadedQ<sf::Image> rendered;
 
 private:
-    std::atomic_bool bQuit = false;
+    sf::Image img;
+    ThreadPool pool;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
     std::deque<std::unique_ptr<IObject>> qObject;

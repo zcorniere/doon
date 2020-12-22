@@ -1,7 +1,6 @@
 #ifndef _COORDS_HPP_
 #define _COORDS_HPP_
 
-#include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -14,7 +13,6 @@ struct Coords {
     inline Coords(T x, T y): x(x), y(y){};
     inline Coords(T x): x(x), y(x){};
     inline Coords(const Coords<T> &other) = default;
-    inline Coords(const sf::Vector2<T> &other): x(other.x), y(other.y){};
     inline Coords(Coords<T> &&other)
     {
         x = std::move(other.x);
