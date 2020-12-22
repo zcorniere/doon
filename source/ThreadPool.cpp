@@ -7,7 +7,7 @@ ThreadPool::~ThreadPool() { this->stop(); }
 void ThreadPool::stop()
 {
     bExit = true;
-    qWork.notify();
+    qWork.setWaitMode(false);
     for (auto &i: thread_p) {
         if (i.joinable()) i.join();
     }
@@ -24,8 +24,9 @@ void ThreadPool::new_thread(const unsigned id)
 {
     auto work = [this, id]() {
         Snitch::info("THREAD_POOL") << "New thread: " << id << Snitch::endl;
-        while (!this->bExit) {
+        while (1) {
             this->qWork.wait();
+            if (this->bExit) break;
             try {
                 auto work = this->qWork.pop_front();
                 work(id);

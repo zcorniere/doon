@@ -1,3 +1,4 @@
+#include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <mutex>
@@ -78,17 +79,30 @@ public:
 
     void wait()
     {
-        while (this->empty()) {
+        while (this->bWait && this->empty()) {
             std::unique_lock<std::mutex> ul(mutBlocking);
             vBlocking.wait(ul);
         }
     }
-    void notify() { vBlocking.notify_all(); }
+
+    void notify()
+    {
+        Snitch::debug() << "Notify" << Snitch::endl;
+        std::unique_lock<std::mutex> ul(mutBlocking);
+        vBlocking.notify_all();
+    }
+
+    void setWaitMode(bool mode)
+    {
+        bWait = mode;
+        this->notify();
+    }
 
 private:
     std::mutex q_mut;
     std::deque<T> q;
 
+    std::atomic_bool bWait = true;
     std::mutex mutBlocking;
     std::condition_variable vBlocking;
 };
