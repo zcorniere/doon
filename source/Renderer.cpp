@@ -1,6 +1,7 @@
 #include "Renderer.hpp"
 #include "Snitch.hpp"
 #include <cmath>
+#include <execution>
 #include <unordered_set>
 
 constexpr float fFOV = M_PI / 4.0f;
@@ -39,20 +40,21 @@ Renderer::~Renderer() {}
 
 const sf::Image &Renderer::update()
 {
-    auto computeCo = [this](int, sf::Image &img, unsigned x) {
+    auto computeCo = [this](int, unsigned x) {
         Coords<float> fSample;
         for (; x < size.x; x += 2) {
             float fDistanceToWall = this->computeColumn(x, fSample);
             qDepthBuffer.at(x) = fDistanceToWall;
-            this->drawColumn(fDistanceToWall, x, fSample, img);
+            this->drawColumn(fDistanceToWall, x, fSample);
         }
-        return 0;
     };
 
-    for (unsigned i = 0; i < pool.size(); i++) {
-        pool.push(computeCo, std::ref(img), i).wait();
-    }
-    for (auto &i: qObject) { this->drawObject(i, img); }
+    std::deque<std::future<void>> fur;
+    fur.resize(pool.size());
+    for (unsigned i = 0; i < pool.size(); i++) { fur.at(i) = pool.push(computeCo, i); }
+    std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
+    std::for_each(qObject.begin(), qObject.end(),
+                  [this](auto &i) { this->drawObject(i); });
     return img;
 }
 
@@ -93,7 +95,7 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
 }
 
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
-                          Coords<float> &fSample, sf::Image &img)
+                          Coords<float> &fSample)
 {
     const float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
     const float fFloor = size.y - fCeiling;
@@ -119,7 +121,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(Object &obj, sf::Image &img)
+void Renderer::drawObject(Object &obj)
 {
     if (obj.bRemove) return;
     if (!sprite_list.contains(obj.sTexture)) {
