@@ -27,16 +27,14 @@ private:
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &fSample,
                                                const sf::Vector2u &fSize) const;
     float computeColumn(const unsigned &, Coords<float> &);
-    void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
-    void drawObject(std::unique_ptr<IObject> &, sf::Image &);
-
-public:
-    Coords<unsigned> size;
-    ThreadedQ<sf::Image> rendered;
+    void drawColumn(const float &, const unsigned x, Coords<float> &);
+    void drawObject(std::unique_ptr<IObject> &);
 
 private:
     sf::Image img;
     ThreadPool pool;
+
+    Coords<unsigned> size;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
     std::deque<std::unique_ptr<IObject>> qObject;

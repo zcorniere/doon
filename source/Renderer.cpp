@@ -123,7 +123,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
 }
 
 
-void Renderer::drawObject(std::unique_ptr<IObject> &obj, sf::Image &img)
+void Renderer::drawObject(std::unique_ptr<IObject> &obj)
 {
     if (obj->isDrawable()) return;
     if (!sprite_list.contains(obj->getTextureName())) {
