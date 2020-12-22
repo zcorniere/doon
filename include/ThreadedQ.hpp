@@ -83,8 +83,9 @@ public:
             vBlocking.wait(ul);
         }
     }
+    void notify() { vBlocking.notify_all(); }
 
-protected:
+private:
     std::mutex q_mut;
     std::deque<T> q;
 

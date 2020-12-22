@@ -25,7 +25,7 @@ public:
     auto push(F &&f, Args &&...args) -> std::future<decltype(f(0, args...))>
     {
         auto packagedFunction =
-            std::make_shared<std::packaged_task<decltype(f(0, args...))>>(std::bind(
+            std::make_shared<std::packaged_task<decltype(f(0, args...))(int)>>(std::bind(
                 std::forward<F>(f), std::placeholders::_1, std::forward<Args>(args)...));
         auto storageFunc = std::function<void(int id)>(
             [packagedFunction](int id) { (*packagedFunction)(id); });

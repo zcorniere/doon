@@ -12,14 +12,12 @@
 #include <atomic>
 #include <unordered_map>
 
-class Renderer : public AThreaded
+class Renderer
 {
 public:
     Renderer(const Player &, const Map &, Coords<unsigned>, const std::string &);
-    Renderer(const Renderer &) = delete;
     ~Renderer();
-    virtual void run() final;
-    virtual void stop() final;
+    const sf::Image &update();
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
@@ -31,13 +29,11 @@ private:
     void drawColumn(const float &, const unsigned x, Coords<float> &, sf::Image &);
     void drawObject(Object &, sf::Image &);
 
-public:
-    Coords<unsigned> size;
-    ThreadedQ<sf::Image> rendered;
-
 private:
+    sf::Image img;
     ThreadPool pool;
-    std::atomic_bool bQuit = false;
+
+    Coords<unsigned> size;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
     std::deque<Object> qObject;
