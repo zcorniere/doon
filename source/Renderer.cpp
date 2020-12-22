@@ -1,5 +1,6 @@
 #include "Renderer.hpp"
 #include "Snitch.hpp"
+#include "objects/Poggers.hpp"
 #include <cmath>
 #include <execution>
 #include <unordered_set>
@@ -28,8 +29,8 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                 Snitch::warn("RENDERER") << e.what() << Snitch::endl;
             }
         }
-        qObject.push_back({{47.5f, 22.5f}, "pogger"});
-        qObject.push_back({{47.5f, 19.5f}, "pogger"});
+        qObject.push_back(std::make_unique<Poggers>(47.5f, 22.5f));
+        qObject.push_back(std::make_unique<Poggers>(47.5f, 19.5f));
     } catch (const std::exception &e) {
         Snitch::err("RENDERER") << e.what() << Snitch::endl;
     }
@@ -108,9 +109,9 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
             if (fDistanceToWall < fDepth && fShade > 0) {
                 fSample.y = (y - fCeiling) / (fFloor - fCeiling);
                 sf::Color sampled = this->sampleTexture(fSample, sWallTexture);
-                sampled.b = sampled.b * fShade;
-                sampled.r = sampled.r * fShade;
-                sampled.g = sampled.g * fShade;
+                sampled.b *= fShade;
+                sampled.r *= fShade;
+                sampled.g *= fShade;
                 img.setPixel(x, y, sampled);
             } else {
                 img.setPixel(x, y, sf::Color::Black);
@@ -121,14 +122,16 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(Object &obj)
+
+void Renderer::drawObject(std::unique_ptr<IObject> &obj, sf::Image &img)
 {
-    if (obj.bRemove) return;
-    if (!sprite_list.contains(obj.sTexture)) {
-        Snitch::err("RENDERER") << "Texture not found : " << obj.sTexture << Snitch::endl;
+    if (obj->isDrawable()) return;
+    if (!sprite_list.contains(obj->getTextureName())) {
+        Snitch::err("RENDERER")
+            << "Texture not found : " << obj->getTextureName() << Snitch::endl;
         return;
     }
-    Coords<float> fVec(obj.fPos - player.getPlayerPos<float>());
+    Coords<float> fVec(obj->getPosition() - player.getPlayerPos<float>());
     float fDistanceToPlayer(fVec.mag());
 
     Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
@@ -138,7 +141,8 @@ void Renderer::drawObject(Object &obj)
         fDistanceToPlayer >= fDepth) {
         return;
     }
-    const sf::Image &iSprite = sprite_list.at(obj.sTexture);
+    const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
+    const sf::Image &iSprite = sprite_list.at(obj->getTextureName());
     const sf::Vector2u imgSize = iSprite.getSize();
     Coords<float> fImgSize(imgSize.x, imgSize.y);
     float fObjCeiling = size.y / 2.0f - size.y / fDistanceToPlayer;
@@ -159,6 +163,9 @@ void Renderer::drawObject(Object &obj)
                 Coords<unsigned> uSample =
                     this->sampleTextureCoords(fObj / fObject, imgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
+                sample.b *= fShade;
+                sample.r *= fShade;
+                sample.g *= fShade;
                 if (sample.a != 0 &&
                     qDepthBuffer.at(uObjectColumn) >= fDistanceToPlayer) {
                     img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
