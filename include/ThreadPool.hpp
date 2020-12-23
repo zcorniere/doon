@@ -27,7 +27,7 @@ public:
         auto packagedFunction =
             std::make_shared<std::packaged_task<decltype(f(0, args...))(int)>>(std::bind(
                 std::forward<F>(f), std::placeholders::_1, std::forward<Args>(args)...));
-        auto storageFunc = std::function<void(int id)>(
+        std::function<void(int id)> storageFunc(
             [packagedFunction](int id) { (*packagedFunction)(id); });
         qWork.push_back(storageFunc);
         return packagedFunction->get_future();

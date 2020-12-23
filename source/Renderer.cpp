@@ -16,7 +16,7 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : pool(2), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
+    : pool(4), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -43,7 +43,7 @@ const sf::Image &Renderer::update()
 {
     auto computeCo = [this](int, unsigned x) {
         Coords<float> fSample;
-        for (; x < size.x; x += 2) {
+        for (; x < size.x; x += pool.size()) {
             float fDistanceToWall = this->computeColumn(x, fSample);
             qDepthBuffer.at(x) = fDistanceToWall;
             this->drawColumn(fDistanceToWall, x, fSample);
