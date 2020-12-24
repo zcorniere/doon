@@ -20,12 +20,20 @@ public:
     ~Renderer();
     const sf::Image &update();
 
+    template <typename T>
+    void addObject(std::unique_ptr<T> &obj)
+    {
+        static_assert(std::is_base_of<IObject, T>::value,
+                      "Object must be derived from IObject interface");
+        qObject.push_back(std::move(obj));
+    }
+
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
                                                const Coords<float> &) const;
-    const Coords<unsigned> sampleTextureCoords(const Coords<float> &fSample,
-                                               const sf::Vector2u &fSize) const;
+    const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
+                                               const sf::Vector2u &) const;
     float computeColumn(const unsigned &, Coords<float> &);
     void drawColumn(const float &, const unsigned x, Coords<float> &);
     void drawObject(std::unique_ptr<IObject> &);

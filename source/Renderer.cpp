@@ -122,9 +122,9 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-
 void Renderer::drawObject(std::unique_ptr<IObject> &obj)
 {
+    obj->update();
     if (obj->isDrawable()) return;
     if (!sprite_list.contains(obj->getTextureName())) {
         Snitch::err("RENDERER")
@@ -151,7 +151,7 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
     if (fObjCeiling < 0 || fObjFloor < 0) return;
     Coords<float> fObject;
     fObject.y = fObjFloor - fObjCeiling;
-    fObject.x = fObject.y / (imgSize.y / imgSize.x);
+    fObject.x = fObject.y / (float(imgSize.y) / imgSize.x);
     float fMiddleOfObject =
         (0.5f * (fObjectAngle / (fFOV / 2.0f)) + 0.5f) * (float(size.x));
 
