@@ -31,7 +31,10 @@ void ThreadPool::new_thread(const unsigned id)
                 auto work = this->qWork.pop_front();
                 work(id);
             } catch (const std::exception &e) {
-                Snitch::err("THREAD_POOL") << e.what() << Snitch::endl;
+                Snitch::err("THREAD_POOL") << id << " : " << e.what() << Snitch::endl;
+            } catch (...) {
+                Snitch::err("THREAD_POOL")
+                    << "Unkown error on thread " << id << Snitch::endl;
             }
         };
         Snitch::info("THREAD_POOL") << "End thread: " << id << Snitch::endl;

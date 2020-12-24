@@ -13,13 +13,24 @@ public:
     Coords<unsigned> getSize() const;
     inline char operator[](const std::size_t idx) { return map[idx]; }
     inline char at(const std::size_t idx) { return map.at(idx); }
-    inline char at(const Coords<unsigned> &idx) { return map.at(idx.y * width + idx.x); }
+    inline char at(const Coords<unsigned> &idx)
+    {
+        unsigned point = idx.y * width + idx.x;
+        if (point >= map.size())
+            return '#';
+        else
+            return map.at(point);
+    }
 
     inline char operator[](const std::size_t idx) const { return map[idx]; }
     inline char at(const std::size_t idx) const { return map.at(idx); }
     inline char at(const Coords<unsigned> &idx) const
     {
-        return map.at(idx.y * width + idx.x);
+        unsigned point = idx.y * width + idx.x;
+        if (point >= map.size())
+            return '#';
+        else
+            return map.at(point);
     }
 
 public:

@@ -1,4 +1,5 @@
 #include "GameInstance.hpp"
+#include "objects/Fireball.hpp"
 #include <FrameLimiter.hpp>
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
@@ -42,7 +43,6 @@ void GameInstance::run()
         texture.loadFromImage(rendy.update());
         sprite.setTexture(texture);
 
-        win.clear();
         win.draw(sprite);
         win.display();
         limiter.sleep();
@@ -63,6 +63,15 @@ void GameInstance::handleInput(const float &fElapsedTime)
                     case sf::Keyboard::P:
                         Snitch::msg("PLAYER") << player.pos << Snitch::endl;
                         break;
+                    case sf::Keyboard::Space: {
+                        float fNoise = (((float)rand() / (float)RAND_MAX) - 0.5f) * 0.1f;
+                        Coords<float> fObjV;
+                        fObjV.x = std::sin(player.angle + fNoise) * 14.0f * fElapsedTime;
+                        fObjV.y = std::cos(player.angle + fNoise) * 14.0f * fElapsedTime;
+                        auto obj =
+                            std::make_unique<Fireball>(player.pos, std::move(fObjV));
+                        rendy.addObject(obj);
+                    } break;
                     default: break;
                 }
             } break;

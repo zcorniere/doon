@@ -87,7 +87,6 @@ public:
 
     void notify()
     {
-        Snitch::debug() << "Notify" << Snitch::endl;
         std::unique_lock<std::mutex> ul(mutBlocking);
         vBlocking.notify_all();
     }

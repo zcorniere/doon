@@ -12,13 +12,11 @@ public:
     virtual const Coords<float> &getPosition() = 0;
     virtual void update() = 0;
 
-    virtual bool isDrawable() = 0;
-
-    void setVisible(bool vis) { bVisible = vis; };
-    bool isVisible() { return bVisible; };
+    void setRemove(bool vis) { bRemove = vis; };
+    bool needRemove() { return bRemove; };
 
 protected:
-    bool bVisible = true;
+    bool bRemove = false;
 };
 
 #endif    //_IOBJECT_HPP_

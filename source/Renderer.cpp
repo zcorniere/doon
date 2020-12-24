@@ -56,6 +56,7 @@ const sf::Image &Renderer::update()
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     std::for_each(qObject.begin(), qObject.end(),
                   [this](auto &i) { this->drawObject(i); });
+    std::erase_if(qObject, [](auto &i) { return i->needRemove(); });
     return img;
 }
 
@@ -125,10 +126,14 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
 void Renderer::drawObject(std::unique_ptr<IObject> &obj)
 {
     obj->update();
-    if (obj->isDrawable()) return;
+    if (map.at(obj->getPosition()) == '#') {
+        obj->setRemove(true);
+        return;
+    }
     if (!sprite_list.contains(obj->getTextureName())) {
         Snitch::err("RENDERER")
             << "Texture not found : " << obj->getTextureName() << Snitch::endl;
+        obj->setRemove(true);
         return;
     }
     Coords<float> fVec(obj->getPosition() - player.getPlayerPos<float>());
