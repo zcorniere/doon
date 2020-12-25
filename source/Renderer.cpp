@@ -34,6 +34,7 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
     } catch (const std::exception &e) {
         Snitch::err("RENDERER") << e.what() << Snitch::endl;
     }
+    for (auto &i: qDepthBuffer) { i.resize(size.x); }
     img.create(size.x, size.y);
 }
 
@@ -45,14 +46,14 @@ const sf::Image &Renderer::update()
         Coords<float> fSample;
         for (; x < size.x; x += pool.size()) {
             float fDistanceToWall = this->computeColumn(x, fSample);
-            qDepthBuffer.at(x) = fDistanceToWall;
+            std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
+                      fDistanceToWall);
             this->drawColumn(fDistanceToWall, x, fSample);
         }
     };
 
-    std::deque<std::future<void>> fur;
-    fur.resize(pool.size());
-    for (unsigned i = 0; i < pool.size(); i++) { fur.at(i) = pool.push(computeCo, i); }
+    std::deque<std::future<void>> fur(pool.size());
+    for (unsigned i = 0; i < pool.size(); ++i) { fur.at(i) = pool.push(computeCo, i); }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     std::for_each(qObject.begin(), qObject.end(),
                   [this](auto &i) { this->drawObject(i); });
@@ -161,20 +162,20 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
         (0.5f * (fObjectAngle / (fFOV / 2.0f)) + 0.5f) * (float(size.x));
 
     Coords<float> fObj;
-    for (fObj.x = 0; fObj.x < fObject.x; fObj.x++) {
-        for (fObj.y = 0; fObj.y < fObject.y; fObj.y++) {
+    for (fObj.x = 0; fObj.x < fObject.x; ++fObj.x) {
+        for (fObj.y = 0; fObj.y < fObject.y; ++fObj.y) {
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample =
                     this->sampleTextureCoords(fObj / fObject, imgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
-                sample.b *= fShade;
-                sample.r *= fShade;
-                sample.g *= fShade;
-                if (sample.a != 0 &&
-                    qDepthBuffer.at(uObjectColumn) >= fDistanceToPlayer) {
+                if (sample.a == 0) continue;
+                if (qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) >= fDistanceToPlayer) {
+                    sample.b *= fShade;
+                    sample.r *= fShade;
+                    sample.g *= fShade;
                     img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
-                    qDepthBuffer.at(uObjectColumn) = fDistanceToPlayer;
+                    qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) = fDistanceToPlayer;
                 }
             }
         }
