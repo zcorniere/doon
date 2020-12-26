@@ -29,6 +29,7 @@ void GameInstance::run()
     sf::Texture texture;
     sf::Sprite sprite;
 
+    float secs = 0;
     auto tp1 = std::chrono::system_clock::now();
 
     while (win.isOpen()) {
@@ -37,7 +38,11 @@ void GameInstance::run()
         tp1 = std::move(tp2);
 
         float fElapsedTime = elapsedTime.count();
-        win.setTitle(std::to_string(1.0f / fElapsedTime));
+        secs += fElapsedTime;
+        if (secs >= 0.5f) {
+            win.setTitle(std::to_string(1.0f / fElapsedTime));
+            secs = 0;
+        }
 
         this->handleInput(fElapsedTime);
         texture.loadFromImage(rendy.update());
