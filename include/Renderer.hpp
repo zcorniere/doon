@@ -12,6 +12,7 @@
 #include <atomic>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 class Renderer
 {
@@ -34,7 +35,7 @@ private:
                                                const Coords<float> &) const;
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
                                                const sf::Vector2u &) const;
-    float computeColumn(const unsigned &, Coords<float> &);
+    float computeColumn(const unsigned &, Coords<float> &) const;
     void drawColumn(const float &, const unsigned x, Coords<float> &);
     void drawObject(std::unique_ptr<IObject> &);
 
@@ -46,7 +47,7 @@ private:
 
     std::unordered_map<std::string, sf::Image> sprite_list;
     std::deque<std::unique_ptr<IObject>> qObject;
-    std::deque<std::deque<float>> qDepthBuffer;
+    std::vector<std::vector<float>> qDepthBuffer;
 
     const Player &player;
     const Map &map;

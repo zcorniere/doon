@@ -61,7 +61,7 @@ const sf::Image &Renderer::update()
     return img;
 }
 
-float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample)
+float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample) const
 {
     float fDistanceToWall = 0;
     float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
@@ -170,12 +170,14 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
                     this->sampleTextureCoords(fObj / fObject, imgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
                 if (sample.a == 0) continue;
-                if (qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) >= fDistanceToPlayer) {
+                if (qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) >=
+                    fDistanceToPlayer) {
                     sample.b *= fShade;
                     sample.r *= fShade;
                     sample.g *= fShade;
                     img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
-                    qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) = fDistanceToPlayer;
+                    qDepthBuffer.at(uObjectColumn).at(fObjCeiling + fObj.y) =
+                        fDistanceToPlayer;
                 }
             }
         }
