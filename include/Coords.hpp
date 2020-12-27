@@ -113,11 +113,11 @@ struct Coords {
     };
     inline bool operator==(const Coords &other) const
     {
-        return {this->x == other.x, this->y == other.y};
+        return this->x == other.x && this->y == other.y;
     };
     inline bool operator!=(const Coords &other) const
     {
-        return {this->x != other.x, this->y != other.y};
+        return this->x != other.x && this->y != other.y;
     };
     inline bool operator>(const Coords &other) const
     {
@@ -137,11 +137,11 @@ struct Coords {
     };
     inline bool operator==(const T &other) const
     {
-        return {this->x == other, this->y == other};
+        return this->x == other && this->y == other;
     };
     inline bool operator!=(const T &other) const
     {
-        return {this->x != other, this->y != other};
+        return this->x != other && this->y != other;
     };
     inline bool operator>(const T &other) const
     {
