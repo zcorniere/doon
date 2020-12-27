@@ -33,6 +33,9 @@ public:
         return packagedFunction->get_future();
     }
 
+    // stop the threads and run each work in syncronous
+    void operator()();
+
 private:
     void new_thread(const unsigned i);
 

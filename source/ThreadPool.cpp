@@ -11,6 +11,7 @@ void ThreadPool::stop()
     for (auto &i: thread_p) {
         if (i.joinable()) i.join();
     }
+    thread_p.resize(0);
 }
 
 void ThreadPool::resize(const unsigned size)
@@ -22,14 +23,14 @@ void ThreadPool::resize(const unsigned size)
 
 void ThreadPool::new_thread(const unsigned id)
 {
-    auto work = [this, id]() {
+    this->thread_p.at(id) = std::thread([this, id]() {
         Snitch::info("THREAD_POOL") << "New thread: " << id << Snitch::endl;
         while (1) {
             this->qWork.wait();
             if (this->bExit) break;
             try {
                 auto work = this->qWork.pop_front();
-                work(id);
+                if (work) work(id);
             } catch (const std::exception &e) {
                 Snitch::err("THREAD_POOL") << id << " : " << e.what() << Snitch::endl;
             } catch (...) {
@@ -38,6 +39,16 @@ void ThreadPool::new_thread(const unsigned id)
             }
         };
         Snitch::info("THREAD_POOL") << "End thread: " << id << Snitch::endl;
-    };
-    this->thread_p.at(id) = std::thread(work);
+    });
+}
+
+void ThreadPool::operator()()
+{
+    unsigned old = this->size();
+    this->stop();
+    while (qWork.size() != 0) {
+        auto work = this->qWork.pop_front();
+        if (work) work(-1);
+    }
+    this->resize(old);
 }
