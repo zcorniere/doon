@@ -39,7 +39,7 @@ void GameInstance::run()
 
         float fElapsedTime = elapsedTime.count();
         secs += fElapsedTime;
-        if (secs >= 0.5f) {
+        if (secs >= 0.25f) {
             win.setTitle(std::to_string(1.0f / fElapsedTime));
             secs = 0;
         }

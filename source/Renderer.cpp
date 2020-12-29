@@ -16,7 +16,7 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : pool(4), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
+    : pool(std::thread::hardware_concurrency()), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
