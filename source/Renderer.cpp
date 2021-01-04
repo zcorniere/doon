@@ -16,7 +16,11 @@ const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                    const std::string &assets)
-    : pool(std::thread::hardware_concurrency()), size(std::move(size)), qDepthBuffer(size.x), player(player), map(map)
+    : pool(std::thread::hardware_concurrency()),
+      size(std::move(size)),
+      qDepthBuffer(size.x),
+      player(player),
+      map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -42,21 +46,25 @@ Renderer::~Renderer() {}
 
 const sf::Image &Renderer::update()
 {
-    auto computeCo = [this](int, unsigned x) {
-        Coords<float> fSample;
-        for (; x < size.x; x += pool.size()) {
-            float fDistanceToWall = this->computeColumn(x, fSample);
-            std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
-                      fDistanceToWall);
-            this->drawColumn(fDistanceToWall, x, fSample);
-        }
-    };
+    std::deque<std::future<void>> fur(size.x);
+    std::deque<std::future<void>> obj;
 
-    std::deque<std::future<void>> fur(pool.size());
-    for (unsigned i = 0; i < pool.size(); ++i) { fur.at(i) = pool.push(computeCo, i); }
+    for (unsigned i = 0; i < size.x; ++i) {
+        fur.at(i) = pool.push(
+            [this](int, unsigned x) {
+                Coords<float> fSample;
+                float fDistanceToWall = this->computeColumn(x, fSample);
+                std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
+                          fDistanceToWall);
+                this->drawColumn(fDistanceToWall, x, fSample);
+            },
+            i);
+    }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
-    std::for_each(qObject.begin(), qObject.end(),
-                  [this](auto &i) { this->drawObject(i); });
+    for (auto &i: qObject) {
+        obj.push_back(pool.push([this, &i](int) { i->update(); this->drawObject(i); }));
+    }
+    std::for_each(std::execution::par, obj.begin(), obj.end(), [](auto &i) { i.wait(); });
     std::erase_if(qObject, [](auto &i) { return i->needRemove(); });
     return img;
 }
@@ -126,7 +134,6 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
 
 void Renderer::drawObject(std::unique_ptr<IObject> &obj)
 {
-    obj->update();
     if (map.at(obj->getPosition()) == '#') {
         obj->setRemove(true);
         return;
@@ -143,7 +150,7 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
     Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
     float fObjectAngle(fEye.atan() - fVec.atan());
 
-    if (!(fabs(fObjectAngle) < fFOV / 2.0f) && fDistanceToPlayer < 0.5f &&
+    if (!(std::abs(fObjectAngle) < fFOV / 2.0f) && fDistanceToPlayer < 0.5f &&
         fDistanceToPlayer >= fDepth) {
         return;
     }
