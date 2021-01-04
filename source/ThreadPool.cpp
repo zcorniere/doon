@@ -41,14 +41,3 @@ void ThreadPool::new_thread(const unsigned id)
         Snitch::info("THREAD_POOL") << "End thread: " << id << Snitch::endl;
     });
 }
-
-void ThreadPool::operator()()
-{
-    unsigned old = this->size();
-    this->stop();
-    while (qWork.size() != 0) {
-        auto work = this->qWork.pop_front();
-        if (work) work(-1);
-    }
-    this->resize(old);
-}
