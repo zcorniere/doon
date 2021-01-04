@@ -19,14 +19,14 @@ public:
 
     const T &front()
     {
-        if (this->size() == 0) { throw std::runtime_error("queue is empty"); }
         std::scoped_lock lock(q_mut);
+        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
         return q.front();
     }
     const T &back()
     {
-        if (this->size() == 0) { throw std::runtime_error("queue is empty"); }
         std::scoped_lock lock(q_mut);
+        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
         return q.back();
     }
     bool empty()
@@ -46,16 +46,16 @@ public:
     }
     T pop_front()
     {
-        if (this->size() == 0) { throw std::runtime_error("queue is empty"); }
         std::scoped_lock lock(q_mut);
+        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
         T t = std::move(q.front());
         q.pop_front();
         return t;
     }
     T pop_back()
     {
-        if (this->size() == 0) { throw std::runtime_error("queue is empty"); }
         std::scoped_lock lock(q_mut);
+        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
         T t = std::move(q.front());
         q.pop_back();
         return t;
