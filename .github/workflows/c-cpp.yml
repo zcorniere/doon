@@ -9,13 +9,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Get Package
         uses: mstksg/get-package@v1
         with:
-         apt-get: libsfml-dev  clang-11
+         apt-get: libsfml-dev
       - uses: actions/checkout@v2
       - name: make
         run: make

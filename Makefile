@@ -9,7 +9,7 @@ HEADP := ./include/
 SRC_FOLDER := source
 OBJ_FOLDER := .object
 
-CC := clang++-11
+CC := clang++
 
 LANG := .cpp
 VPATH := $(SRC_FOLDER) $(SRC_FOLDER)/objects
