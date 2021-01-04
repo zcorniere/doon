@@ -1,9 +1,10 @@
 #ifndef _POGGERS_HPP_
 #define _POGGERS_HPP_
 
+#include "abstract/ADestructible.hpp"
 #include "interface/IObject.hpp"
 
-class Poggers : public IObject
+class Poggers : public virtual IObject, public virtual ADestructible
 {
 public:
     Poggers(Coords<float>);

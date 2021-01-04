@@ -1,9 +1,10 @@
 #ifndef _FIREBALL_HPP_
 #define _FIREBALL_HPP_
 
+#include "abstract/ADestructible.hpp"
 #include "interface/IObject.hpp"
 
-class Fireball : public IObject
+class Fireball : public virtual IObject, public virtual ADestructible
 {
 public:
     Fireball(Coords<float>, Coords<float>);
