@@ -1,6 +1,10 @@
 #include <ThreadPool.hpp>
 
-ThreadPool::ThreadPool(const unsigned size) { this->resize(size); }
+ThreadPool::ThreadPool(const unsigned size)
+{
+    log.start();
+    this->resize(size);
+}
 
 ThreadPool::~ThreadPool() { this->stop(); }
 
@@ -24,7 +28,8 @@ void ThreadPool::resize(const unsigned size)
 void ThreadPool::new_thread(const unsigned id)
 {
     this->thread_p.at(id) = std::thread([this, id]() {
-        Snitch::info("THREAD_POOL") << "New thread: " << id << Snitch::endl;
+        log.info("THREAD_POOL") << "New thread: " << id;
+        log.endl();
         while (1) {
             this->qWork.wait();
             if (this->bExit) break;
@@ -32,12 +37,12 @@ void ThreadPool::new_thread(const unsigned id)
                 auto work = this->qWork.pop_front();
                 if (work) work(id);
             } catch (const std::exception &e) {
-                Snitch::err("THREAD_POOL") << id << " : " << e.what() << Snitch::endl;
+                log.err("THREAD_POOL") << id << " : " << e.what();
+                log.endl();
             } catch (...) {
-                Snitch::err("THREAD_POOL")
-                    << "Unkown error on thread " << id << Snitch::endl;
+                log.err("THREAD_POOL") << "Unkown error on thread " << id << Snitch::endl;
             }
         };
-        Snitch::info("THREAD_POOL") << "End thread: " << id << Snitch::endl;
+        log.info("THREAD_POOL") << "End thread: " << id << Snitch::endl;
     });
 }
