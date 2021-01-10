@@ -16,6 +16,7 @@ public:
     ~Logger();
     void start();
     void stop();
+    void flush();
 
     std::stringstream &warn(const std::string &msg = "WARNING");
     std::stringstream &err(const std::string &msg = "ERROR");
@@ -26,6 +27,7 @@ public:
     void endl();
 
 private:
+    std::mutex mutBuffer;
     std::atomic_bool bExit = false;
     std::thread msgT;
     ThreadedQ<std::string> qMsg;

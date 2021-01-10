@@ -1,4 +1,4 @@
-#include <Logger.hpp>
+#include "Logger.hpp"
 
 Logger::Logger() {}
 
@@ -22,9 +22,22 @@ void Logger::start()
 
 void Logger::stop()
 {
+    this->flush();
     bExit = true;
     qMsg.setWaitMode(false);
     if (msgT.joinable()) { msgT.join(); }
+}
+
+void Logger::flush()
+{
+    std::unique_lock<std::mutex> lBuffers;
+
+    for (auto &[_, i]: mBuffers) {
+        std::string msg(i.str());
+        if (!msg.empty())
+            std::cerr << msg << std::endl;
+        i = std::stringstream();
+    }
 }
 
 void Logger::endl()
