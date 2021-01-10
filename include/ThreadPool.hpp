@@ -1,7 +1,6 @@
 #ifndef _THREADPOOL_HPP_
 #define _THREADPOOL_HPP_
 
-#include "Logger.hpp"
 #include "Snitch.hpp"
 #include "ThreadedQ.hpp"
 #include <atomic>
@@ -38,7 +37,6 @@ private:
     void new_thread(const unsigned i);
 
 private:
-    Logger log;
     ThreadedQ<std::function<void(int)>> qWork;
     std::atomic_bool bExit = false;
     std::deque<std::thread> thread_p;

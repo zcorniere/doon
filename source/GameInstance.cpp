@@ -1,6 +1,7 @@
 #include "GameInstance.hpp"
 #include "objects/Fireball.hpp"
-#include <FrameLimiter.hpp>
+#include "Logger.hpp"
+#include "FrameLimiter.hpp"
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
@@ -9,9 +10,9 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       player(map.getSize() / 2),
       rendy(player, map, uSize, sAssetsPath)
 {
-    Snitch::msg() << "Map height :" << map.height << Snitch::endl;
-    Snitch::msg() << "Map width :" << map.width << Snitch::endl;
-    std::cerr << map << std::endl;
+    logger.msg() << "Map height :" << map.height; logger.endl();
+    logger.msg() << "Map width :" << map.width; logger.endl();
+    logger.raw() << map; logger.endl();
 }
 
 GameInstance::~GameInstance(){};

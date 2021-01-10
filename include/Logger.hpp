@@ -22,6 +22,7 @@ public:
     std::stringstream &info(const std::string &msg = "INFO");
     std::stringstream &debug(const std::string &msg = "DEBUG");
     std::stringstream &msg(const std::string &msg = "MESSAGE");
+    std::stringstream &raw();
     void endl();
 
 private:
@@ -32,3 +33,5 @@ private:
 };
 
 #endif    //_LOGGER_HPP_
+
+extern Logger logger;

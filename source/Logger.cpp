@@ -83,3 +83,10 @@ std::stringstream &Logger::msg(const std::string &msg)
     buf << "[" << msg << "]: ";
     return buf;
 }
+
+std::stringstream &Logger::raw() {
+    if (!mBuffers.contains(std::this_thread::get_id())) {
+        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
+    }
+    return mBuffers.at(std::this_thread::get_id());
+}

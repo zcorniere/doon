@@ -62,7 +62,10 @@ const sf::Image &Renderer::update()
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     for (auto &i: qObject) {
-        obj.push_back(pool.push([this, &i](int) { i->update(); this->drawObject(i); }));
+        obj.push_back(pool.push([this, &i](int) {
+            i->update();
+            this->drawObject(i);
+        }));
     }
     std::for_each(std::execution::par, obj.begin(), obj.end(), [](auto &i) { i.wait(); });
     std::erase_if(qObject, [](auto &i) { return i->needRemove(); });

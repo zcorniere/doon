@@ -1,8 +1,8 @@
-#include <ThreadPool.hpp>
+#include "ThreadPool.hpp"
+#include "Logger.hpp"
 
 ThreadPool::ThreadPool(const unsigned size)
 {
-    log.start();
     this->resize(size);
 }
 
@@ -28,8 +28,8 @@ void ThreadPool::resize(const unsigned size)
 void ThreadPool::new_thread(const unsigned id)
 {
     this->thread_p.at(id) = std::thread([this, id]() {
-        log.info("THREAD_POOL") << "New thread: " << id;
-        log.endl();
+        logger.info("THREAD_POOL") << "New thread: " << id;
+        logger.endl();
         while (1) {
             this->qWork.wait();
             if (this->bExit) break;
@@ -37,12 +37,12 @@ void ThreadPool::new_thread(const unsigned id)
                 auto work = this->qWork.pop_front();
                 if (work) work(id);
             } catch (const std::exception &e) {
-                log.err("THREAD_POOL") << id << " : " << e.what();
-                log.endl();
+                logger.err("THREAD_POOL") << id << " : " << e.what();
+                logger.endl();
             } catch (...) {
-                log.err("THREAD_POOL") << "Unkown error on thread " << id << Snitch::endl;
+                logger.err("THREAD_POOL") << "Unkown error on thread " << id; logger.endl();
             }
         };
-        log.info("THREAD_POOL") << "End thread: " << id << Snitch::endl;
+        logger.info("THREAD_POOL") << "End thread: " << id; logger.endl();
     });
 }

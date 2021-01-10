@@ -1,5 +1,4 @@
 #include "Map.hpp"
-#include "Snitch.hpp"
 #include <fstream>
 #include <streambuf>
 
