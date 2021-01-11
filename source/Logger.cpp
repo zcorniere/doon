@@ -48,50 +48,35 @@ void Logger::endl()
 
 std::stringstream &Logger::warn(const std::string &msg)
 {
-    if (!mBuffers.contains(std::this_thread::get_id())) {
-        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
-    }
-    auto &buf = mBuffers.at(std::this_thread::get_id());
+    auto &buf = this->raw();
     buf << "\e[33m[" << msg << "]: ";
     return buf;
 }
 
 std::stringstream &Logger::err(const std::string &msg)
 {
-    if (!mBuffers.contains(std::this_thread::get_id())) {
-        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
-    }
-    auto &buf = mBuffers.at(std::this_thread::get_id());
+    auto &buf = this->raw();
     buf << "\e[31m[" << msg << "]: ";
     return buf;
 }
 
 std::stringstream &Logger::info(const std::string &msg)
 {
-    if (!mBuffers.contains(std::this_thread::get_id())) {
-        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
-    }
-    auto &buf = mBuffers.at(std::this_thread::get_id());
+    auto &buf = this->raw();
     buf << "[" << msg << "]: ";
     return buf;
 }
 
 std::stringstream &Logger::debug(const std::string &msg)
 {
-    if (!mBuffers.contains(std::this_thread::get_id())) {
-        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
-    }
-    auto &buf = mBuffers.at(std::this_thread::get_id());
+    auto &buf = this->raw();
     buf << "\e[36m[" << msg << "]: ";
     return buf;
 }
 
 std::stringstream &Logger::msg(const std::string &msg)
 {
-    if (!mBuffers.contains(std::this_thread::get_id())) {
-        mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
-    }
-    auto &buf = mBuffers.at(std::this_thread::get_id());
+    auto &buf = this->raw();
     buf << "[" << msg << "]: ";
     return buf;
 }
