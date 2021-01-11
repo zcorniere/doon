@@ -1,5 +1,5 @@
 #include "Renderer.hpp"
-#include "Snitch.hpp"
+#include "Logger.hpp"
 #include "objects/Poggers.hpp"
 #include <cmath>
 #include <execution>
@@ -30,13 +30,15 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                 img.loadFromFile(f.path());
                 sprite_list.insert({f.path().stem(), std::move(img)});
             } catch (const std::exception &e) {
-                Snitch::warn("RENDERER") << e.what() << Snitch::endl;
+                logger.warn("RENDERER") << e.what();
+                logger.endl();
             }
         }
         qObject.push_back(std::make_unique<Poggers>(47.5f, 22.5f));
         qObject.push_back(std::make_unique<Poggers>(47.5f, 19.5f));
     } catch (const std::exception &e) {
-        Snitch::err("RENDERER") << e.what() << Snitch::endl;
+        logger.err("RENDERER") << e.what();
+        logger.endl();
     }
     for (auto &i: qDepthBuffer) { i.resize(size.x); }
     img.create(size.x, size.y);
@@ -142,8 +144,8 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
         return;
     }
     if (!sprite_list.contains(obj->getTextureName())) {
-        Snitch::err("RENDERER")
-            << "Texture not found : " << obj->getTextureName() << Snitch::endl;
+        logger.err("RENDERER") << "Texture not found : " << obj->getTextureName();
+        logger.endl();
         obj->setRemove(true);
         return;
     }
@@ -205,7 +207,8 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
             std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
         return img.getPixel(uSample.x, uSample.y);
     } catch (const std::out_of_range &oor) {
-        Snitch::err("RENDERER") << "Missing texture : " << texture << "!" << Snitch::endl;
+        logger.err("RENDERER") << "Missing texture : " << texture << "!";
+        logger.endl();
         return sf::Color::Black;
     }
 }

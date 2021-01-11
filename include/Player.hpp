@@ -8,6 +8,7 @@ class Player
 public:
     enum class Move { Forward, Backward, Left, Right };
     enum class Rotation { Clockwise, CounterClockwise };
+    enum class Panning { Up, Down };
 
 public:
     Player(Coords<float>);
@@ -15,6 +16,7 @@ public:
     ~Player();
     void rotate(const Player::Rotation, const float &);
     void move(const Player::Move, const float &);
+    void pan(const Player::Panning, const float &);
     template <typename T>
     inline Coords<T> getPlayerPos() const
     {
@@ -23,6 +25,7 @@ public:
 
 public:
     Coords<float> pos;
+    float elevation = 1.0f;
     float angle = 0.0f;
 };
 

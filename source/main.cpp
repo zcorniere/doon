@@ -11,7 +11,6 @@
 #include "Map.hpp"
 #include "Player.hpp"
 #include "Renderer.hpp"
-#include "Snitch.hpp"
 
 constexpr unsigned WindowWidth = 1280;
 constexpr unsigned WindowHeight = 960;

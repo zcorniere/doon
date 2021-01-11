@@ -1,4 +1,4 @@
-#include "Snitch.hpp"
+#include "Logger.hpp"
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -29,7 +29,8 @@ public:
         try {
             thread = std::thread([this]() { this->run(); });
         } catch (const std::exception &e) {
-            Snitch::err() << e.what() << Snitch::endl;
+            logger.err() << e.what();
+            logger.endl();
         }
     }
 

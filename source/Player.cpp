@@ -1,9 +1,9 @@
 #include "Player.hpp"
-#include "Snitch.hpp"
 #include <math.h>
 
 constexpr float fMovementSpeed = 10.0f;
 constexpr float fRotationSpeed = 1.0f;
+constexpr float fElevationSpeed = 1.0f;
 
 Player::Player(Coords<float> pos): pos(std::move(pos)) {}
 Player::Player(const float x, const float y): pos(x, y) {}
@@ -41,6 +41,14 @@ void Player::move(const Player::Move dir, const float &fElapsedTime)
             pos.x += cosf(angle) * fMovementSpeed * fElapsedTime;
             pos.y -= sinf(angle) * fMovementSpeed * fElapsedTime;
         } break;
+    }
+}
+
+void Player::pan(const Player::Panning p, const float &m)
+{
+    switch (p) {
+        case Panning::Up: elevation += (m * fElevationSpeed); break;
+        case Panning::Down: elevation -= (m * fElevationSpeed); break;
     }
 }
 

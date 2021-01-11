@@ -34,8 +34,7 @@ void Logger::flush()
 
     for (auto &[_, i]: mBuffers) {
         std::string msg(i.str());
-        if (!msg.empty())
-            std::cerr << msg << std::endl;
+        if (!msg.empty()) std::cerr << msg << std::endl;
         i = std::stringstream();
     }
 }
@@ -97,7 +96,8 @@ std::stringstream &Logger::msg(const std::string &msg)
     return buf;
 }
 
-std::stringstream &Logger::raw() {
+std::stringstream &Logger::raw()
+{
     if (!mBuffers.contains(std::this_thread::get_id())) {
         mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
     }

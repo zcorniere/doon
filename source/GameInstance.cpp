@@ -1,7 +1,7 @@
 #include "GameInstance.hpp"
-#include "objects/Fireball.hpp"
-#include "Logger.hpp"
 #include "FrameLimiter.hpp"
+#include "Logger.hpp"
+#include "objects/Fireball.hpp"
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
@@ -10,9 +10,12 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       player(map.getSize() / 2),
       rendy(player, map, uSize, sAssetsPath)
 {
-    logger.msg() << "Map height :" << map.height; logger.endl();
-    logger.msg() << "Map width :" << map.width; logger.endl();
-    logger.raw() << map; logger.endl();
+    logger.msg() << "Map height :" << map.height;
+    logger.endl();
+    logger.msg() << "Map width :" << map.width;
+    logger.endl();
+    logger.raw() << map;
+    logger.endl();
 }
 
 GameInstance::~GameInstance(){};
@@ -59,6 +62,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
 {
     sf::Event event;
 
+    if (!win.hasFocus()) return;
     while (win.pollEvent(event)) {
         switch (event.type) {
             case sf::Event::Closed: {
@@ -67,7 +71,8 @@ void GameInstance::handleInput(const float &fElapsedTime)
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
                     case sf::Keyboard::P:
-                        Snitch::msg("PLAYER") << player.pos << Snitch::endl;
+                        logger.msg("PLAYER") << player.pos;
+                        logger.endl();
                         break;
                     case sf::Keyboard::Space: {
                         float fNoise = (((float)rand() / (float)RAND_MAX) - 0.5f) * 0.1f;
@@ -84,7 +89,12 @@ void GameInstance::handleInput(const float &fElapsedTime)
             default: break;
         }
     }
-    if (!win.hasFocus()) return;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        player.pan(Player::Panning::Up, fElapsedTime);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+        player.pan(Player::Panning::Down, fElapsedTime);
+    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
     }

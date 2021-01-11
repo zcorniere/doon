@@ -1,10 +1,7 @@
 #include "ThreadPool.hpp"
 #include "Logger.hpp"
 
-ThreadPool::ThreadPool(const unsigned size)
-{
-    this->resize(size);
-}
+ThreadPool::ThreadPool(const unsigned size) { this->resize(size); }
 
 ThreadPool::~ThreadPool() { this->stop(); }
 
@@ -40,9 +37,11 @@ void ThreadPool::new_thread(const unsigned id)
                 logger.err("THREAD_POOL") << id << " : " << e.what();
                 logger.endl();
             } catch (...) {
-                logger.err("THREAD_POOL") << "Unkown error on thread " << id; logger.endl();
+                logger.err("THREAD_POOL") << "Unkown error on thread " << id;
+                logger.endl();
             }
         };
-        logger.info("THREAD_POOL") << "End thread: " << id; logger.endl();
+        logger.info("THREAD_POOL") << "End thread: " << id;
+        logger.endl();
     });
 }

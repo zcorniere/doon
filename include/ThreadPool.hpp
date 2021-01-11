@@ -1,7 +1,6 @@
 #ifndef _THREADPOOL_HPP_
 #define _THREADPOOL_HPP_
 
-#include "Snitch.hpp"
 #include "ThreadedQ.hpp"
 #include <atomic>
 #include <functional>

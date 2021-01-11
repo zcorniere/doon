@@ -6,8 +6,6 @@
 #ifndef _THREADEDQ_HPP_
 #define _THREADEDQ_HPP_
 
-#include "Snitch.hpp"
-
 template <typename T>
 class ThreadedQ
 {

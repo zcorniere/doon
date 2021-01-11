@@ -3,6 +3,7 @@
 
 #include "ThreadedQ.hpp"
 #include <atomic>
+#include <iostream>
 #include <memory>
 #include <mutex>
 #include <sstream>
