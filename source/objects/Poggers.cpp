@@ -6,4 +6,4 @@ Poggers::Poggers(float x, float y): fPos(x, y) {}
 
 Poggers::~Poggers() {}
 
-void Poggers::update() {}
+void Poggers::update(float) {}

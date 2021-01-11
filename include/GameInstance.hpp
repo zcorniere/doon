@@ -3,8 +3,10 @@
 
 #include "Coords.hpp"
 #include "Map.hpp"
+#include "ObjectManager.hpp"
 #include "Player.hpp"
 #include "Renderer.hpp"
+#include "ThreadPool.hpp"
 #include <SFML/Graphics.hpp>
 
 constexpr char sMapPath[] = "./map";
@@ -24,7 +26,10 @@ private:
 private:
     Coords<unsigned> uSize;
     sf::RenderWindow win;
+
     const Map map;
+    ObjectManager objs;
+    ThreadPool pool;
     Player player;
     Renderer rendy;
 };

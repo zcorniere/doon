@@ -2,13 +2,17 @@
 #include "FrameLimiter.hpp"
 #include "Logger.hpp"
 #include "objects/Fireball.hpp"
+#include "objects/Poggers.hpp"
+#include <thread>
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
       win(sf::VideoMode(windowWidth, windowHeight), "N/A"),
       map(sMapPath),
+      objs(pool),
+      pool(std::thread::hardware_concurrency()),
       player(map.getSize() / 2),
-      rendy(player, map, uSize, sAssetsPath)
+      rendy(pool, player, map, uSize, sAssetsPath)
 {
     logger.msg() << "Map height :" << map.height;
     logger.endl();
@@ -16,6 +20,9 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
     logger.endl();
     logger.raw() << map;
     logger.endl();
+
+    objs.getObjects().push_back(std::make_unique<Poggers>(47.5f, 22.5f));
+    objs.getObjects().push_back(std::make_unique<Poggers>(47.5f, 19.5f));
 }
 
 GameInstance::~GameInstance(){};
@@ -43,13 +50,14 @@ void GameInstance::run()
 
         float fElapsedTime = elapsedTime.count();
         secs += fElapsedTime;
-        if (secs >= 0.25f) {
+        if (secs >= 0.10f) {
             win.setTitle(std::to_string(1.0f / fElapsedTime));
             secs = 0;
         }
 
         this->handleInput(fElapsedTime);
-        texture.loadFromImage(rendy.update());
+        objs.update(fElapsedTime);
+        texture.loadFromImage(rendy.update(objs));
         sprite.setTexture(texture);
 
         win.draw(sprite);
@@ -77,11 +85,11 @@ void GameInstance::handleInput(const float &fElapsedTime)
                     case sf::Keyboard::Space: {
                         float fNoise = (((float)rand() / (float)RAND_MAX) - 0.5f) * 0.1f;
                         Coords<float> fObjV;
-                        fObjV.x = std::sin(player.angle + fNoise) * 14.0f * fElapsedTime;
-                        fObjV.y = std::cos(player.angle + fNoise) * 14.0f * fElapsedTime;
+                        fObjV.x = std::sin(player.angle + fNoise) * 16.0f;
+                        fObjV.y = std::cos(player.angle + fNoise) * 16.0f;
                         auto obj =
                             std::make_unique<Fireball>(player.pos, std::move(fObjV));
-                        rendy.addObject(obj);
+                        objs.addObject(obj);
                     } break;
                     default: break;
                 }

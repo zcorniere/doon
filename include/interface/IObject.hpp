@@ -10,7 +10,7 @@ public:
     virtual ~IObject(){};
     virtual const std::string &getTextureName() = 0;
     virtual const Coords<float> &getPosition() = 0;
-    virtual void update() = 0;
+    virtual void update(float) = 0;
 
     void setRemove(bool vis) { bRemove = vis; };
     bool needRemove() { return bRemove; };

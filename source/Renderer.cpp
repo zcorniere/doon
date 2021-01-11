@@ -1,6 +1,5 @@
 #include "Renderer.hpp"
 #include "Logger.hpp"
-#include "objects/Poggers.hpp"
 #include <cmath>
 #include <execution>
 #include <unordered_set>
@@ -14,13 +13,9 @@ const std::string sWallTexture("wall");
 const sf::Color cFloor(0x32, 0x70, 0x34);
 const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
-Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
-                   const std::string &assets)
-    : pool(std::thread::hardware_concurrency()),
-      size(std::move(size)),
-      qDepthBuffer(size.x),
-      player(player),
-      map(map)
+Renderer::Renderer(ThreadPool &p, const Player &player, const Map &map,
+                   Coords<unsigned> size, const std::string &assets)
+    : size(std::move(size)), qDepthBuffer(size.x), pool(p), player(player), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -34,8 +29,6 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
                 logger.endl();
             }
         }
-        qObject.push_back(std::make_unique<Poggers>(47.5f, 22.5f));
-        qObject.push_back(std::make_unique<Poggers>(47.5f, 19.5f));
     } catch (const std::exception &e) {
         logger.err("RENDERER") << e.what();
         logger.endl();
@@ -46,10 +39,10 @@ Renderer::Renderer(const Player &player, const Map &map, Coords<unsigned> size,
 
 Renderer::~Renderer() {}
 
-const sf::Image &Renderer::update()
+const sf::Image &Renderer::update(ObjectManager &obj)
 {
     std::deque<std::future<void>> fur(size.x);
-    std::deque<std::future<void>> obj;
+    std::deque<std::future<void>> qObj;
 
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
@@ -63,14 +56,11 @@ const sf::Image &Renderer::update()
             i);
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
-    for (auto &i: qObject) {
-        obj.push_back(pool.push([this, &i](int) {
-            i->update();
-            this->drawObject(i);
-        }));
+    for (auto &i: obj.getObjects()) {
+        qObj.push_back(pool.push([this, &i](int) { this->drawObject(i); }));
     }
-    std::for_each(std::execution::par, obj.begin(), obj.end(), [](auto &i) { i.wait(); });
-    std::erase_if(qObject, [](auto &i) { return i->needRemove(); });
+    std::for_each(std::execution::par, qObj.begin(), qObj.end(),
+                  [](auto &i) { i.wait(); });
     return img;
 }
 

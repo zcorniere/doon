@@ -7,4 +7,4 @@ Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
 
 Fireball::~Fireball() {}
 
-void Fireball::update() { fPos += fVelocity; }
+void Fireball::update(float fElapsed) { fPos += (fVelocity * fElapsed); }

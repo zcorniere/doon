@@ -3,6 +3,7 @@
 
 #include "Coords.hpp"
 #include "Map.hpp"
+#include "ObjectManager.hpp"
 #include "Player.hpp"
 #include "ThreadPool.hpp"
 #include "ThreadedQ.hpp"
@@ -17,17 +18,10 @@
 class Renderer
 {
 public:
-    Renderer(const Player &, const Map &, Coords<unsigned>, const std::string &);
+    Renderer(ThreadPool &, const Player &, const Map &, Coords<unsigned>,
+             const std::string &);
     ~Renderer();
-    const sf::Image &update();
-
-    template <typename T>
-    void addObject(std::unique_ptr<T> &obj)
-    {
-        static_assert(std::is_base_of<IObject, T>::value,
-                      "Object must be derived from IObject interface");
-        qObject.push_back(std::move(obj));
-    }
+    const sf::Image &update(ObjectManager &);
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
@@ -41,14 +35,13 @@ private:
 
 private:
     sf::Image img;
-    ThreadPool pool;
 
     Coords<unsigned> size;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
-    std::deque<std::unique_ptr<IObject>> qObject;
     std::vector<std::vector<float>> qDepthBuffer;
 
+    ThreadPool &pool;
     const Player &player;
     const Map &map;
 };

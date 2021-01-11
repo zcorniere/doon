@@ -12,7 +12,7 @@ public:
 
     virtual const std::string &getTextureName() final { return sTexture; };
     virtual const Coords<float> &getPosition() final { return fPos; };
-    virtual void update() final;
+    virtual void update(float) final;
 
 private:
     const std::string sTexture = "fireball";
