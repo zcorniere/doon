@@ -6,6 +6,17 @@
 #ifndef _THREADEDQ_HPP_
 #define _THREADEDQ_HPP_
 
+class QError : public std::exception
+{
+public:
+    QError(const std::string &s): msg(s) {}
+    ~QError() {}
+    const std::string &getMsg() const { return msg; }
+
+private:
+    std::string msg;
+};
+
 template <typename T>
 class ThreadedQ
 {
@@ -18,13 +29,13 @@ public:
     const T &front()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
+        if (q.size() == 0) { throw QError("queue is empty"); }
         return q.front();
     }
     const T &back()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
+        if (q.size() == 0) { throw QError("queue is empty"); }
         return q.back();
     }
     bool empty()
@@ -45,7 +56,7 @@ public:
     T pop_front()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
+        if (q.size() == 0) { throw QError("queue is empty"); }
         T t = std::move(q.front());
         q.pop_front();
         return t;
@@ -53,7 +64,7 @@ public:
     T pop_back()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw std::runtime_error("queue is empty"); }
+        if (q.size() == 0) { throw QError("queue is empty"); }
         T t = std::move(q.front());
         q.pop_back();
         return t;
@@ -103,4 +114,5 @@ private:
     std::mutex mutBlocking;
     std::condition_variable vBlocking;
 };
+
 #endif    //_THREADEDQ_HPP_

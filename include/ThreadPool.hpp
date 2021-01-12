@@ -38,6 +38,7 @@ private:
 private:
     ThreadedQ<std::function<void(int)>> qWork;
     std::atomic_bool bExit = false;
+    std::atomic_uint uError = 0;
     std::deque<std::thread> thread_p;
 };
 #endif

@@ -13,6 +13,9 @@ void ThreadPool::stop()
         if (i.joinable()) i.join();
     }
     thread_p.resize(0);
+    logger.err("THREAD_POOL") << "number of empty q error :" << uError;
+    logger.endl();
+    uError = 0;
 }
 
 void ThreadPool::resize(const unsigned size)
@@ -33,6 +36,9 @@ void ThreadPool::new_thread(const unsigned id)
             try {
                 auto work = this->qWork.pop_front();
                 if (work) work(id);
+            } catch (const QError &re) {
+                if (re.getMsg() != "queue is empty") throw;
+                uError++;
             } catch (const std::exception &e) {
                 logger.err("THREAD_POOL") << id << " : " << e.what();
                 logger.endl();
