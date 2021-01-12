@@ -26,6 +26,7 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+
 CFLAGS := -std=c++20 -O3 -I $(HEADP) -Wall -Wextra
 
 MAKEFLAGS += --no-print-directory --silent
@@ -42,7 +43,7 @@ start_compile:
 .PHONY: start_compile
 
 $(NAME): start_compile $(OBJ)
-	$(CC) -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) $(SFML_LIBS) -lpthread
+	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) -lpthread $(SFML_LIBS)
 	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
 format:
