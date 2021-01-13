@@ -12,7 +12,7 @@ public:
     virtual const Coords<float> &getPosition() = 0;
     virtual void update(float) = 0;
 
-    void setRemove(bool vis) { bRemove = vis; };
+    virtual void setRemove(bool vis) { bRemove = vis; };
     bool needRemove() { return bRemove; };
 
 protected:

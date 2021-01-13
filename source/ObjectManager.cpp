@@ -18,8 +18,8 @@ void ObjectManager::update(float fElapsedTime)
             [&i](int, float fElapsedTime) { i->update(fElapsedTime); }, fElapsedTime));
     }
     std::for_each(std::execution::par, fut.begin(), fut.end(), [](auto &i) { i.wait(); });
-    this->computeCollision();
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
+    this->computeCollision();
 }
 
 void ObjectManager::computeCollision()
