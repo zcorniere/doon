@@ -3,6 +3,8 @@
 
 #include "interface/IObject.hpp"
 
+constexpr short PoggerTimeout = 10;
+
 class Poggers : public virtual IObject
 {
 public:
@@ -16,6 +18,7 @@ public:
     virtual void setRemove(bool vis) final;
 
 private:
+    short timeout = PoggerTimeout;
     std::string sTexture = "pogger";
     Coords<float> fPos;
 };

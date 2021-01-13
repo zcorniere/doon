@@ -91,9 +91,8 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         float fVelocity = player.angle + fNoise;
                         Coords<float> fObjV(std::sin(fVelocity) * 16.0f,
                                             std::cos(fVelocity) * 16.0f);
-                        auto obj =
-                            std::make_unique<Fireball>(player.pos, std::move(fObjV));
-                        objs.addObject(obj);
+                        objs.getObjects().push_back(
+                            std::make_unique<Fireball>(player.pos, std::move(fObjV)));
                     } break;
                     default: break;
                 }

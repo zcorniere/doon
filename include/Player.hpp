@@ -17,6 +17,7 @@ public:
     void rotate(const Player::Rotation, const float &);
     void move(const Player::Move, const float &);
     void pan(const Player::Panning, const float &);
+
     template <typename T>
     inline Coords<T> getPlayerPos() const
     {
