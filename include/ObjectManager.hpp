@@ -24,6 +24,9 @@ public:
     void update(float fElapsedTime);
 
 private:
+    void computeCollision();
+
+private:
     ThreadPool &pool;
     std::deque<std::unique_ptr<IObject>> qObjects;
 };
