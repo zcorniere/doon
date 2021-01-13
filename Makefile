@@ -17,7 +17,7 @@ SRC := $(notdir $(shell find $(SRC_FOLDER) -name '*$(LANG)'))
 OBJ := $(addprefix $(OBJ_FOLDER)/,$(SRC:$(LANG)=.o))
 
 DEP_FOLDER := .deps
-DEPS := $(addprefix $(DEP_FOLDER), $(SRC:$(LANG)=.d))
+DEPS := $(addprefix $(DEP_FOLDER)/, $(SRC:$(LANG)=.d))
 
 END := \033[0m
 BOLD := \033[1m
@@ -33,7 +33,6 @@ MAKEFLAGS += --no-print-directory --silent
 
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
--include $(DEPS)
 
 all: $(NAME)
 .PHONY: all
@@ -46,6 +45,8 @@ $(NAME): start_compile $(OBJ)
 	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) -lpthread $(SFML_LIBS)
 	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
+-include $(DEPS)
+
 format:
 	find . -regex '.*\.\(cpp\|hpp\)' -exec clang-format -style=file -i {} \;
 .PHONY: format
@@ -53,10 +54,9 @@ format:
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
 
 $(OBJ):$(OBJ_FOLDER)/%.o: %$(LANG)
-	$(CC) $(CFLAGS) -c -o $@ $<	\
+	$(CC) $(CFLAGS) -c -o $@ $< -MMD -MF $(DEP_FOLDER)/$*.d	\
 	&& printf "$(BOLD)$(CYAN)$< $(END)$(BOLD)has been blessed.$(END)\n"    \
 	|| printf "$(BOLD)$(RED) $< $(END)$(BOLD)has been cursed.$(END)\n"
-	$(CC) $(CFLAGS) -MM -MP -MT $@ $< > $(DEP_FOLDER)/$*.d
 
 clear:
 	printf "$(SAY) Purging heretics files...\n"
