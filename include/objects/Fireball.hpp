@@ -14,7 +14,8 @@ public:
     virtual void update(float) final;
 
 private:
-    const std::string sTexture = "fireball";
+    unsigned loop = 0;
+    std::string sTexture = "fireball-0";
     Coords<float> fPos;
     Coords<float> fVelocity;
 };

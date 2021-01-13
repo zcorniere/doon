@@ -19,4 +19,5 @@ private:
     std::string sTexture = "pogger";
     Coords<float> fPos;
 };
+
 #endif    //_POGGERS_HPP_
