@@ -78,15 +78,19 @@ void GameInstance::handleInput(const float &fElapsedTime)
             } break;
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
-                    case sf::Keyboard::P:
+                    case sf::Keyboard::P: {
                         logger.msg("PLAYER") << player.pos;
                         logger.endl();
-                        break;
+                    } break;
+                    case sf::Keyboard::K: {
+                        logger.raw() << rendy.getDepthBuffer();
+                        logger.endl();
+                    } break;
                     case sf::Keyboard::Space: {
                         float fNoise = (((float)rand() / (float)RAND_MAX) - 0.5f) * 0.1f;
-                        Coords<float> fObjV;
-                        fObjV.x = std::sin(player.angle + fNoise) * 16.0f;
-                        fObjV.y = std::cos(player.angle + fNoise) * 16.0f;
+                        float fVelocity = player.angle + fNoise;
+                        Coords<float> fObjV(std::sin(fVelocity) * 16.0f,
+                                            std::cos(fVelocity) * 16.0f);
                         auto obj =
                             std::make_unique<Fireball>(player.pos, std::move(fObjV));
                         objs.addObject(obj);

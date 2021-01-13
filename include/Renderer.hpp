@@ -2,6 +2,7 @@
 #define _RENDERER_HPP_
 
 #include "Coords.hpp"
+#include "DepthBuffer.hpp"
 #include "Map.hpp"
 #include "ObjectManager.hpp"
 #include "Player.hpp"
@@ -22,6 +23,7 @@ public:
              const std::string &);
     ~Renderer();
     const sf::Image &update(ObjectManager &);
+    DepthBuffer getDepthBuffer() const;
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
@@ -39,7 +41,7 @@ private:
     Coords<unsigned> size;
 
     std::unordered_map<std::string, sf::Image> sprite_list;
-    std::vector<std::vector<float>> qDepthBuffer;
+    DepthBuffer qDepthBuffer;
 
     ThreadPool &pool;
     const Player &player;
