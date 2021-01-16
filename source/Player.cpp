@@ -20,6 +20,7 @@ void Player::rotate(const Player::Rotation dir, const float &fElapsedTime)
             angle -= fRotationSpeed * fElapsedTime;
         } break;
     }
+    if (angle == M_2_PI || angle == -M_2_PI) { angle = 0; }
 }
 
 void Player::move(const Player::Move dir, const float &fElapsedTime)
