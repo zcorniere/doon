@@ -33,7 +33,7 @@ private:
                                                const sf::Vector2u &) const;
     float computeColumn(const unsigned &, Coords<float> &) const;
     void drawColumn(const float &, const unsigned x, Coords<float> &);
-    void drawObject(std::unique_ptr<IObject> &);
+    void drawObject(std::unique_ptr<IObject> &, const float &);
 
 private:
     sf::Image img;

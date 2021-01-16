@@ -41,6 +41,8 @@ Renderer::~Renderer() {}
 
 const sf::Image &Renderer::update(ObjectManager &obj)
 {
+    Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
+    float fEyeAngle = fEye.atan();
     std::deque<std::future<void>> fur(size.x);
     std::deque<std::future<void>> qObj;
 
@@ -57,7 +59,12 @@ const sf::Image &Renderer::update(ObjectManager &obj)
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     for (auto &i: obj.getObjects()) {
-        qObj.push_back(pool.push([this, &i](int) { this->drawObject(i); }));
+        if (map.at(i->getPosition()) == '#') {
+            i->setRemove(true);
+            continue;
+        }
+        qObj.push_back(
+            pool.push([this, &i, &fEyeAngle](int) { this->drawObject(i, fEyeAngle); }));
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
                   [](auto &i) { i.wait(); });
@@ -129,12 +136,8 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(std::unique_ptr<IObject> &obj)
+void Renderer::drawObject(std::unique_ptr<IObject> &obj, const float &fEyeAngle)
 {
-    if (map.at(obj->getPosition()) == '#') {
-        obj->setRemove(true);
-        return;
-    }
     if (!sprite_list.contains(obj->getTextureName())) {
         logger.err("RENDERER") << "Texture not found : " << obj->getTextureName();
         logger.endl();
@@ -143,9 +146,7 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj)
     }
     Coords<float> fVec(obj->getPosition() - player.getPlayerPos<float>());
     float fDistanceToPlayer(fVec.mag());
-
-    Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
-    float fObjectAngle(fEye.atan() - fVec.atan());
+    float fObjectAngle(fEyeAngle - fVec.atan());
 
     if (!(std::abs(fObjectAngle) < fFOV / 2.0f) && fDistanceToPlayer < 0.5f &&
         fDistanceToPlayer >= fDepth) {
