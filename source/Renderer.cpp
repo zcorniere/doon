@@ -106,7 +106,7 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample) const
             }
         }
     }
-    return fDistanceToWall;
+    return fDistanceToWall * std::cos(fRayAngle - player.angle);
 }
 
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
