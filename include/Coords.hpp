@@ -171,8 +171,8 @@ struct Coords {
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Coords<T> &other)
 {
-    os << "Coords<" << typeid(other.x).name() << "> { x = " << other.x
-       << ", y = " << other.y << "}";
+    os << "Coords<" << typeid(T).name() << "> { x = " << other.x << ", y = " << other.y
+       << "}";
     return os;
 }
 

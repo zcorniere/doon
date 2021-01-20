@@ -2,21 +2,24 @@
 #define _PLAYER_HPP_
 
 #include "Coords.hpp"
+#include "interface/IMovement.hpp"
+#include "interface/IShoot.hpp"
 
-class Player
+class Player : public virtual IShoot,
+               public virtual Movement::IMove,
+               public virtual Movement::IRotate,
+               public virtual Movement::IPan
 {
-public:
-    enum class Move { Forward, Backward, Left, Right };
-    enum class Rotation { Clockwise, CounterClockwise };
-    enum class Panning { Up, Down };
-
 public:
     Player(Coords<float>);
     Player(const float, const float);
     ~Player();
-    void rotate(const Player::Rotation, const float &);
-    void move(const Player::Move, const float &);
-    void pan(const Player::Panning, const float &);
+
+    virtual void rotate(const Movement::Rotation, const float &) final;
+    virtual void move(const Movement::Move, const float &) final;
+    virtual void pan(const Movement::Panning, const float &) final;
+
+    virtual void shoot(ObjectManager &) final;
 
     template <typename T>
     inline Coords<T> getPlayerPos() const

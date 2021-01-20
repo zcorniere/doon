@@ -1,6 +1,7 @@
 #include "GameInstance.hpp"
 #include "FrameLimiter.hpp"
 #include "Logger.hpp"
+#include "interface/IMovement.hpp"
 #include "objects/Fireball.hpp"
 #include "objects/Poggers.hpp"
 #include <random>
@@ -98,12 +99,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         logger.endl();
                     } break;
                     case sf::Keyboard::Space: {
-                        float fNoise = (((float)rand() / (float)RAND_MAX) - 0.5f) * 0.1f;
-                        float fVelocity = player.angle + fNoise;
-                        Coords<float> fObjV(std::sin(fVelocity) * 16.0f,
-                                            std::cos(fVelocity) * 16.0f);
-                        objs.getObjects().push_back(
-                            std::make_unique<Fireball>(player.pos, std::move(fObjV)));
+                        player.shoot(objs);
                     } break;
                     case sf::Keyboard::LShift: {
                         player.fSpeedModifier = 0.5;
@@ -123,35 +119,35 @@ void GameInstance::handleInput(const float &fElapsedTime)
         }
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        player.pan(Player::Panning::Up, fElapsedTime);
+        player.pan(Movement::Panning::Up, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
-        player.pan(Player::Panning::Down, fElapsedTime);
+        player.pan(Movement::Panning::Down, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        player.rotate(Player::Rotation::CounterClockwise, fElapsedTime);
+        player.rotate(Movement::Rotation::CounterClockwise, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-        player.rotate(Player::Rotation::Clockwise, fElapsedTime);
+        player.rotate(Movement::Rotation::Clockwise, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-        player.move(Player::Move::Forward, fElapsedTime);
+        player.move(Movement::Move::Forward, fElapsedTime);
         if (map.at(player.getPlayerPos<unsigned>()) == '#')
-            player.move(Player::Move::Backward, fElapsedTime);
+            player.move(Movement::Move::Backward, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        player.move(Player::Move::Backward, fElapsedTime);
+        player.move(Movement::Move::Backward, fElapsedTime);
         if (map.at(player.getPlayerPos<unsigned>()) == '#')
-            player.move(Player::Move::Forward, fElapsedTime);
+            player.move(Movement::Move::Forward, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-        player.move(Player::Move::Left, fElapsedTime);
+        player.move(Movement::Move::Left, fElapsedTime);
         if (map.at(player.getPlayerPos<unsigned>()) == '#')
-            player.move(Player::Move::Right, fElapsedTime);
+            player.move(Movement::Move::Right, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        player.move(Player::Move::Right, fElapsedTime);
+        player.move(Movement::Move::Right, fElapsedTime);
         if (map.at(player.getPlayerPos<unsigned>()) == '#')
-            player.move(Player::Move::Left, fElapsedTime);
+            player.move(Movement::Move::Left, fElapsedTime);
     }
 }
