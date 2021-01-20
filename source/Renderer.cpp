@@ -148,7 +148,8 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj, const float &fEyeAngle)
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
-    if (!(std::abs(fObjectAngle) < fFOV / 2.0f) && fDistanceToPlayer < 0.5f &&
+    bool bInPlayerFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
+    if (!bInPlayerFOV && fDistanceToPlayer < 0.5f &&
         fDistanceToPlayer >= fDepth) {
         return;
     }
