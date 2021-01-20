@@ -22,17 +22,17 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
     logger.raw() << map;
     logger.endl();
 
-    objs.getObjects().push_back(std::make_unique<Poggers>(47.5f, 22.5f));
-    objs.getObjects().push_back(std::make_unique<Poggers>(47.5f, 19.5f));
-    for (unsigned i = 0; i < 10; i++) {
-        Coords<float> roll(std::rand() % map.getSize().x, std::rand() % map.getSize().y);
-        roll += 0.5f;
-        if (map.at(roll) == '#') {
-            i--;
-        } else {
-            logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
-            logger.endl();
-            objs.getObjects().push_back(std::make_unique<Poggers>(roll));
+    if (!std::getenv("DOON_NO_POGGERS")) {
+        for (unsigned i = 0; i < 10; i++) {
+            Coords<float> roll(std::rand() % map.getSize().x, std::rand() % map.getSize().y);
+            roll += 0.5f;
+            if (map.at(roll) == '#') {
+                i--;
+            } else {
+                logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
+                logger.endl();
+                objs.getObjects().push_back(std::make_unique<Poggers>(roll));
+            }
         }
     }
 }
