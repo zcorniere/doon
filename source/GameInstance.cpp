@@ -68,6 +68,7 @@ void GameInstance::run()
         }
 
         this->handleInput(fElapsedTime);
+        player.update(fElapsedTime);
         objs.update(fElapsedTime);
         texture.loadFromImage(rendy.update(objs));
         sprite.setTexture(texture);

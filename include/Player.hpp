@@ -14,6 +14,7 @@ public:
     Player(Coords<float>);
     Player(const float, const float);
     ~Player();
+    void update(const float &fElapsedTime);
 
     virtual void rotate(const Movement::Rotation, const float &) final;
     virtual void move(const Movement::Move, const float &) final;
@@ -32,6 +33,8 @@ public:
     float elevation = 1.0f;
     float angle = 0.0f;
     float fSpeedModifier = 1;
+
+    float fCooldown = 0.0f;
 };
 
 #endif    //_PLAYER_HPP_
