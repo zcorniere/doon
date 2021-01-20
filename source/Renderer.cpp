@@ -148,9 +148,9 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj, const float &fEyeAngle)
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
-    bool bInPlayerFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
-    if (!bInPlayerFOV && fDistanceToPlayer < 0.5f &&
-        fDistanceToPlayer >= fDepth) {
+    bool bInPlayerFOV =
+        std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
+    if (!bInPlayerFOV && fDistanceToPlayer < 0.5f && fDistanceToPlayer >= fDepth) {
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);

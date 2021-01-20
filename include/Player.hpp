@@ -28,6 +28,7 @@ public:
     Coords<float> pos;
     float elevation = 1.0f;
     float angle = 0.0f;
+    float fSpeedModifier = 1;
 };
 
 #endif    //_PLAYER_HPP_

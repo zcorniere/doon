@@ -27,20 +27,20 @@ void Player::move(const Player::Move dir, const float &fElapsedTime)
 {
     switch (dir) {
         case Move::Forward: {
-            pos.x += sinf(angle) * fMovementSpeed * fElapsedTime;
-            pos.y += cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x += sinf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            pos.y += cosf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
         } break;
         case Move::Backward: {
-            pos.x -= sinf(angle) * fMovementSpeed * fElapsedTime;
-            pos.y -= cosf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x -= sinf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            pos.y -= cosf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
         } break;
         case Move::Left: {
-            pos.x -= cosf(angle) * fMovementSpeed * fElapsedTime;
-            pos.y += sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x -= cosf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            pos.y += sinf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
         } break;
         case Move::Right: {
-            pos.x += cosf(angle) * fMovementSpeed * fElapsedTime;
-            pos.y -= sinf(angle) * fMovementSpeed * fElapsedTime;
+            pos.x += cosf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            pos.y -= sinf(angle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
         } break;
     }
 }

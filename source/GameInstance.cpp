@@ -105,6 +105,17 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         objs.getObjects().push_back(
                             std::make_unique<Fireball>(player.pos, std::move(fObjV)));
                     } break;
+                    case sf::Keyboard::LShift: {
+                        player.fSpeedModifier = 0.5;
+                    } break;
+                    default: break;
+                }
+            } break;
+            case sf::Event::KeyReleased: {
+                switch (event.key.code) {
+                    case sf::Keyboard::LShift: {
+                        player.fSpeedModifier = 1;
+                    } break;
                     default: break;
                 }
             } break;
