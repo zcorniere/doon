@@ -24,7 +24,8 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
 
     if (!std::getenv("DOON_NO_POGGERS")) {
         for (unsigned i = 0; i < 10; i++) {
-            Coords<float> roll(std::rand() % map.getSize().x, std::rand() % map.getSize().y);
+            Coords<float> roll(std::rand() % map.getSize().x,
+                               std::rand() % map.getSize().y);
             roll += 0.5f;
             if (map.at(roll) == '#') {
                 i--;
@@ -42,7 +43,7 @@ GameInstance::~GameInstance(){};
 void GameInstance::init()
 {
     win.setVerticalSyncEnabled(true);
-    win.clear(sf::Color::Black);
+    // win.clear(sf::Color::Black);
     win.display();
 }
 

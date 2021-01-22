@@ -28,16 +28,14 @@ void ObjectManager::computeCollision()
     std::deque<std::future<void>> fut;
 
     for (auto &s: qObjects) {
+        if (std::is_convertible<ICollision *, decltype(s.get())>::value || s->needRemove())
+            continue;
         for (auto &i: qObjects) {
-            if (s == i || s->needRemove() || i->needRemove()) continue;
+            if (s == i || i->needRemove() || std::is_convertible<ICollision *, decltype(i.get())>::value ) continue;
             Coords<float> fVec(s->getPosition() - i->getPosition());
             if (fVec.mag() <= fCollisionSize) {
-                if (auto *col = dynamic_cast<ICollision *>(i.get())) {
-                    col->onCollision(s);
-                }
-                if (auto *col = dynamic_cast<ICollision *>(s.get())) {
-                    col->onCollision(i);
-                }
+                dynamic_cast<ICollision *>(i.get())->onCollision(s);
+                dynamic_cast<ICollision *>(s.get())->onCollision(i);
             }
         }
     }
