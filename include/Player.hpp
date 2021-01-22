@@ -4,8 +4,10 @@
 #include "Coords.hpp"
 #include "interface/IMovement.hpp"
 #include "interface/IShoot.hpp"
+#include "abstract/ALife.hpp"
 
 class Player : public virtual IShoot,
+                public virtual ALife,
                public virtual Movement::IMove,
                public virtual Movement::IRotate,
                public virtual Movement::IPan

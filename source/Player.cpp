@@ -9,8 +9,8 @@ constexpr float fElevationSpeed = 1.0f;
 
 constexpr float fCooldownShoot = 0.5f;
 
-Player::Player(Coords<float> pos): pos(std::move(pos)) {}
-Player::Player(const float x, const float y): pos(x, y) {}
+Player::Player(Coords<float> pos): ALife(5), pos(std::move(pos)) {}
+Player::Player(const float x, const float y): Player(Coords(x, y)) {}
 
 Player::~Player() {}
 

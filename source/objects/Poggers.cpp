@@ -1,8 +1,8 @@
 #include "objects/Poggers.hpp"
 
-Poggers::Poggers(Coords<float> pos): fPos(std::move(pos)) {}
+Poggers::Poggers(Coords<float> pos): ALife(1), fPos(std::move(pos)) {}
 
-Poggers::Poggers(float x, float y): fPos(x, y) {}
+Poggers::Poggers(float x, float y): Poggers(Coords(x,y)) {}
 
 Poggers::~Poggers() {}
 
@@ -16,6 +16,9 @@ void Poggers::update(float)
 
 void Poggers::onCollision(const std::unique_ptr<IObject> &)
 {
-    sTexture = "explosion";
-    timeout--;
+    this->damage(1);
+    if (!this->isAlive()) {
+        sTexture = "explosion";
+        timeout--;
+    }
 }
