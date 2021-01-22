@@ -23,3 +23,8 @@ void Fireball::update(float fElapsed)
         }
     }
 }
+
+void Fireball::onCollision(const std::unique_ptr<IObject> &)
+{
+    this->IObject::setRemove(true);
+}

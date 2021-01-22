@@ -1,5 +1,6 @@
 #include "ObjectManager.hpp"
 #include "Logger.hpp"
+#include "interface/ICollision.hpp"
 #include <execution>
 #include <functional>
 
@@ -31,8 +32,12 @@ void ObjectManager::computeCollision()
             if (s == i || s->needRemove() || i->needRemove()) continue;
             Coords<float> fVec(s->getPosition() - i->getPosition());
             if (fVec.mag() <= fCollisionSize) {
-                s->setRemove(true);
-                i->setRemove(true);
+                if (auto *col = dynamic_cast<ICollision *>(i.get())) {
+                    col->onCollision(s);
+                }
+                if (auto *col = dynamic_cast<ICollision *>(s.get())) {
+                    col->onCollision(i);
+                }
             }
         }
     }

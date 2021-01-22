@@ -14,13 +14,8 @@ void Poggers::update(float)
     }
 }
 
-void Poggers::setRemove(bool vis)
+void Poggers::onCollision(const std::unique_ptr<IObject> &)
 {
-    if (vis) {
-        sTexture = "explosion";
-        timeout--;
-    } else {
-        sTexture = "pogger";
-        timeout = PoggerTimeout;
-    }
+    sTexture = "explosion";
+    timeout--;
 }
