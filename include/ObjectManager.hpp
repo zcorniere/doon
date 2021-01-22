@@ -17,7 +17,7 @@ public:
     template <typename T>
     void addObject(std::unique_ptr<T> &obj)
     {
-        static_assert(std::is_base_of<IObject, T>::value,
+        static_assert(std::is_convertible<IObject, T>::value,
                       "Object must be derived from IObject interface");
         qObjects.push_back(std::move(obj));
     }
