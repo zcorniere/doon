@@ -23,6 +23,12 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
     logger.endl();
 
     if (!std::getenv("DOON_NO_POGGERS")) {
+        for (auto &i: map.getChars('P')) {
+            Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
+            logger.info("GAME_INSTANCE") << "New Map Pogger: " << fi;
+            logger.endl();
+            objs.getObjects().push_back(std::make_unique<Poggers>(fi));
+        }
         for (unsigned i = 0; i < 10; i++) {
             Coords<float> roll(std::rand() % map.getSize().x,
                                std::rand() % map.getSize().y);

@@ -1,9 +1,9 @@
 #ifndef _POGGERS_HPP_
 #define _POGGERS_HPP_
 
+#include "abstract/ALife.hpp"
 #include "interface/ICollision.hpp"
 #include "interface/IObject.hpp"
-#include "abstract/ALife.hpp"
 
 constexpr short PoggerTimeout = 10;
 

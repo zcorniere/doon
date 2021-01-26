@@ -2,6 +2,7 @@
 #define _MAP_HPP_
 
 #include "Coords.hpp"
+#include <deque>
 #include <filesystem>
 #include <string>
 
@@ -13,14 +14,8 @@ public:
     Coords<unsigned> getSize() const;
     inline char operator[](const std::size_t idx) const { return map[idx]; }
     inline char at(const std::size_t idx) const { return map.at(idx); }
-    inline char at(const Coords<unsigned> &idx) const
-    {
-        unsigned point = idx.y * width + idx.x;
-        if (point >= map.size())
-            return '#';
-        else
-            return map.at(point);
-    }
+    std::deque<Coords<unsigned>> getChars(const char c) const;
+    char at(const Coords<unsigned> &idx) const;
 
 public:
     std::string map;

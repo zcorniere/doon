@@ -22,6 +22,29 @@ Map::~Map() {}
 
 Coords<unsigned> Map::getSize() const { return Coords(width, height); };
 
+char Map::at(const Coords<unsigned> &idx) const
+{
+    unsigned point = idx.y * width + idx.x;
+    if (point >= map.size())
+        return '#';
+    else
+        return map.at(point);
+}
+
+std::deque<Coords<unsigned>> Map::getChars(const char c) const
+{
+    std::deque<Coords<unsigned>> ret;
+
+    for (unsigned i = 0; i < map.size(); ++i) {
+        if (map.at(i) == c) {
+            unsigned uXpos = i / width;
+            Coords<unsigned> pos((i - uXpos) % height, uXpos);
+            ret.push_back(std::move(pos));
+        }
+    }
+    return ret;
+}
+
 std::ostream &operator<<(std::ostream &os, const Map &other)
 {
     for (unsigned i = 0; i < other.map.size(); i++) {

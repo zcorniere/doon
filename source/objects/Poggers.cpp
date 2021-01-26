@@ -2,7 +2,7 @@
 
 Poggers::Poggers(Coords<float> pos): ALife(1), fPos(std::move(pos)) {}
 
-Poggers::Poggers(float x, float y): Poggers(Coords(x,y)) {}
+Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
 
 Poggers::~Poggers() {}
 

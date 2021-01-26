@@ -32,8 +32,9 @@ struct Coords {
         return T(this->x * other.x + this->y * other.y);
     };
 
-    auto operator<=>(const Coords &other)const = default;
-    auto operator<=>(const T &other)const {
+    auto operator<=>(const Coords &other) const = default;
+    auto operator<=>(const T &other) const
+    {
         return this->x <=> other && this->y <=> other;
     };
 

@@ -1,10 +1,10 @@
+#ifndef _OBJECTMANAGER_HPP_
+#define _OBJECTMANAGER_HPP_
+
 #include "ThreadPool.hpp"
 #include "interface/IObject.hpp"
 #include <deque>
 #include <memory>
-
-#ifndef _OBJECTMANAGER_HPP_
-#define _OBJECTMANAGER_HPP_
 
 class ObjectManager
 {

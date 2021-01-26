@@ -23,10 +23,10 @@ void Player::rotate(const Movement::Rotation dir, const float &fElapsedTime)
 {
     switch (dir) {
         case Movement::Clockwise: {
-            angle += fRotationSpeed * fElapsedTime;
+            angle += fRotationSpeed * fSpeedModifier * fElapsedTime;
         } break;
         case Movement::CounterClockwise: {
-            angle -= fRotationSpeed * fElapsedTime;
+            angle -= fRotationSpeed * fSpeedModifier * fElapsedTime;
         } break;
     }
     if (angle == M_2_PI || angle == -M_2_PI) { angle = 0; }
