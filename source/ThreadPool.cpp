@@ -1,6 +1,7 @@
 #include "ThreadPool.hpp"
 #include "Logger.hpp"
 
+ThreadPool::ThreadPool() : ThreadPool(std::thread::hardware_concurrency()) {}
 ThreadPool::ThreadPool(const unsigned size) { this->resize(size); }
 
 ThreadPool::~ThreadPool() { this->stop(); }

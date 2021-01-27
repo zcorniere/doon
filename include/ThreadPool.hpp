@@ -12,6 +12,7 @@
 class ThreadPool
 {
 public:
+    ThreadPool();
     ThreadPool(const unsigned size);
     ThreadPool(const ThreadPool &) = delete;
     ThreadPool(ThreadPool &) = delete;

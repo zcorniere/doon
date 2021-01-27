@@ -11,7 +11,7 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       win(sf::VideoMode(windowWidth, windowHeight), "N/A"),
       map(sMapPath),
       objs(pool),
-      pool(std::thread::hardware_concurrency()),
+      pool(),
       player(map.getSize() / 2),
       rendy(pool, player, map, uSize, sAssetsPath)
 {
