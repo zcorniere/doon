@@ -61,6 +61,15 @@ public:
         q.pop_front();
         return t;
     }
+    bool pop_front(T &t)
+    {
+        std::scoped_lock lock(q_mut);
+        if (q.empty()) { return false; }
+        t = std::move(q.front());
+        q.pop_front();
+        return true;
+    }
+
     T pop_back()
     {
         std::scoped_lock lock(q_mut);

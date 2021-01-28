@@ -217,6 +217,5 @@ const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSampl
 const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
                                                      const sf::Vector2u &fSize) const
 {
-    return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
-            std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
+    return this->sampleTextureCoords(fSample, Coords(fSize.x, fSize.y));
 }

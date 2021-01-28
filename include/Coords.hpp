@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <compare>
 #include <iostream>
 
 template <class T>

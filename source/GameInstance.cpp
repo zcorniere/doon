@@ -98,6 +98,9 @@ void GameInstance::handleInput(const float &fElapsedTime)
             } break;
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
+                    case sf::Keyboard::Escape: {
+                        win.close();
+                    } break;
                     case sf::Keyboard::P: {
                         logger.msg("PLAYER") << player.pos << ": " << player.angle;
                         logger.endl();
