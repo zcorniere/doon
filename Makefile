@@ -27,7 +27,8 @@ CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 
-CFLAGS := -std=c++20 -Ofast -I $(HEADP) -Wall -Wextra
+OP_FLAGS := -Ofast -fassociative-math -ffast-math
+CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
 
 MAKEFLAGS += --no-print-directory --silent
 
