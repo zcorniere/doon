@@ -29,14 +29,19 @@ SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
+ifeq ($(MAKECMDGOALS), trace)
+    CFLAGS += -pg
+endif
 
 MAKEFLAGS += --no-print-directory --silent
 
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
-
 all: $(NAME)
 .PHONY: all
+
+trace: all
+.PHONY: trace
 
 start_compile:
 	printf "$(SAY) Praise for the almighty $(CYAN)binary$(END)$(BOLD) !$(END)\n"
