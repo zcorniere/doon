@@ -8,12 +8,12 @@
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
-      win(sf::VideoMode(windowWidth, windowHeight), "N/A"),
       map(sMapPath),
       objs(pool),
       pool(),
       player(map.getSize() / 2),
-      rendy(pool, player, map, uSize, sAssetsPath)
+      rendy(pool, player, map, uSize, sAssetsPath),
+      win(sf::VideoMode(windowWidth, windowHeight), "N/A")
 {
     logger.msg() << "Map height :" << map.height;
     logger.endl();
@@ -33,7 +33,7 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
             Coords<float> roll(std::rand() % map.getSize().x,
                                std::rand() % map.getSize().y);
             roll += 0.5f;
-            if (map.at(roll) == '#') {
+            if (map.at(roll) == '#' || map.at(roll) == 'P') {
                 i--;
             } else {
                 logger.info("GAME_INSTANCE") << "New Pogger: " << roll;

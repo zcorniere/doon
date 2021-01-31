@@ -25,13 +25,14 @@ private:
 
 private:
     Coords<unsigned> uSize;
-    sf::RenderWindow win;
 
     const Map map;
     ObjectManager objs;
     ThreadPool pool;
     Player player;
     Renderer rendy;
+
+    sf::RenderWindow win;
 };
 
 #endif    //_GAMEINSTANCE_HPP_
