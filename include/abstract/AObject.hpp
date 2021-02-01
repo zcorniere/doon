@@ -2,6 +2,7 @@
 #define _AOBJECT_HPP_
 
 #include "Coords.hpp"
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -16,6 +17,8 @@ public:
     virtual std::optional<std::string> getTextureName() { return sTexture; };
     virtual void setRemove(bool vis) { bRemove = vis; };
     virtual bool needRemove() { return bRemove; };
+    virtual void onCollision(const std::unique_ptr<AObject> &){};
+    virtual void onSceneryCollision() { this->setRemove(true); };
 
     virtual void update(float) = 0;
 

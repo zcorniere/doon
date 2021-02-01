@@ -3,11 +3,10 @@
 
 #include "abstract/ALife.hpp"
 #include "abstract/AObject.hpp"
-#include "interface/ICollision.hpp"
 
 constexpr short PoggerTimeout = 10;
 
-class Poggers : public virtual AObject, public virtual ICollision, public virtual ALife
+class Poggers : public virtual AObject, public virtual ALife
 {
 public:
     Poggers(Coords<float>);

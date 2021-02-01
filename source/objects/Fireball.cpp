@@ -9,6 +9,11 @@ Fireball::~Fireball() {}
 
 void Fireball::update(float fElapsed)
 {
+    fLifespan -= fElapsed;
+    if (fLifespan <= 0.0f) {
+        this->setRemove(true);
+        return;
+    }
     fPosition += (fVelocity * fElapsed);
     if (loop++ == 5) {
         loop = 0;
@@ -25,3 +30,5 @@ void Fireball::update(float fElapsed)
 }
 
 void Fireball::onCollision(const std::unique_ptr<AObject> &) { this->setRemove(true); }
+
+void Fireball::onSceneryCollision() { fVelocity *= -1.0f; }

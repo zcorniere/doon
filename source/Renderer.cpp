@@ -61,7 +61,7 @@ const sf::Image &Renderer::update(ObjectManager &obj)
     for (auto &i: obj.getObjects()) {
         if (!i->getTextureName()) continue;
         if (map.at(i->getPosition()) == '#') {
-            i->setRemove(true);
+            i->onSceneryCollision();
             continue;
         }
         qObj.push_back(
