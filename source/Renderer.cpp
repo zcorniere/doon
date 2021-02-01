@@ -59,6 +59,7 @@ const sf::Image &Renderer::update(ObjectManager &obj)
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     for (auto &i: obj.getObjects()) {
+        if (!i->getTextureName()) continue;
         if (map.at(i->getPosition()) == '#') {
             i->setRemove(true);
             continue;
@@ -136,10 +137,11 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(std::unique_ptr<IObject> &obj, const float &fEyeAngle)
+void Renderer::drawObject(std::unique_ptr<AObject> &obj, const float &fEyeAngle)
 {
-    if (!sprite_list.contains(obj->getTextureName())) {
-        logger.err("RENDERER") << "Texture not found : " << obj->getTextureName();
+    std::string texture = obj->getTextureName().value();
+    if (!sprite_list.contains(texture)) {
+        logger.err("RENDERER") << "Texture not found : " << texture;
         logger.endl();
         obj->setRemove(true);
         return;
@@ -154,7 +156,7 @@ void Renderer::drawObject(std::unique_ptr<IObject> &obj, const float &fEyeAngle)
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const sf::Image &iSprite = sprite_list.at(obj->getTextureName());
+    const sf::Image &iSprite = sprite_list.at(texture);
     const sf::Vector2u imgSize = iSprite.getSize();
     Coords<float> fImgSize(imgSize.x, imgSize.y);
     float fObjCeiling = size.y / 2.0f - size.y / fDistanceToPlayer;

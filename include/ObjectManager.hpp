@@ -2,7 +2,7 @@
 #define _OBJECTMANAGER_HPP_
 
 #include "ThreadPool.hpp"
-#include "interface/IObject.hpp"
+#include "abstract/AObject.hpp"
 #include <deque>
 #include <memory>
 
@@ -17,7 +17,7 @@ public:
     template <typename T>
     void addObject(std::unique_ptr<T> &obj)
     {
-        static_assert(std::is_convertible<IObject, T>::value,
+        static_assert(std::is_convertible<AObject, T>::value,
                       "Object must be derived from IObject interface");
         qObjects.push_back(std::move(obj));
     }
@@ -28,7 +28,7 @@ private:
 
 private:
     ThreadPool &pool;
-    std::deque<std::unique_ptr<IObject>> qObjects;
+    std::deque<std::unique_ptr<AObject>> qObjects;
 };
 
 #endif    //_OBJECTMANAGER_HPP_

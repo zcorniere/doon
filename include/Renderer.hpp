@@ -8,8 +8,8 @@
 #include "Player.hpp"
 #include "ThreadPool.hpp"
 #include "ThreadedQ.hpp"
+#include "abstract/AObject.hpp"
 #include "abstract/AThreaded.hpp"
-#include "interface/IObject.hpp"
 #include <SFML/Graphics.hpp>
 #include <atomic>
 #include <memory>
@@ -33,7 +33,7 @@ private:
                                                const sf::Vector2u &) const;
     float computeColumn(const unsigned &, Coords<float> &) const;
     void drawColumn(const float &, const unsigned x, Coords<float> &);
-    void drawObject(std::unique_ptr<IObject> &, const float &);
+    void drawObject(std::unique_ptr<AObject> &, const float &);
 
 private:
     sf::Image img;

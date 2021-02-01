@@ -1,6 +1,6 @@
 #include "objects/Poggers.hpp"
 
-Poggers::Poggers(Coords<float> pos): ALife(1), fPos(std::move(pos)) {}
+Poggers::Poggers(Coords<float> pos): AObject(std::move(pos), "pogger"), ALife(1) {}
 
 Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
 
@@ -10,11 +10,11 @@ void Poggers::update(float)
 {
     if (timeout < PoggerTimeout) {
         timeout--;
-        if (timeout <= 0) { this->IObject::setRemove(true); }
+        if (timeout <= 0) { this->setRemove(true); }
     }
 }
 
-void Poggers::onCollision(const std::unique_ptr<IObject> &)
+void Poggers::onCollision(const std::unique_ptr<AObject> &)
 {
     this->damage(1);
     if (!this->isAlive()) {

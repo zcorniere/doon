@@ -1,7 +1,7 @@
 #include "objects/Fireball.hpp"
 
 Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
-    : fPos(std::move(pos)), fVelocity(std::move(velocity))
+    : AObject(pos, "fireball-0"), fVelocity(std::move(velocity))
 {
 }
 
@@ -9,7 +9,7 @@ Fireball::~Fireball() {}
 
 void Fireball::update(float fElapsed)
 {
-    fPos += (fVelocity * fElapsed);
+    fPosition += (fVelocity * fElapsed);
     if (loop++ == 5) {
         loop = 0;
         if (sTexture == "fireball-0") {
@@ -24,7 +24,4 @@ void Fireball::update(float fElapsed)
     }
 }
 
-void Fireball::onCollision(const std::unique_ptr<IObject> &)
-{
-    this->IObject::setRemove(true);
-}
+void Fireball::onCollision(const std::unique_ptr<AObject> &) { this->setRemove(true); }
