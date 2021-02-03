@@ -30,7 +30,7 @@ void ObjectManager::computeCollision()
         if (s->needRemove()) continue;
         for (auto &i: qObjects) {
             if (s == i || i->needRemove()) continue;
-            Coords<float> fVec(s->getPosition() - i->getPosition());
+            Coords<float> fVec(s->getPosition<float>() - i->getPosition<float>());
             if (fVec.mag() <= fCollisionSize) {
                 i->onCollision(s);
                 s->onCollision(i);

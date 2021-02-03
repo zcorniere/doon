@@ -3,6 +3,7 @@
 
 #include "Coords.hpp"
 #include "abstract/ALife.hpp"
+#include "abstract/AObject.hpp"
 #include "interface/IMovement.hpp"
 #include "interface/IShoot.hpp"
 
@@ -10,13 +11,14 @@ class Player : public virtual IShoot,
                public virtual ALife,
                public virtual Movement::IMove,
                public virtual Movement::IRotate,
-               public virtual Movement::IPan
+               public virtual Movement::IPan,
+               public virtual AObject
 {
 public:
     Player(Coords<float>);
     Player(const float, const float);
     ~Player();
-    void update(const float &fElapsedTime);
+    virtual void update(const float fElapsedTime) final;
 
     virtual void rotate(const Movement::Rotation, const float &) final;
     virtual void move(const Movement::Move, const float &) final;
@@ -24,16 +26,8 @@ public:
 
     virtual void shoot(ObjectManager &) final;
 
-    template <typename T>
-    inline Coords<T> getPlayerPos() const
-    {
-        return static_cast<Coords<T>>(pos);
-    };
-
 public:
-    Coords<float> pos;
     float elevation = 1.0f;
-    float angle = 0.0f;
     float fSpeedModifier = 1;
 
     float fCooldown = 0.0f;

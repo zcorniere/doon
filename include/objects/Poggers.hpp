@@ -13,7 +13,7 @@ public:
     Poggers(float, float);
     ~Poggers();
 
-    virtual void update(float) final;
+    virtual void update(const float) final;
     virtual void onCollision(const std::unique_ptr<AObject> &other) final;
 
 private:

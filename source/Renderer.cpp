@@ -4,18 +4,15 @@
 #include <execution>
 #include <unordered_set>
 
-constexpr float fFOV = M_PI / 4.0f;
-constexpr float fDepth = 32;
-
 constexpr float fRayResolution = 0.01f;
 const std::string sWallTexture("wall");
 
 const sf::Color cFloor(0x32, 0x70, 0x34);
 const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
-Renderer::Renderer(ThreadPool &p, const Player &player, const Map &map,
-                   Coords<unsigned> size, const std::string &assets)
-    : size(std::move(size)), pool(p), player(player), map(map)
+Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
+                   const std::string &assets)
+    : size(std::move(size)), pool(p), map(map)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(assets)) {
@@ -39,51 +36,54 @@ Renderer::Renderer(ThreadPool &p, const Player &player, const Map &map,
 
 Renderer::~Renderer() {}
 
-const sf::Image &Renderer::update(ObjectManager &obj)
+const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamPosition, ObjectManager &obj)
 {
-    Coords<float> fEye(std::sin(player.angle), std::cos(player.angle));
+    Coords<float> fEye(std::sin(fAngle), std::cos(fAngle));
     float fEyeAngle = fEye.atan();
     std::deque<std::future<void>> fur(size.x);
     std::deque<std::future<void>> qObj;
 
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
-            [this](int, unsigned x) {
+            [this](int, const unsigned x, const float angle,
+                   const Coords<float> &fOrigin) {
                 Coords<float> fSample;
-                float fDistanceToWall = this->computeColumn(x, fSample);
+                float fDistanceToWall = this->computeColumn(x, angle, fOrigin, fSample);
                 std::fill(qDepthBuffer.buf.at(x).begin(), qDepthBuffer.buf.at(x).end(),
                           fDistanceToWall);
                 this->drawColumn(fDistanceToWall, x, fSample);
             },
-            i);
+            i, fAngle, fCamPosition);
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
     for (auto &i: obj.getObjects()) {
         if (!i->getTextureName()) continue;
-        if (map.at(i->getPosition()) == '#') {
+        if (map.at(i->getPosition<unsigned>()) == '#') {
             i->onSceneryCollision();
             continue;
         }
-        qObj.push_back(
-            pool.push([this, &i, &fEyeAngle](int) { this->drawObject(i, fEyeAngle); }));
+        qObj.push_back(pool.push(
+            [this, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
+                this->drawObject(i, fCamPosition, fEyeAngle);
+            },
+            fCamPosition, fEyeAngle));
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
                   [](auto &i) { i.wait(); });
     return img;
 }
 
-DepthBuffer Renderer::getDepthBuffer() const { return qDepthBuffer; }
-
-float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample) const
+float Renderer::computeColumn(const unsigned &x, const float angle,
+                              const Coords<float> &fOrigin, Coords<float> &fSample) const
 {
     float fDistanceToWall = 0;
-    float fRayAngle = (player.angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
+    float fRayAngle = (angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
     Coords<float> fEye(std::sin(fRayAngle), std::cos(fRayAngle));
 
     while (fDistanceToWall < fDepth) {
         fDistanceToWall += fRayResolution;
 
-        Coords<unsigned> nTest = player.getPlayerPos<float>() + fEye * fDistanceToWall;
+        Coords<unsigned> nTest = fOrigin + fEye * fDistanceToWall;
 
         if (nTest.x >= map.width || nTest.y >= map.height) {
             return fDepth;
@@ -91,7 +91,7 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample) const
             if (map.at(nTest) == '#') {
                 Coords<float> fBlockMid(nTest);
                 fBlockMid += 0.5f;
-                Coords<float> fTestPoint(player.getPlayerPos<float>() +
+                Coords<float> fTestPoint(fOrigin +
                                          fEye * fDistanceToWall);
                 float fTestAngle = std::atan2((fTestPoint.y - fBlockMid.y),
                                               (fTestPoint.x - fBlockMid.x));
@@ -107,7 +107,7 @@ float Renderer::computeColumn(const unsigned &x, Coords<float> &fSample) const
             }
         }
     }
-    return fDistanceToWall * std::cos(fRayAngle - player.angle);
+    return fDistanceToWall * std::cos(fRayAngle - angle);
 }
 
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
@@ -137,7 +137,25 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-void Renderer::drawObject(std::unique_ptr<AObject> &obj, const float &fEyeAngle)
+const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
+                                        const std::string &texture) const
+{
+    try {
+        const sf::Image &img = sprite_list.at(texture);
+        const sf::Vector2u imgSize = img.getSize();
+        const Coords<unsigned> uSample(
+            std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
+            std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
+        return img.getPixel(uSample.x, uSample.y);
+    } catch (const std::out_of_range &oor) {
+        logger.err("RENDERER") << "Missing texture : " << texture << "!";
+        logger.endl();
+        return sf::Color::Black;
+    }
+}
+
+void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
+                          const Coords<float> &fCamPosition, const float &fEyeAngle)
 {
     std::string texture = obj->getTextureName().value();
     if (!sprite_list.contains(texture)) {
@@ -146,7 +164,7 @@ void Renderer::drawObject(std::unique_ptr<AObject> &obj, const float &fEyeAngle)
         obj->setRemove(true);
         return;
     }
-    Coords<float> fVec(obj->getPosition() - player.getPlayerPos<float>());
+    Coords<float> fVec(obj->getPosition<float>() - fCamPosition);
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
@@ -191,24 +209,6 @@ void Renderer::drawObject(std::unique_ptr<AObject> &obj, const float &fEyeAngle)
         }
     }
 }
-
-const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
-                                        const std::string &texture) const
-{
-    try {
-        const sf::Image &img = sprite_list.at(texture);
-        const sf::Vector2u imgSize = img.getSize();
-        const Coords<unsigned> uSample(
-            std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
-            std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
-        return img.getPixel(uSample.x, uSample.y);
-    } catch (const std::out_of_range &oor) {
-        logger.err("RENDERER") << "Missing texture : " << texture << "!";
-        logger.endl();
-        return sf::Color::Black;
-    }
-}
-
 const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
                                                      const Coords<float> &fSize) const
 {
@@ -221,3 +221,5 @@ const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSampl
 {
     return this->sampleTextureCoords(fSample, Coords(fSize.x, fSize.y));
 }
+
+const DepthBuffer &Renderer::getDepthBuffer() const { return qDepthBuffer; }

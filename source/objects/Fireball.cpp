@@ -7,7 +7,7 @@ Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
 
 Fireball::~Fireball() {}
 
-void Fireball::update(float fElapsed)
+void Fireball::update(const float fElapsed)
 {
     fLifespan -= fElapsed;
     if (fLifespan <= 0.0f) {

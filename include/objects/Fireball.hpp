@@ -11,7 +11,7 @@ public:
     Fireball(Coords<float>, Coords<float>);
     ~Fireball();
 
-    virtual void update(float) final;
+    virtual void update(const float) final;
     virtual void onCollision(const std::unique_ptr<AObject> &) final;
     virtual void onSceneryCollision() final;
 

@@ -20,9 +20,18 @@ public:
     virtual void onCollision(const std::unique_ptr<AObject> &){};
     virtual void onSceneryCollision() { this->setRemove(true); };
 
-    virtual void update(float) = 0;
+    virtual void update(const float) = 0;
 
-    const Coords<float> &getPosition() { return fPosition; };
+    template <typename T = float>
+    Coords<T> getPosition() const
+    {
+        return static_cast<Coords<T>>(fPosition);
+    };
+    template <typename T = float>
+    T getAngle() const
+    {
+        return static_cast<T>(fAngle);
+    };
 
 protected:
     Coords<float> fPosition;

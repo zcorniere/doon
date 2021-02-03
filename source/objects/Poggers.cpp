@@ -6,7 +6,7 @@ Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
 
 Poggers::~Poggers() {}
 
-void Poggers::update(float)
+void Poggers::update(const float)
 {
     if (timeout < PoggerTimeout) {
         timeout--;

@@ -12,7 +12,7 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       objs(pool),
       pool(),
       player(map.getSize() / 2),
-      rendy(pool, player, map, uSize, sAssetsPath),
+      rendy(pool, map, uSize, sAssetsPath),
       win(sf::VideoMode(windowWidth, windowHeight), "N/A")
 {
     logger.msg() << "Map height :" << map.height;
@@ -77,7 +77,7 @@ void GameInstance::run()
         this->handleInput(fElapsedTime);
         player.update(fElapsedTime);
         objs.update(fElapsedTime);
-        texture.loadFromImage(rendy.update(objs));
+        texture.loadFromImage(rendy.update(player.getAngle(), player.getPosition(), objs));
         sprite.setTexture(texture);
 
         win.draw(sprite);
@@ -102,7 +102,8 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         win.close();
                     } break;
                     case sf::Keyboard::P: {
-                        logger.msg("PLAYER") << player.pos << ": " << player.angle;
+                        logger.msg("PLAYER")
+                            << player.getPosition() << ": " << player.getAngle();
                         logger.endl();
                     } break;
                     case sf::Keyboard::K: {
@@ -143,22 +144,22 @@ void GameInstance::handleInput(const float &fElapsedTime)
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
         player.move(Movement::Move::Forward, fElapsedTime);
-        if (map.at(player.getPlayerPos<unsigned>()) == '#')
+        if (map.at(player.getPosition<unsigned>()) == '#')
             player.move(Movement::Move::Backward, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         player.move(Movement::Move::Backward, fElapsedTime);
-        if (map.at(player.getPlayerPos<unsigned>()) == '#')
+        if (map.at(player.getPosition<unsigned>()) == '#')
             player.move(Movement::Move::Forward, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
         player.move(Movement::Move::Left, fElapsedTime);
-        if (map.at(player.getPlayerPos<unsigned>()) == '#')
+        if (map.at(player.getPosition<unsigned>()) == '#')
             player.move(Movement::Move::Right, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         player.move(Movement::Move::Right, fElapsedTime);
-        if (map.at(player.getPlayerPos<unsigned>()) == '#')
+        if (map.at(player.getPosition<unsigned>()) == '#')
             player.move(Movement::Move::Left, fElapsedTime);
     }
 }
