@@ -11,7 +11,6 @@ class Player : public virtual IShoot,
                public virtual ALife,
                public virtual Movement::IMove,
                public virtual Movement::IRotate,
-               public virtual Movement::IPan,
                public virtual AObject
 {
 public:
@@ -20,13 +19,15 @@ public:
     ~Player();
     virtual void update(const float fElapsedTime) final;
 
-    virtual void rotate(const Movement::Rotation, const float &) final;
-    virtual void move(const Movement::Move, const float &) final;
-    virtual void pan(const Movement::Panning, const float &) final;
+    virtual void rotate(const Movement::Rotation, const float) final;
+    virtual void move(const Movement::Move, const float) final;
 
     virtual void shoot(ObjectManager &) final;
 
 public:
+    Coords<float> fVelocity;
+    float fRotationVelocity;
+
     float elevation = 1.0f;
     float fSpeedModifier = 1;
 

@@ -13,7 +13,7 @@ public:
 
     virtual void update(const float) final;
     virtual void onCollision(const std::unique_ptr<AObject> &) final;
-    virtual void onSceneryCollision() final;
+    virtual void onSceneryCollision(const Map &) final;
 
 private:
     float fLifespan = uFireballLife;

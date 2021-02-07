@@ -77,7 +77,8 @@ void GameInstance::run()
         this->handleInput(fElapsedTime);
         player.update(fElapsedTime);
         objs.update(fElapsedTime);
-        texture.loadFromImage(rendy.update(player.getAngle(), player.getPosition(), objs));
+        texture.loadFromImage(
+            rendy.update(player.getAngle(), player.getPosition(), objs));
         sprite.setTexture(texture);
 
         win.draw(sprite);
@@ -129,12 +130,6 @@ void GameInstance::handleInput(const float &fElapsedTime)
             } break;
             default: break;
         }
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        player.pan(Movement::Panning::Up, fElapsedTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
-        player.pan(Movement::Panning::Down, fElapsedTime);
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
         player.rotate(Movement::Rotation::CounterClockwise, fElapsedTime);

@@ -9,15 +9,15 @@ enum Panning { Up, Down };
 
 class IRotate
 {
-    virtual void rotate(const Movement::Rotation, const float &) = 0;
+    virtual void rotate(const Movement::Rotation, const float) = 0;
 };
 class IMove
 {
-    virtual void move(const Movement::Move, const float &) = 0;
+    virtual void move(const Movement::Move, const float) = 0;
 };
 class IPan
 {
-    virtual void pan(const Movement::Panning, const float &) = 0;
+    virtual void pan(const Movement::Panning, const float) = 0;
 };
 }    // namespace Movement
 

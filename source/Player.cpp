@@ -5,7 +5,6 @@
 
 constexpr float fMovementSpeed = 10.0f;
 constexpr float fRotationSpeed = 1.0f;
-constexpr float fElevationSpeed = 1.0f;
 
 constexpr float fCooldownShoot = 0.5f;
 
@@ -19,10 +18,13 @@ Player::~Player() {}
 
 void Player::update(const float fElapsedTime)
 {
+    fPosition += (fVelocity * fElapsedTime);
+    fVelocity.x = 0;
+    fVelocity.y = 0;
     if (fCooldown > 0.0f) fCooldown -= fElapsedTime;
 }
 
-void Player::rotate(const Movement::Rotation dir, const float &fElapsedTime)
+void Player::rotate(const Movement::Rotation dir, const float fElapsedTime)
 {
     switch (dir) {
         case Movement::Clockwise: {
@@ -35,33 +37,25 @@ void Player::rotate(const Movement::Rotation dir, const float &fElapsedTime)
     if (fAngle == M_2_PI || fAngle == -M_2_PI) { fAngle = 0; }
 }
 
-void Player::move(const Movement::Move dir, const float &fElapsedTime)
+void Player::move(const Movement::Move dir, const float)
 {
     switch (dir) {
         case Movement::Forward: {
-            fPosition.x += sinf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
-            fPosition.y += cosf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            fVelocity.x = sinf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = cosf(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Backward: {
-            fPosition.x -= sinf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
-            fPosition.y -= cosf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            fVelocity.x = -sinf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = -cosf(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Left: {
-            fPosition.x -= cosf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
-            fPosition.y += sinf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            fVelocity.x = -cosf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = sinf(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Right: {
-            fPosition.x += cosf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
-            fPosition.y -= sinf(fAngle) * fMovementSpeed * fSpeedModifier * fElapsedTime;
+            fVelocity.x = cosf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = -sinf(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
-    }
-}
-
-void Player::pan(const Movement::Panning p, const float &m)
-{
-    switch (p) {
-        case Movement::Up: elevation += (m * fElevationSpeed); break;
-        case Movement::Down: elevation -= (m * fElevationSpeed); break;
     }
 }
 

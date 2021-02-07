@@ -31,4 +31,4 @@ void Fireball::update(const float fElapsed)
 
 void Fireball::onCollision(const std::unique_ptr<AObject> &) { this->setRemove(true); }
 
-void Fireball::onSceneryCollision() { fVelocity *= -1.0f; }
+void Fireball::onSceneryCollision(const Map &) { fVelocity *= -1.0f; }

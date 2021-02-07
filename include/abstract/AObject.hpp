@@ -2,6 +2,7 @@
 #define _AOBJECT_HPP_
 
 #include "Coords.hpp"
+#include "Map.hpp"
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,13 +16,13 @@ public:
     }
     virtual ~AObject(){};
     virtual void onCollision(const std::unique_ptr<AObject> &){};
-    virtual void onSceneryCollision() { this->setRemove(true); };
+    virtual void onSceneryCollision(const Map &) { this->setRemove(true); };
 
     virtual void update(const float) = 0;
 
-    inline std::optional<std::string> getTextureName()const { return sTexture; };
+    inline std::optional<std::string> getTextureName() const { return sTexture; };
     inline void setRemove(bool vis) { bRemove = vis; };
-    inline bool needRemove()const { return bRemove; };
+    inline bool needRemove() const { return bRemove; };
     template <typename T = float>
     Coords<T> inline getPosition() const
     {

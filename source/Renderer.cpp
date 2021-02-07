@@ -36,7 +36,8 @@ Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
 
 Renderer::~Renderer() {}
 
-const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamPosition, ObjectManager &obj)
+const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamPosition,
+                                  ObjectManager &obj)
 {
     Coords<float> fEye(std::sin(fAngle), std::cos(fAngle));
     float fEyeAngle = fEye.atan();
@@ -59,7 +60,7 @@ const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamP
     for (auto &i: obj.getObjects()) {
         if (!i->getTextureName()) continue;
         if (map.at(i->getPosition<unsigned>()) == '#') {
-            i->onSceneryCollision();
+            i->onSceneryCollision(map);
             continue;
         }
         qObj.push_back(pool.push(
@@ -91,8 +92,7 @@ float Renderer::computeColumn(const unsigned &x, const float angle,
             if (map.at(nTest) == '#') {
                 Coords<float> fBlockMid(nTest);
                 fBlockMid += 0.5f;
-                Coords<float> fTestPoint(fOrigin +
-                                         fEye * fDistanceToWall);
+                Coords<float> fTestPoint(fOrigin + fEye * fDistanceToWall);
                 float fTestAngle = std::atan2((fTestPoint.y - fBlockMid.y),
                                               (fTestPoint.x - fBlockMid.x));
                 if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
