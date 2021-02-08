@@ -22,7 +22,7 @@ struct Coords {
     inline Coords &operator=(Coords other)
     {
         std::swap(x, other.x);
-        std::swap(x, other.y);
+        std::swap(y, other.y);
         return *this;
     }
     inline T atan() const { return std::atan2(y, x); }

@@ -36,10 +36,10 @@ Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
 
 Renderer::~Renderer() {}
 
-const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamPosition,
-                                  ObjectManager &obj)
+const sf::Image &Renderer::update(const ObjectManager &obj, const unsigned uPovIndex)
 {
-    Coords<float> fEye(std::sin(fAngle), std::cos(fAngle));
+    auto &pPov = obj.at(uPovIndex);
+    Coords<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
     float fEyeAngle = fEye.atan();
     std::deque<std::future<void>> fur(size.x);
     std::deque<std::future<void>> qObj;
@@ -54,11 +54,11 @@ const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamP
                           fDistanceToWall);
                 this->drawColumn(fDistanceToWall, x, fSample);
             },
-            i, fAngle, fCamPosition);
+            i, pPov->getAngle(), pPov->getPosition());
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
-    for (auto &i: obj.getObjects()) {
-        if (!i->getTextureName()) continue;
+    for (const auto &i: obj.getObjects()) {
+        if (!i->getTextureName() && obj.at(uPovIndex) == i) continue;
         if (map.at(i->getPosition<unsigned>()) == '#') {
             i->onSceneryCollision(map);
             continue;
@@ -67,11 +67,17 @@ const sf::Image &Renderer::update(const float fAngle, const Coords<float> &fCamP
             [this, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
                 this->drawObject(i, fCamPosition, fEyeAngle);
             },
-            fCamPosition, fEyeAngle));
+            pPov->getPosition(), fEyeAngle));
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
                   [](auto &i) { i.wait(); });
     return img;
+}
+
+void Renderer::resize(Coords<unsigned> fNewCoords)
+{
+    size = std::move(fNewCoords);
+    img.create(size.x, size.y);
 }
 
 float Renderer::computeColumn(const unsigned &x, const float angle,
@@ -113,10 +119,10 @@ float Renderer::computeColumn(const unsigned &x, const float angle,
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
                           Coords<float> &fSample)
 {
-    const float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
-    const float fFloor = size.y - fCeiling;
+    float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
+    float fFloor = size.y - fCeiling;
 
-    const float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
+    float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
             img.setPixel(x, y, sf::Color::Blue);
@@ -221,4 +227,3 @@ const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSampl
 {
     return this->sampleTextureCoords(fSample, Coords(fSize.x, fSize.y));
 }
-

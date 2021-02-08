@@ -12,16 +12,18 @@ public:
     ObjectManager(ThreadPool &);
     ~ObjectManager();
 
-    auto &getObjects() { return qObjects; }
+    inline auto &getObjects() const { return qObjects; }
+    inline auto &at(const unsigned i) const { return qObjects.at(i); }
+    inline auto &at(const unsigned i) { return qObjects.at(i); }
 
     template <typename T>
-    void addObject(std::unique_ptr<T> &obj)
+    void addObject(std::unique_ptr<T> obj)
     {
-        static_assert(std::is_convertible<AObject, T>::value,
-                      "Object must be derived from IObject interface");
+        static_assert(std::is_base_of_v<AObject, T>,
+                      "Object must be derived from AObject interface");
         qObjects.push_back(std::move(obj));
     }
-    void update(float fElapsedTime);
+    void update(const float fElapsedTime);
 
 private:
     void computeCollision();

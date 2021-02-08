@@ -25,12 +25,9 @@ public:
     virtual void shoot(ObjectManager &) final;
 
 public:
-    Coords<float> fVelocity;
-    float fRotationVelocity;
-
-    float elevation = 1.0f;
+    Coords<float> fVelocity = 0;
+    float fRotationVelocity = 0;
     float fSpeedModifier = 1;
-
     float fCooldown = 0.0f;
 };
 

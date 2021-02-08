@@ -23,6 +23,7 @@ public:
     inline std::optional<std::string> getTextureName() const { return sTexture; };
     inline void setRemove(bool vis) { bRemove = vis; };
     inline bool needRemove() const { return bRemove; };
+
     template <typename T = float>
     Coords<T> inline getPosition() const
     {
@@ -32,6 +33,16 @@ public:
     T inline getAngle() const
     {
         return static_cast<T>(fAngle);
+    };
+    template <typename T = float>
+    void inline setAngle(T a)
+    {
+        fAngle = a;
+    };
+    template <typename T = float>
+    void inline setPosistion(Coords<T> a)
+    {
+        fPosition = a;
     };
 
 protected:

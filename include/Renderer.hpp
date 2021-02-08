@@ -7,15 +7,12 @@
 #include "ObjectManager.hpp"
 #include "Player.hpp"
 #include "ThreadPool.hpp"
-#include "ThreadedQ.hpp"
 #include "abstract/AObject.hpp"
-#include "abstract/AThreaded.hpp"
 #include <SFML/Graphics.hpp>
 #include <atomic>
 #include <execution>
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 constexpr float fFOV = M_PI / 4.0f;
 constexpr float fDepth = 32;
@@ -25,7 +22,8 @@ class Renderer
 public:
     Renderer(ThreadPool &, const Map &, Coords<unsigned>, const std::string &);
     ~Renderer();
-    const sf::Image &update(const float fAngle, const Coords<float> &, ObjectManager &);
+    const sf::Image &update(const ObjectManager &, const unsigned);
+    void resize(Coords<unsigned>);
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;

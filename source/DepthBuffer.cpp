@@ -12,4 +12,3 @@ void DepthBuffer::resize(unsigned x, unsigned y)
     buf.resize(x);
     std::for_each(buf.begin(), buf.end(), [y](auto &i) { i.resize(y); });
 }
-

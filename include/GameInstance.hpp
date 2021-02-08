@@ -29,7 +29,6 @@ private:
     const Map map;
     ObjectManager objs;
     ThreadPool pool;
-    Player player;
     Renderer rendy;
 
     sf::RenderWindow win;
