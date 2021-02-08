@@ -107,10 +107,6 @@ void GameInstance::handleInput(const float &fElapsedTime)
                             << player.getPosition() << ": " << player.getAngle();
                         logger.endl();
                     } break;
-                    case sf::Keyboard::K: {
-                        logger.raw() << rendy.getDepthBuffer();
-                        logger.endl();
-                    } break;
                     case sf::Keyboard::Space: {
                         player.shoot(objs);
                     } break;

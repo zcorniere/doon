@@ -222,4 +222,3 @@ const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSampl
     return this->sampleTextureCoords(fSample, Coords(fSize.x, fSize.y));
 }
 
-const DepthBuffer &Renderer::getDepthBuffer() const { return qDepthBuffer; }

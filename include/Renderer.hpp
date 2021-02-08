@@ -27,8 +27,6 @@ public:
     ~Renderer();
     const sf::Image &update(const float fAngle, const Coords<float> &, ObjectManager &);
 
-    const DepthBuffer &getDepthBuffer() const;
-
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleTextureCoords(const Coords<float> &,

@@ -14,5 +14,4 @@ struct DepthBuffer {
     void resize(unsigned x, unsigned y);
 };
 
-std::ostream &operator<<(std::ostream &os, const DepthBuffer &d);
 #endif    //_DEPTHBUFFER_HPP_
