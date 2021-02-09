@@ -92,8 +92,14 @@ void GameInstance::run()
 
 void GameInstance::handleInput(const float &fElapsedTime)
 {
-    Player *player = dynamic_cast<Player *>(objs.at(0).get());
     sf::Event event;
+    Player *player = nullptr;
+
+    if ((player = dynamic_cast<Player *>(objs.at(0).get())) == nullptr) {
+        logger.err("GAME_INSTANCE") << "Player not valid, aborting";
+        logger.endl();
+        std::abort();
+    }
 
     if (!win.hasFocus()) return;
     while (win.pollEvent(event)) {
