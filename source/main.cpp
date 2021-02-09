@@ -1,3 +1,4 @@
+#include <csignal>
 #include "GameInstance.hpp"
 #include "Logger.hpp"
 
@@ -9,8 +10,17 @@ Logger logger;
 __attribute__((constructor)) void ctor() { logger.start(); }
 __attribute__((destructor)) void dtor() { logger.stop(); }
 
+void sig_int_handler(int signal) {
+    logger.err("SIGNAL") << "Received signal " << signal << ", exiting...";
+    logger.endl();
+    std::exit(signal);
+}
+
 int main()
 {
+    std::signal(SIGINT, sig_int_handler);
+    std::signal(SIGTERM, sig_int_handler);
+
     GameInstance game(WindowWidth, WindowHeight);
     game.init();
     game.run();
