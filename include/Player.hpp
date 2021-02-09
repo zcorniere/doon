@@ -17,6 +17,7 @@ public:
     Player(Coords<float>);
     Player(const float, const float);
     ~Player();
+    virtual void onSceneryCollision(const Map &) final;
     virtual void update(const float fElapsedTime) final;
 
     virtual void rotate(const Movement::Rotation, const float) final;

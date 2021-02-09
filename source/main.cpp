@@ -1,6 +1,6 @@
-#include <csignal>
 #include "GameInstance.hpp"
 #include "Logger.hpp"
+#include <csignal>
 
 constexpr unsigned WindowWidth = 1280;
 constexpr unsigned WindowHeight = 960;
@@ -10,7 +10,8 @@ Logger logger;
 __attribute__((constructor)) void ctor() { logger.start(); }
 __attribute__((destructor)) void dtor() { logger.stop(); }
 
-void sig_int_handler(int signal) {
+void sig_int_handler(int signal)
+{
     logger.err("SIGNAL") << "Received signal " << signal << ", exiting...";
     logger.endl();
     std::exit(signal);

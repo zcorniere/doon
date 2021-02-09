@@ -80,6 +80,7 @@ void GameInstance::run()
 
         this->handleInput(fElapsedTime);
         objs.update(fElapsedTime);
+        objs.computeCollision();
         texture.loadFromImage(rendy.update(objs, 0));
         sprite.setTexture(texture);
 

@@ -9,12 +9,14 @@ constexpr float fRotationSpeed = 1.0f;
 constexpr float fCooldownShoot = 0.5f;
 
 Player::Player(Coords<float> fPosition)
-    : ALife(5), AObject(fPosition, std::optional<std::string>("pogger"))
+    : ALife(5), AObject(fPosition, std::optional<std::string>())
 {
 }
 Player::Player(const float x, const float y): Player(Coords(x, y)) {}
 
 Player::~Player() {}
+
+void Player::onSceneryCollision(const Map &) {}
 
 void Player::update(const float fElapsedTime)
 {

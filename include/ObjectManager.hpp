@@ -24,8 +24,6 @@ public:
         qObjects.push_back(std::move(obj));
     }
     void update(const float fElapsedTime);
-
-private:
     void computeCollision();
 
 private:
