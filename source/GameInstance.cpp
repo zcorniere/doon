@@ -23,6 +23,8 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
 
     // Player is always the object placed at index 0
     objs.addObject(std::make_unique<Player>(map.getSize() / 2));
+    logger.info("GAME_INSTANCE") << "Spawned Player at " << objs.at(0)->getPosition();
+    logger.endl();
     if (!std::getenv("DOON_NO_POGGERS")) {
         for (auto &i: map.getChars('P')) {
             Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
@@ -50,6 +52,7 @@ GameInstance::~GameInstance(){};
 void GameInstance::init()
 {
     win.setVerticalSyncEnabled(true);
+    win.setActive(false);
     // win.clear(sf::Color::Black);
     win.display();
 }

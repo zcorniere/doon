@@ -48,7 +48,7 @@ std::deque<Coords<unsigned>> Map::getChars(const char c) const
 std::ostream &operator<<(std::ostream &os, const Map &other)
 {
     for (unsigned i = 0; i < other.map.size(); i++) {
-        if (i % other.width == 0) { os << std::endl; }
+        if (i > 0 && i % other.width == 0) { os << std::endl; }
         os << other.map.at(i);
     }
     return os;

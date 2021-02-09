@@ -163,7 +163,7 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
 void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
                           const Coords<float> &fCamPosition, const float &fEyeAngle)
 {
-    std::string texture = obj->getTextureName().value();
+    std::string texture(obj->getTextureName().value());
     if (!sprite_list.contains(texture)) {
         logger.err("RENDERER") << "Texture not found : " << texture;
         logger.endl();
@@ -174,22 +174,20 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
-    bool bInPlayerFOV =
-        std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
-    if (!bInPlayerFOV && fDistanceToPlayer < 0.5f && fDistanceToPlayer >= fDepth) {
+    if (!(std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f) &&
+        fDistanceToPlayer < 0.5f && fDistanceToPlayer >= fDepth) {
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
     const sf::Image &iSprite = sprite_list.at(texture);
-    const sf::Vector2u imgSize = iSprite.getSize();
-    Coords<float> fImgSize(imgSize.x, imgSize.y);
-    float fObjCeiling = size.y / 2.0f - size.y / fDistanceToPlayer;
+    Coords<unsigned> uImgSize(iSprite.getSize());
+    float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;
 
     if (fObjCeiling < 0 || fObjFloor < 0) return;
     Coords<float> fObject;
     fObject.y = fObjFloor - fObjCeiling;
-    fObject.x = fObject.y / (float(imgSize.y) / imgSize.x);
+    fObject.x = fObject.y / (float(uImgSize.y) / uImgSize.x);
     float fMiddleOfObject =
         (0.5f * (fObjectAngle / (fFOV / 2.0f)) + 0.5f) * (float(size.x));
 
@@ -199,7 +197,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample =
-                    this->sampleTextureCoords(fObj / fObject, imgSize);
+                    this->sampleTextureCoords(fObj / fObject, uImgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
                 if (sample.a == 0) continue;
                 if (qDepthBuffer.at(uObjectColumn, fObjCeiling + fObj.y) >=
@@ -220,10 +218,4 @@ const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSampl
 {
     return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
             std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
-}
-
-const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
-                                                     const sf::Vector2u &fSize) const
-{
-    return this->sampleTextureCoords(fSample, Coords(fSize.x, fSize.y));
 }
