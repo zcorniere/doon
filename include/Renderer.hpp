@@ -3,6 +3,7 @@
 
 #include "Coords.hpp"
 #include "DepthBuffer.hpp"
+#include "Frame.hpp"
 #include "Map.hpp"
 #include "ObjectManager.hpp"
 #include "Player.hpp"
@@ -22,7 +23,7 @@ class Renderer
 public:
     Renderer(ThreadPool &, const Map &, Coords<unsigned>, const std::string &);
     ~Renderer();
-    const sf::Image &update(const ObjectManager &, const unsigned);
+    const uint8_t *update(const ObjectManager &, const unsigned);
     void resize(Coords<unsigned>);
 
 private:
@@ -37,7 +38,7 @@ private:
                     const float &);
 
 private:
-    sf::Image img;
+    Frame img;
     Coords<unsigned> size;
 
     std::unordered_map<std::string, sf::Image> sprite_list;

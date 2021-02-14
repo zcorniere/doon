@@ -7,7 +7,7 @@
 constexpr float fRayResolution = 0.01f;
 const std::string sWallTexture("wall");
 
-const sf::Color cFloor(0x32, 0x70, 0x34);
+constexpr Pixel cFloor(0x32, 0x70, 0x34);
 const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
 Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
@@ -31,12 +31,12 @@ Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
         logger.endl();
     }
     qDepthBuffer.resize(size);
-    img.create(size.x, size.y);
+    img.create(size);
 }
 
 Renderer::~Renderer() {}
 
-const sf::Image &Renderer::update(const ObjectManager &obj, const unsigned uPovIndex)
+const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovIndex)
 {
     auto &pPov = obj.at(uPovIndex);
     Coords<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
@@ -71,13 +71,13 @@ const sf::Image &Renderer::update(const ObjectManager &obj, const unsigned uPovI
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
                   [](auto &i) { i.wait(); });
-    return img;
+    return img.getFramePtr();
 }
 
 void Renderer::resize(Coords<unsigned> fNewCoords)
 {
     size = std::move(fNewCoords);
-    img.create(size.x, size.y);
+    img.create(size);
 }
 
 float Renderer::computeColumn(const unsigned &x, const float angle,
@@ -125,17 +125,17 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
-            img.setPixel(x, y, sf::Color::Blue);
+            img.setPixel(x, y, Blue);
         } else if (y > fCeiling && y <= fFloor) {
             if (fDistanceToWall < fDepth && fShade > 0) {
                 fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-                sf::Color sampled = this->sampleTexture(fSample, sWallTexture);
+                Pixel sampled = this->sampleTexture(fSample, sWallTexture);
                 sampled.b *= fShade;
                 sampled.r *= fShade;
                 sampled.g *= fShade;
                 img.setPixel(x, y, sampled);
             } else {
-                img.setPixel(x, y, sf::Color::Black);
+                img.setPixel(x, y, Black);
             }
         } else {
             img.setPixel(x, y, cFloor);

@@ -53,7 +53,6 @@ void GameInstance::init()
 {
     win.setVerticalSyncEnabled(true);
     win.setActive(false);
-    // win.clear(sf::Color::Black);
     win.display();
 }
 
@@ -66,6 +65,7 @@ void GameInstance::run()
     float secs = 0;
     auto tp1 = std::chrono::system_clock::now();
 
+    texture.create(uSize.x, uSize.y);
     while (win.isOpen()) {
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
@@ -81,7 +81,7 @@ void GameInstance::run()
         this->handleInput(fElapsedTime);
         objs.update(fElapsedTime);
         objs.computeCollision();
-        texture.loadFromImage(rendy.update(objs, 0));
+        texture.update(rendy.update(objs, 0));
         sprite.setTexture(texture);
 
         win.draw(sprite);

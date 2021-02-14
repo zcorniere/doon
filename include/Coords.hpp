@@ -35,8 +35,8 @@ struct Coords {
         return T(this->x * other.x + this->y * other.y);
     };
 
-    auto operator<=>(const Coords &other) const = default;
-    auto operator<=>(const T &other) const
+    inline auto operator<=>(const Coords &other) const = default;
+    inline auto operator<=>(const T &other) const
     {
         return this->x <=> other && this->y <=> other;
     };
@@ -134,8 +134,8 @@ struct Coords {
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Coords<T> &other)
 {
-    os << "Coords<" << typeid(T).name() << "> { x = " << other.x << ", y = " << other.y
-       << "}";
+    os << "Coords<" << typeid(other.x).name() << "> { x = " << other.x
+       << ", y = " << other.y << "}";
     return os;
 }
 
