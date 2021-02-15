@@ -4,13 +4,14 @@
 #include "Coords.hpp"
 #include "abstract/ALife.hpp"
 #include "abstract/AObject.hpp"
+#include "abstract/AShoot.hpp"
 #include "interface/IMovement.hpp"
-#include "interface/IShoot.hpp"
+#include "objects/Fireball.hpp"
 
-class Player : public virtual IShoot,
-               public virtual ALife,
+class Player : public virtual ALife,
                public virtual Movement::IMove,
                public virtual Movement::IRotate,
+               public virtual AShoot<Fireball>,
                public virtual AObject
 {
 public:
@@ -23,7 +24,7 @@ public:
     virtual void rotate(const Movement::Rotation, const float) final;
     virtual void move(const Movement::Move, const float) final;
 
-    virtual void shoot(ObjectManager &) final;
+    virtual std::unique_ptr<AObject> shoot() final;
 
 public:
     Coords<float> fVelocity = 0;

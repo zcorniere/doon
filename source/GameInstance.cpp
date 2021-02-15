@@ -104,48 +104,39 @@ void GameInstance::handleInput(const float &fElapsedTime)
     if (!win.hasFocus()) return;
     while (win.pollEvent(event)) {
         switch (event.type) {
-            case sf::Event::Closed: {
-                win.close();
-            } break;
-            case sf::Event::Resized: {
+            case sf::Event::Closed: win.close(); break;
+            case sf::Event::Resized:
                 rendy.resize(Coords(event.size.width, event.size.height));
-            } break;
+                break;
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
-                    case sf::Keyboard::Escape: {
-                        win.close();
-                    } break;
+                    case sf::Keyboard::Escape: win.close(); break;
                     case sf::Keyboard::P: {
                         logger.msg("PLAYER")
                             << player->getPosition() << ": " << player->getAngle();
                         logger.endl();
                     } break;
                     case sf::Keyboard::Space: {
-                        player->shoot(objs);
+                        auto pl = player->shoot();
+                        if (pl) objs.addObject(std::move(pl));
                     } break;
-                    case sf::Keyboard::LShift: {
-                        player->fSpeedModifier = 0.5;
-                    } break;
+                    case sf::Keyboard::LShift: player->fSpeedModifier = 0.5; break;
                     default: break;
                 }
             } break;
             case sf::Event::KeyReleased: {
                 switch (event.key.code) {
-                    case sf::Keyboard::LShift: {
-                        player->fSpeedModifier = 1;
-                    } break;
+                    case sf::Keyboard::LShift: player->fSpeedModifier = 1; break;
                     default: break;
                 }
             } break;
             default: break;
         }
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         player->rotate(Movement::Rotation::CounterClockwise, fElapsedTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         player->rotate(Movement::Rotation::Clockwise, fElapsedTime);
-    }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
         player->move(Movement::Move::Forward, fElapsedTime);
         if (map.at(player->getPosition<unsigned>()) == '#')

@@ -61,14 +61,15 @@ void Player::move(const Movement::Move dir, const float)
     }
 }
 
-void Player::shoot(ObjectManager &obj)
+std::unique_ptr<AObject> Player::shoot()
 {
     if (fCooldown <= 0.0f) {
-        Coords<float> fObjV(std::sin(fAngle), std::cos(fAngle));
-        obj.addObject(std::make_unique<Fireball>(fPosition + fObjV, fObjV * 16.0f));
+        auto i = this->AShoot::shoot();
         fCooldown = fCooldownShoot;
+        return i;
     } else {
         logger.info("PLAYER") << "Shoot in cooldown ! (" << fCooldown << ")";
         logger.endl();
     }
+    return nullptr;
 }
