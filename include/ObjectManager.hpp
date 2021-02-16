@@ -3,6 +3,7 @@
 
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
+#include "concepts.hpp"
 #include <deque>
 #include <memory>
 
@@ -16,11 +17,9 @@ public:
     inline auto &at(const unsigned i) const { return qObjects.at(i); }
     inline auto &at(const unsigned i) { return qObjects.at(i); }
 
-    template <typename T>
+    template <isAObject T>
     void addObject(std::unique_ptr<T> obj)
     {
-        static_assert(std::is_base_of_v<AObject, T>,
-                      "Object must be derived from AObject interface");
         qObjects.push_back(std::move(obj));
     }
     void update(const float fElapsedTime);

@@ -2,10 +2,11 @@
 #define _ASHOOT_HPP_
 
 #include "ObjectManager.hpp"
+#include "concepts.hpp"
 
 constexpr float fBulletSpeed = 16.0f;
 
-template <class Bullet>
+template <isAObject Bullet>
 class AShoot : public virtual AObject
 {
     static_assert(std::is_base_of_v<AObject, Bullet>, "Bullets must be an AObject");

@@ -21,7 +21,7 @@ constexpr float fDepth = 32;
 class Renderer
 {
 public:
-    Renderer(ThreadPool &, const Storage &, const Map &, Coords<unsigned>);
+    Renderer(ThreadPool &, const Storage &, const Map &, const Coords<unsigned>);
     ~Renderer();
     const uint8_t *update(const ObjectManager &, const unsigned);
     void resize(Coords<unsigned>);
@@ -34,6 +34,7 @@ private:
         return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
                 std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
     }
+
     float computeColumn(const unsigned &, const float, const Coords<float> &,
                         Coords<float> &) const;
     void drawColumn(const float &, const unsigned x, Coords<float> &);

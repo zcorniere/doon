@@ -8,8 +8,9 @@ constexpr float fRayResolution = 0.01f;
 constexpr char sWallTexture[] = "wall";
 constexpr Pixel cFloor(0x32, 0x70, 0x34);
 
-Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map, Coords<unsigned> size)
-    : size(std::move(size)), pool(p), storage(s), map(map)
+Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map,
+                   const Coords<unsigned> sze)
+    : size(std::move(sze)), pool(p), storage(s), map(map)
 {
     qDepthBuffer.resize(size);
     img.create(size);
@@ -104,7 +105,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     const sf::Image &iWall(storage.get(sWallTexture));
     const Coords<unsigned> uWallSize(iWall.getSize());
 
-    float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
+    float fCeiling = (size.y >> 1) - (size.y / fDistanceToWall);
     float fFloor = size.y - fCeiling;
 
     float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
