@@ -5,7 +5,7 @@
 #include <unordered_set>
 
 constexpr float fRayResolution = 0.01f;
-const std::string sWallTexture("wall");
+constexpr char sWallTexture[] = "wall";
 
 constexpr Pixel cFloor(0x32, 0x70, 0x34);
 const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
@@ -57,6 +57,7 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
             i, pPov->getAngle(), pPov->getPosition());
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
+
     for (const auto &i: obj.getObjects()) {
         if (!i->getTextureName() && obj.at(uPovIndex) == i) continue;
         if (map.at(i->getPosition<unsigned>()) == '#') {

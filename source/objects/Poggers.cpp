@@ -1,6 +1,9 @@
 #include "objects/Poggers.hpp"
 
-Poggers::Poggers(Coords<float> pos): AObject(std::move(pos), "pogger"), ALife(1) {}
+Poggers::Poggers(Coords<float> pos): AObject(std::move(pos), "pogger"), ALife(1)
+{
+    fSize = 0.75f;
+}
 
 Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
 

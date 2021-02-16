@@ -3,8 +3,6 @@
 #include <execution>
 #include <functional>
 
-constexpr float fCollisionSize = 0.5f;
-
 ObjectManager::ObjectManager(ThreadPool &t): pool(t) {}
 
 ObjectManager::~ObjectManager() {}
@@ -31,7 +29,7 @@ void ObjectManager::computeCollision()
         for (auto &i: qObjects) {
             if (s == i || i->needRemove()) continue;
             Coords<float> fVec(s->getPosition<float>() - i->getPosition<float>());
-            if (std::abs(fVec.mag()) <= fCollisionSize) {
+            if (std::abs(fVec.mag()) <= i->getSize()) {
                 i->onCollision(s);
                 s->onCollision(i);
             }

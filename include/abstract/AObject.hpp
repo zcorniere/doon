@@ -35,6 +35,12 @@ public:
         return static_cast<T>(fAngle);
     };
     template <typename T = float>
+    T inline getSize() const
+    {
+        return static_cast<T>(fSize);
+    };
+
+    template <typename T = float>
     void inline setAngle(T a)
     {
         fAngle = a;
@@ -48,6 +54,7 @@ public:
 protected:
     Coords<float> fPosition;
     float fAngle = 0.0f;
+    float fSize = 0.5f;
 
     std::optional<std::string> sTexture;
     bool bRemove = false;
