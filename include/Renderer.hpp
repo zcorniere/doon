@@ -27,7 +27,7 @@ public:
     void resize(Coords<unsigned>);
 
 private:
-    const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
+    const Pixel sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleCoords(const Coords<float> &fSample,
                                         const Coords<float> &fSize) const
     {

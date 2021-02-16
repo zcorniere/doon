@@ -1,7 +1,7 @@
 #ifndef _STORAGE_HPP_
 #define _STORAGE_HPP_
 
-#include <SFML/Graphics/Image.hpp>
+#include "Frame.hpp"
 #include <filesystem>
 #include <unordered_map>
 #include <unordered_set>
@@ -13,7 +13,7 @@ class Storage
 public:
     Storage(const std::filesystem::path &path);
     ~Storage();
-    inline const sf::Image &get(const std::string &name) const
+    inline const Frame &get(const std::string &name) const
     {
         return sprite_list.at(name);
     }
@@ -23,7 +23,7 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, sf::Image> sprite_list;
+    std::unordered_map<std::string, Frame> sprite_list;
 };
 
 #endif    //_STORAGE_HPP_

@@ -98,7 +98,7 @@ float Renderer::computeColumn(const unsigned &x, const float angle,
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
                           Coords<float> &fSample)
 {
-    const sf::Image &iWall(storage.get(sWallTexture));
+    const Frame &iWall(storage.get(sWallTexture));
     const Coords<unsigned> uWallSize(iWall.getSize());
 
     float fCeiling = (size.y >> 1) - (size.y / fDistanceToWall);
@@ -126,12 +126,12 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     }
 }
 
-const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
-                                        const std::string &texture) const
+const Pixel Renderer::sampleTexture(const Coords<float> &fSample,
+                                    const std::string &texture) const
 {
     try {
-        const sf::Image &img(storage.get(texture));
-        const sf::Vector2u imgSize = img.getSize();
+        const Frame &img(storage.get(texture));
+        const Coords<unsigned> imgSize = img.getSize();
         const Coords<unsigned> uSample(
             std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
             std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
@@ -162,7 +162,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const sf::Image &iSprite = storage.get(texture);
+    const Frame &iSprite(storage.get(texture));
     Coords<unsigned> uImgSize(iSprite.getSize());
     float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;
@@ -180,7 +180,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
                 Coords<unsigned> uSample = this->sampleCoords(fObj / fObject, uImgSize);
-                sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
+                Pixel sample = iSprite.getPixel(uSample.x, uSample.y);
                 if (sample.a == 0) continue;
                 if (qDepthBuffer.at(uObjectColumn, fObjCeiling + fObj.y) >=
                     fDistanceToPlayer) {

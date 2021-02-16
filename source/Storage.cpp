@@ -1,5 +1,6 @@
 #include "Storage.hpp"
 #include "Logger.hpp"
+#include <SFML/Graphics/Image.hpp>
 
 Storage::Storage(const std::filesystem::path &path)
 {
@@ -9,7 +10,8 @@ Storage::Storage(const std::filesystem::path &path)
             try {
                 sf::Image img;
                 img.loadFromFile(f.path());
-                sprite_list.insert({f.path().stem(), std::move(img)});
+                sprite_list.insert(
+                    {f.path().stem(), Frame(img.getPixelsPtr(), img.getSize())});
             } catch (const std::exception &e) {
                 logger.warn("STORAGE") << e.what();
                 logger.endl();
