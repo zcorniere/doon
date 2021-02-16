@@ -11,7 +11,8 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       map(sMapPath),
       objs(pool),
       pool(),
-      rendy(pool, map, uSize, sAssetsPath),
+      storage(sAssetsPath),
+      rendy(pool, storage, map, uSize),
       win(sf::VideoMode(windowWidth, windowHeight), "N/A")
 {
     logger.msg() << "Map height :" << map.height;

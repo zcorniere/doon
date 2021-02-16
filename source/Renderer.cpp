@@ -6,30 +6,11 @@
 
 constexpr float fRayResolution = 0.01f;
 constexpr char sWallTexture[] = "wall";
-
 constexpr Pixel cFloor(0x32, 0x70, 0x34);
-const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
 
-Renderer::Renderer(ThreadPool &p, const Map &map, Coords<unsigned> size,
-                   const std::string &assets)
-    : size(std::move(size)), pool(p), map(map)
+Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map, Coords<unsigned> size)
+    : size(std::move(size)), pool(p), storage(s), map(map)
 {
-    try {
-        for (auto &f: std::filesystem::directory_iterator(assets)) {
-            if (!valid_ext.contains(f.path().extension())) continue;
-            try {
-                sf::Image img;
-                img.loadFromFile(f.path());
-                sprite_list.insert({f.path().stem(), std::move(img)});
-            } catch (const std::exception &e) {
-                logger.warn("RENDERER") << e.what();
-                logger.endl();
-            }
-        }
-    } catch (const std::exception &e) {
-        logger.err("RENDERER") << e.what();
-        logger.endl();
-    }
     qDepthBuffer.resize(size);
     img.create(size);
 }
@@ -120,6 +101,9 @@ float Renderer::computeColumn(const unsigned &x, const float angle,
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
                           Coords<float> &fSample)
 {
+    const sf::Image &iWall(storage.get(sWallTexture));
+    const Coords<unsigned> uWallSize(iWall.getSize());
+
     float fCeiling = (size.y / 2.0f) - (size.y / fDistanceToWall);
     float fFloor = size.y - fCeiling;
 
@@ -130,7 +114,8 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
         } else if (y > fCeiling && y <= fFloor) {
             if (fDistanceToWall < fDepth && fShade > 0) {
                 fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-                Pixel sampled = this->sampleTexture(fSample, sWallTexture);
+                Coords<unsigned> uSampled = this->sampleCoords(fSample, uWallSize);
+                Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
                 sampled.b *= fShade;
                 sampled.r *= fShade;
                 sampled.g *= fShade;
@@ -148,7 +133,7 @@ const sf::Color Renderer::sampleTexture(const Coords<float> &fSample,
                                         const std::string &texture) const
 {
     try {
-        const sf::Image &img = sprite_list.at(texture);
+        const sf::Image &img(storage.get(texture));
         const sf::Vector2u imgSize = img.getSize();
         const Coords<unsigned> uSample(
             std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
@@ -165,7 +150,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
                           const Coords<float> &fCamPosition, const float &fEyeAngle)
 {
     std::string texture(obj->getTextureName().value());
-    if (!sprite_list.contains(texture)) {
+    if (!storage.contains(texture)) {
         logger.err("RENDERER") << "Texture not found : " << texture;
         logger.endl();
         obj->setRemove(true);
@@ -180,7 +165,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
         return;
     }
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const sf::Image &iSprite = sprite_list.at(texture);
+    const sf::Image &iSprite = storage.get(texture);
     Coords<unsigned> uImgSize(iSprite.getSize());
     float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;

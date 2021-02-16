@@ -6,6 +6,7 @@
 #include "ObjectManager.hpp"
 #include "Player.hpp"
 #include "Renderer.hpp"
+#include "Storage.hpp"
 #include "ThreadPool.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -29,6 +30,7 @@ private:
     const Map map;
     ObjectManager objs;
     ThreadPool pool;
+    Storage storage;
     Renderer rendy;
 
     sf::RenderWindow win;

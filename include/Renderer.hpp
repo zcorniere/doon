@@ -7,9 +7,9 @@
 #include "Map.hpp"
 #include "ObjectManager.hpp"
 #include "Player.hpp"
+#include "Storage.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
-#include <SFML/Graphics.hpp>
 #include <atomic>
 #include <execution>
 #include <memory>
@@ -21,7 +21,7 @@ constexpr float fDepth = 32;
 class Renderer
 {
 public:
-    Renderer(ThreadPool &, const Map &, Coords<unsigned>, const std::string &);
+    Renderer(ThreadPool &, const Storage &, const Map &, Coords<unsigned>);
     ~Renderer();
     const uint8_t *update(const ObjectManager &, const unsigned);
     void resize(Coords<unsigned>);
@@ -45,10 +45,10 @@ private:
     Frame img;
     Coords<unsigned> size;
 
-    std::unordered_map<std::string, sf::Image> sprite_list;
     DepthBuffer qDepthBuffer;
 
     ThreadPool &pool;
+    const Storage &storage;
     const Map &map;
 };
 
