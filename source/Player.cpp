@@ -16,14 +16,14 @@ Player::Player(const float x, const float y): Player(Coords(x, y)) {}
 
 Player::~Player() {}
 
-void Player::onSceneryCollision(const Map &) {}
+void Player::onSceneryCollision(const Map &, const Coords<float> &) {}
 
-void Player::update(const float fElapsedTime)
+Coords<float> Player::update(const float fElapsedTime)
 {
-    fPosition += (fVelocity * fElapsedTime);
-    fVelocity.x = 0;
-    fVelocity.y = 0;
+    Coords<float> nfPosition = fPosition + (fVelocity * fElapsedTime);
+    fVelocity = {0, 0};
     if (fCooldown > 0.0f) fCooldown -= fElapsedTime;
+    return nfPosition;
 }
 
 void Player::rotate(const Movement::Rotation dir, const float fElapsedTime)

@@ -41,11 +41,7 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
 
     for (const auto &i: obj.getObjects()) {
-        if (!i->getTextureName() && obj.at(uPovIndex) == i) continue;
-        if (map.at(i->getPosition<unsigned>()) == '#') {
-            i->onSceneryCollision(map);
-            continue;
-        }
+        if (obj.at(uPovIndex) == i || !i->getTextureName()) continue;
         qObj.push_back(pool.push(
             [this, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
                 this->drawObject(i, fCamPosition, fEyeAngle);

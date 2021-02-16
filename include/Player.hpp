@@ -18,8 +18,8 @@ public:
     Player(Coords<float>);
     Player(const float, const float);
     ~Player();
-    virtual void onSceneryCollision(const Map &) final;
-    virtual void update(const float fElapsedTime) final;
+    virtual void onSceneryCollision(const Map &, const Coords<float> &) final;
+    virtual Coords<float> update(const float fElapsedTime) final;
 
     virtual void rotate(const Movement::Rotation, const float) final;
     virtual void move(const Movement::Move, const float) final;

@@ -7,14 +7,13 @@ Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
 
 Fireball::~Fireball() {}
 
-void Fireball::update(const float fElapsed)
+Coords<float> Fireball::update(const float fElapsed)
 {
     fLifespan -= fElapsed;
     if (fLifespan <= 0.0f) {
         this->setRemove(true);
-        return;
+        return fPosition;
     }
-    fPosition += (fVelocity * fElapsed);
     if (loop++ == 5) {
         loop = 0;
         if (sTexture == "fireball-0") {
@@ -27,8 +26,12 @@ void Fireball::update(const float fElapsed)
             sTexture = "fireball-0";
         }
     }
+    return fPosition + (fVelocity * fElapsed);
 }
 
 void Fireball::onCollision(const std::unique_ptr<AObject> &) { this->setRemove(true); }
 
-void Fireball::onSceneryCollision(const Map &) { fVelocity *= -1.0f; }
+void Fireball::onSceneryCollision(const Map &, const Coords<float> &)
+{
+    fVelocity *= -1.0f;
+}

@@ -1,6 +1,7 @@
 #ifndef _OBJECTMANAGER_HPP_
 #define _OBJECTMANAGER_HPP_
 
+#include "Map.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
 #include "concepts.hpp"
@@ -10,7 +11,7 @@
 class ObjectManager
 {
 public:
-    ObjectManager(ThreadPool &);
+    ObjectManager(ThreadPool &, const Map &);
     ~ObjectManager();
 
     inline auto &getObjects() const { return qObjects; }
@@ -26,7 +27,9 @@ public:
     void computeCollision();
 
 private:
+    const Map &map;
     ThreadPool &pool;
+
     std::deque<std::unique_ptr<AObject>> qObjects;
 };
 

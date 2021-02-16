@@ -15,9 +15,12 @@ public:
     }
     virtual ~AObject(){};
     virtual void onCollision(const std::unique_ptr<AObject> &){};
-    virtual void onSceneryCollision(const Map &) { this->setRemove(true); };
+    virtual void onSceneryCollision(const Map &, const Coords<float> &)
+    {
+        this->setRemove(true);
+    };
 
-    virtual void update(const float) = 0;
+    virtual Coords<float> update(const float) = 0;
 
     inline std::optional<std::string> getTextureName() const { return sTexture; };
     inline void setRemove(bool vis) { bRemove = vis; };

@@ -3,7 +3,7 @@
 #include <execution>
 #include <functional>
 
-ObjectManager::ObjectManager(ThreadPool &t): pool(t) {}
+ObjectManager::ObjectManager(ThreadPool &p, const Map &m): map(m), pool(p) {}
 
 ObjectManager::~ObjectManager() {}
 
@@ -13,8 +13,17 @@ void ObjectManager::update(float fElapsedTime)
 
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
-            [&i](int, float fElapsedTime) { i->update(fElapsedTime); }, fElapsedTime));
+            [&i, this](int, float fElapsedTime) {
+                Coords<float> next_coord(i->update(fElapsedTime));
+                if (map.at(next_coord) == '#') {
+                    i->onSceneryCollision(map, next_coord);
+                } else {
+                    i->setPosistion(next_coord);
+                }
+            },
+            fElapsedTime));
     }
+
     std::for_each(std::execution::par, fut.begin(), fut.end(), [](auto &i) { i.wait(); });
     this->computeCollision();
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
@@ -22,8 +31,6 @@ void ObjectManager::update(float fElapsedTime)
 
 void ObjectManager::computeCollision()
 {
-    std::deque<std::future<void>> fut;
-
     for (auto &s: qObjects) {
         if (s->needRemove()) continue;
         for (auto &i: qObjects) {

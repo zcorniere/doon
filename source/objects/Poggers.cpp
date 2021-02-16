@@ -9,12 +9,13 @@ Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
 
 Poggers::~Poggers() {}
 
-void Poggers::update(const float)
+Coords<float> Poggers::update(const float)
 {
     if (timeout < PoggerTimeout) {
         timeout--;
         if (timeout <= 0) { this->setRemove(true); }
     }
+    return fPosition;
 }
 
 void Poggers::onCollision(const std::unique_ptr<AObject> &)

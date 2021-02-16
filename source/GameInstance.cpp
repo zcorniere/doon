@@ -9,7 +9,7 @@
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
       map(sMapPath),
-      objs(pool),
+      objs(pool, map),
       pool(),
       storage(sAssetsPath),
       rendy(pool, storage, map, uSize),
@@ -138,24 +138,12 @@ void GameInstance::handleInput(const float &fElapsedTime)
         player->rotate(Movement::Rotation::CounterClockwise, fElapsedTime);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         player->rotate(Movement::Rotation::Clockwise, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
         player->move(Movement::Move::Forward, fElapsedTime);
-        if (map.at(player->getPosition<unsigned>()) == '#')
-            player->move(Movement::Move::Backward, fElapsedTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         player->move(Movement::Move::Backward, fElapsedTime);
-        if (map.at(player->getPosition<unsigned>()) == '#')
-            player->move(Movement::Move::Forward, fElapsedTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
         player->move(Movement::Move::Left, fElapsedTime);
-        if (map.at(player->getPosition<unsigned>()) == '#')
-            player->move(Movement::Move::Right, fElapsedTime);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
         player->move(Movement::Move::Right, fElapsedTime);
-        if (map.at(player->getPosition<unsigned>()) == '#')
-            player->move(Movement::Move::Left, fElapsedTime);
-    }
 }
