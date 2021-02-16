@@ -28,8 +28,12 @@ public:
 
 private:
     const sf::Color sampleTexture(const Coords<float> &, const std::string &) const;
-    const Coords<unsigned> sampleTextureCoords(const Coords<float> &,
-                                               const Coords<float> &) const;
+    const Coords<unsigned> sampleCoords(const Coords<float> &fSample,
+                                        const Coords<float> &fSize) const
+    {
+        return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
+                std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
+    }
     float computeColumn(const unsigned &, const float, const Coords<float> &,
                         Coords<float> &) const;
     void drawColumn(const float &, const unsigned x, Coords<float> &);

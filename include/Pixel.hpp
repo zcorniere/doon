@@ -19,14 +19,6 @@ public:
           a(std::move(col.a))
     {
     }
-    inline Pixel operator*=(const uint8_t &other)
-    {
-        this->a *= other;
-        this->r *= other;
-        this->g *= other;
-        this->b *= other;
-        return *this;
-    }
 
 public:
     uint8_t r = 255;
@@ -34,12 +26,15 @@ public:
     uint8_t b = 255;
     uint8_t a = 255;
 };
-static_assert(sizeof(Pixel) == sizeof(uint32_t), "Color must be 32 bits");
+static_assert(sizeof(Pixel) == sizeof(uint32_t), "Pixel must be 32 bits");
 
+namespace Color
+{
 static constexpr Pixel Black(0, 0, 0);
 static constexpr Pixel White(255, 255, 255);
 static constexpr Pixel Blue(0, 0, 255);
 static constexpr Pixel Green(0, 255, 0);
 static constexpr Pixel Red(255, 0, 0);
+}    // namespace Color
 
 #endif    //_COLOR_HPP_

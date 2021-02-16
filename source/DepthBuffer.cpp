@@ -1,7 +1,5 @@
 #include "DepthBuffer.hpp"
 
-float &DepthBuffer::at(Coords<unsigned> &p) { return buf.at(p.x).at(p.y); }
-float &DepthBuffer::at(unsigned x, unsigned y) { return buf.at(x).at(y); }
 void DepthBuffer::resize(Coords<unsigned> &p)
 {
     buf.resize(p.x);

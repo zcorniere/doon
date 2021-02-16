@@ -125,7 +125,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
     float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
-            img.setPixel(x, y, Blue);
+            img.setPixel(x, y, Color::Blue);
         } else if (y > fCeiling && y <= fFloor) {
             if (fDistanceToWall < fDepth && fShade > 0) {
                 fSample.y = (y - fCeiling) / (fFloor - fCeiling);
@@ -135,7 +135,7 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
                 sampled.g *= fShade;
                 img.setPixel(x, y, sampled);
             } else {
-                img.setPixel(x, y, Black);
+                img.setPixel(x, y, Color::Black);
             }
         } else {
             img.setPixel(x, y, cFloor);
@@ -196,8 +196,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
         for (fObj.y = 0; fObj.y < fObject.y; ++fObj.y) {
             unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
             if (uObjectColumn < size.x) {
-                Coords<unsigned> uSample =
-                    this->sampleTextureCoords(fObj / fObject, uImgSize);
+                Coords<unsigned> uSample = this->sampleCoords(fObj / fObject, uImgSize);
                 sf::Color sample = iSprite.getPixel(uSample.x, uSample.y);
                 if (sample.a == 0) continue;
                 if (qDepthBuffer.at(uObjectColumn, fObjCeiling + fObj.y) >=
@@ -212,10 +211,4 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
             }
         }
     }
-}
-const Coords<unsigned> Renderer::sampleTextureCoords(const Coords<float> &fSample,
-                                                     const Coords<float> &fSize) const
-{
-    return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
-            std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
 }
