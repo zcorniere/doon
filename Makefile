@@ -48,7 +48,7 @@ start_compile:
 .PHONY: start_compile
 
 $(NAME): start_compile $(OBJ)
-	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) -lpthread $(SFML_LIBS)
+	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) -lpthread -ltbb $(SFML_LIBS)
 	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
 -include $(DEPS)
