@@ -13,8 +13,9 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       pool(),
       storage(sAssetsPath),
       rendy(pool, storage, map, uSize),
-      win(sf::VideoMode(windowWidth, windowHeight), "N/A")
+      win()
 {
+    sf::ContextSettings setting;
     logger.msg() << "Map height :" << map.height;
     logger.endl();
     logger.msg() << "Map width :" << map.width;
@@ -46,6 +47,10 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
             }
         }
     }
+
+    setting.antialiasingLevel = 2;
+    win.create(sf::VideoMode(windowWidth, windowHeight), "N/A", sf::Style::Default,
+               setting);
 }
 
 GameInstance::~GameInstance(){};
