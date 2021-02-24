@@ -3,10 +3,10 @@
 #include "objects/Fireball.hpp"
 #include <math.h>
 
-constexpr float fMovementSpeed = 10.0f;
-constexpr float fRotationSpeed = 1.0f;
+constexpr const float fMovementSpeed = 10.0f;
+constexpr const float fRotationSpeed = 1.0f;
 
-constexpr float fCooldownShoot = 0.5f;
+constexpr const float fCooldownShoot = 0.5f;
 
 Player::Player(Coords<float> fPosition)
     : ALife(5), AObject(fPosition, std::optional<std::string>())

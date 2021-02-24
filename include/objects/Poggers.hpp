@@ -4,7 +4,7 @@
 #include "abstract/ALife.hpp"
 #include "abstract/AObject.hpp"
 
-constexpr short PoggerTimeout = 10;
+constexpr const short PoggerTimeout = 10;
 
 class Poggers : public virtual AObject, public virtual ALife
 {

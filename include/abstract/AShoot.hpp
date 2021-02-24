@@ -4,7 +4,7 @@
 #include "ObjectManager.hpp"
 #include "concepts.hpp"
 
-constexpr float fBulletSpeed = 16.0f;
+constexpr const float fBulletSpeed = 16.0f;
 
 template <isAObject Bullet>
 class AShoot : public virtual AObject

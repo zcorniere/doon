@@ -2,8 +2,8 @@
 #include "Logger.hpp"
 #include <csignal>
 
-constexpr unsigned WindowWidth = 1280;
-constexpr unsigned WindowHeight = 960;
+constexpr const unsigned WindowWidth = 1280;
+constexpr const unsigned WindowHeight = 960;
 
 Logger logger;
 

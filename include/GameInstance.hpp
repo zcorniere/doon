@@ -10,8 +10,8 @@
 #include "ThreadPool.hpp"
 #include <SFML/Graphics.hpp>
 
-constexpr char sMapPath[] = "./map";
-constexpr char sAssetsPath[] = "./assets/";
+constexpr const char sMapPath[] = "./map";
+constexpr const char sAssetsPath[] = "./assets/";
 
 class GameInstance
 {

@@ -3,7 +3,7 @@
 
 #include "abstract/AObject.hpp"
 
-constexpr float uFireballLife = 10;
+constexpr const float uFireballLife = 10;
 
 class Fireball : public virtual AObject
 {

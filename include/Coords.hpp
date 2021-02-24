@@ -11,10 +11,10 @@ template <class T>
 struct Coords {
     T x = 0;
     T y = 0;
-    inline Coords() = default;
-    inline Coords(sf::Vector2<T> o): x(o.x), y(o.y){};
-    inline Coords(T x, T y): x(x), y(y){};
-    inline Coords(T x): x(x), y(x){};
+    inline constexpr Coords() = default;
+    inline constexpr Coords(sf::Vector2<T> o): x(o.x), y(o.y){};
+    inline constexpr Coords(T x, T y): x(x), y(y){};
+    inline constexpr Coords(T x): x(x), y(x){};
     inline Coords(const Coords<T> &other) = default;
     inline Coords(Coords<T> &&other)
     {

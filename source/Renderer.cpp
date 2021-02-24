@@ -4,9 +4,9 @@
 #include <execution>
 #include <unordered_set>
 
-constexpr float fRayResolution = 0.01f;
-constexpr char sWallTexture[] = "wall";
-constexpr Pixel cFloor(0x32, 0x70, 0x34);
+constexpr const float fRayResolution = 0.01f;
+constexpr const char sWallTexture[] = "wall";
+constexpr const Pixel cFloor(0x32, 0x70, 0x34);
 
 Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map,
                    const Coords<unsigned> sze)
