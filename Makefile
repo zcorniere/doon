@@ -26,6 +26,11 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
+OPTIONAL_LIBS := -lpthread
+
+ifeq ($(shell ldconfig -p | grep libtbb.so | wc -l), $(shell echo 1))
+    OPTIONAL_LIBS += -ltbb
+endif
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
@@ -48,7 +53,7 @@ start_compile:
 .PHONY: start_compile
 
 $(NAME): start_compile $(OBJ)
-	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) -lpthread -ltbb $(SFML_LIBS)
+	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
 	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
 -include $(DEPS)
