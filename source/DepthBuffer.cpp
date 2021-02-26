@@ -1,5 +1,9 @@
 #include "DepthBuffer.hpp"
 
+DepthBuffer::DepthBuffer() {}
+
+DepthBuffer::~DepthBuffer() {}
+
 void DepthBuffer::resize(const Coords<unsigned> &p)
 {
     buf.resize(p.x);

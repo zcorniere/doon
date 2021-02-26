@@ -32,7 +32,7 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
                    const Coords<float> &fOrigin) {
                 Coords<float> fSample;
                 float fDistanceToWall = this->computeColumn(x, angle, fOrigin, fSample);
-                std::fill(qDepthBuffer.buf.at(x).begin(), qDepthBuffer.buf.at(x).end(),
+                std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           fDistanceToWall);
                 this->drawColumn(fDistanceToWall, x, fSample);
             },

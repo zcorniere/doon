@@ -4,13 +4,19 @@
 #include "Coords.hpp"
 #include <vector>
 
-struct DepthBuffer {
-    std::vector<std::vector<float>> buf;
-
-    inline float &at(Coords<unsigned> &p) { return buf.at(p.x).at(p.y); }
-    inline float &at(unsigned x, unsigned y) { return buf.at(x).at(y); }
+class DepthBuffer
+{
+public:
+    DepthBuffer();
+    ~DepthBuffer();
+    inline auto &at(const unsigned &p) { return buf.at(p); }
+    inline float &at(const Coords<unsigned> &p) { return buf.at(p.x).at(p.y); }
+    inline float &at(const unsigned x, const unsigned y) { return buf.at(x).at(y); }
     void resize(const Coords<unsigned> &p);
     void resize(const unsigned x, const unsigned y);
+
+private:
+    std::vector<std::vector<float>> buf;
 };
 
 #endif    //_DEPTHBUFFER_HPP_
