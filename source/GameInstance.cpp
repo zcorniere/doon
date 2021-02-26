@@ -6,6 +6,8 @@
 #include "objects/Poggers.hpp"
 #include <random>
 
+constexpr const char tIcon[] = "pogger";
+
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
       map(sMapPath),
@@ -15,7 +17,6 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
       rendy(pool, storage, map, uSize),
       win()
 {
-    sf::ContextSettings setting;
     logger.msg() << "Map height :" << map.height;
     logger.endl();
     logger.msg() << "Map width :" << map.width;
@@ -47,16 +48,19 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
             }
         }
     }
-
-    setting.antialiasingLevel = 2;
-    win.create(sf::VideoMode(windowWidth, windowHeight), "N/A", sf::Style::Default,
-               setting);
 }
 
 GameInstance::~GameInstance(){};
 
 void GameInstance::init()
 {
+    const Frame &fr(storage.get(tIcon));
+    const Coords<unsigned> &uIconSize(fr.getSize());
+    sf::ContextSettings setting;
+
+    setting.antialiasingLevel = 2;
+    win.create(sf::VideoMode(uSize.x, uSize.y), "N/A", sf::Style::Close, setting);
+    win.setIcon(uIconSize.x, uIconSize.y, fr.getFramePtr());
     win.setVerticalSyncEnabled(true);
     win.setActive(false);
     win.display();
