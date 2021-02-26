@@ -72,6 +72,15 @@ void GameInstance::run()
     sf::Texture texture;
     sf::Sprite sprite;
 
+    sf::Texture crosshair;
+    sf::Sprite crosshairSprite;
+
+    Coords<unsigned> crossPosition(uSize / 2 - storage.get("crosshair").getSize() / 2);
+
+    crosshair.loadFromFile("./assets/crosshair.png");
+    crosshairSprite.setTexture(crosshair);
+    crosshairSprite.setPosition(crossPosition.x, crossPosition.y);
+
     float secs = 0;
     auto tp1 = std::chrono::system_clock::now();
 
@@ -95,6 +104,7 @@ void GameInstance::run()
         sprite.setTexture(texture);
 
         win.draw(sprite);
+        win.draw(crosshairSprite);
         win.display();
         limiter.sleep();
     }
