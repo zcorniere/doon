@@ -22,7 +22,7 @@ Renderer::~Renderer() {}
 
 const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovIndex)
 {
-    auto &pPov = obj.at(uPovIndex);
+    const auto &pPov = obj.at(uPovIndex);
     Coords<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
     float fEyeAngle = fEye.atan();
     std::deque<std::future<void>> fur(size.x);
@@ -31,18 +31,18 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
     Renderer::Ray ray;
     ray.fOrigin = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
-        ray.fRayAngle = (pPov->getAngle() - (fFOV / 2.0f)) + (float(i) / size.x) * fFOV;
-        ray.fFish = std::cos(ray.fRayAngle - pPov->getAngle());
-        ray.fDirection.x = std::sin(ray.fRayAngle);
-        ray.fDirection.y = std::cos(ray.fRayAngle);
         fur.at(i) = pool.push(
-            [this](int, const unsigned x, Renderer::Ray rayDef) {
+            [this](int, const float fAngle, const unsigned x, Renderer::Ray rayDef) {
+                rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
+                rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
+                rayDef.fDirection.x = std::sin(rayDef.fRayAngle);
+                rayDef.fDirection.y = std::cos(rayDef.fRayAngle);
                 this->computeColumn(rayDef);
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           rayDef.fDistance);
                 this->drawColumn(x, rayDef);
             },
-            i, ray);
+            pPov->getAngle(), i, ray);
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
 
