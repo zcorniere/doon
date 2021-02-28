@@ -1,5 +1,6 @@
 #include "ObjectManager.hpp"
 #include "Logger.hpp"
+#include <cmath>
 #include <execution>
 #include <functional>
 
@@ -19,8 +20,10 @@ void ObjectManager::update(float fElapsedTime)
                 Coords<unsigned> uCurrent(i->getPosition().floor());
                 Coords<unsigned> uTarget(fSolved);
 
-                Coords<unsigned> uTL((uCurrent.min(uTarget) - 1).max({0, 0}));
-                Coords<unsigned> uBR((uCurrent.max(uTarget) + 1).min(map.getSize()));
+                Coords<unsigned> uTL(std::min(uCurrent.x, uTarget.x) - 1,
+                                     std::min(uCurrent.y, uTarget.y) - 1);
+                Coords<unsigned> uBR(std::max(uCurrent.x, uTarget.x) + 1,
+                                     std::max(uCurrent.y, uTarget.y) + 1);
 
                 Coords<unsigned> uCell;
 
@@ -37,7 +40,7 @@ void ObjectManager::update(float fElapsedTime)
 
                             if (fOverlap > 0) {
                                 fSolved -= fRayNear.norm() * fOverlap;
-                                if (std::isnan(fSolved.x) || std::isnan(fSolved.y)) {
+                                if (std::isnan(fSolved)) {
                                     logger.err("COLLISION")
                                         << "fSolved is nan, thus stopping collsion "
                                            "detection; fSolved defaulted to object's "
@@ -68,10 +71,10 @@ void ObjectManager::computeCollision()
         if (s->needRemove()) continue;
         for (auto &i: qObjects) {
             if (s == i || i->needRemove()) continue;
-            Coords<float> fVec(s->getPosition<float>() - i->getPosition<float>());
-            if (std::abs(fVec.mag()) <= i->getSize()) {
-                i->onCollision(s);
+            if ((s->getPosition() - i->getPosition()).mag2() <=
+                std::pow(i->getSize() + s->getSize(), 2)) {
                 s->onCollision(i);
+                i->onCollision(s);
             }
         }
     }

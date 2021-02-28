@@ -151,6 +151,16 @@ struct Coords {
     static inline T add(const Coords &co) { return co.x + co.y; };
 };
 
+namespace std
+{
+
+template <typename E>
+constexpr bool isnan(Coords<E> &o)
+{
+    return isnan(o.x) && isnan(o.y);
+};
+}    // namespace std
+
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Coords<T> &other)
 {
