@@ -31,7 +31,7 @@ void ObjectManager::update(float fElapsedTime)
 }
 
 Coords<float> ObjectManager::resolveWallCollision(std::unique_ptr<AObject> &obj,
-                                         const Coords<float> &fPotential) const
+                                                  const Coords<float> &fPotential) const
 {
     Coords<float> fSolved(fPotential);
     Coords<unsigned> uCurrent(obj->getPosition().floor());

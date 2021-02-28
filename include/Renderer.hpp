@@ -15,9 +15,6 @@
 #include <memory>
 #include <unordered_map>
 
-constexpr const float fFOV = M_PI / 4.0f;
-constexpr const float fDepth = 32;
-
 class Renderer
 {
 public:

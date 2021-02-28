@@ -4,7 +4,9 @@
 #include <execution>
 #include <unordered_set>
 
-constexpr const float fRayResolution = 0.01f;
+constexpr const float fFOV = M_PI / 4.0f;
+constexpr const float fDepth = 100;
+
 constexpr const char sWallTexture[] = "wall";
 constexpr const Pixel cFloor(0x32, 0x70, 0x34);
 
@@ -62,37 +64,55 @@ void Renderer::resize(Coords<unsigned> fNewCoords)
 float Renderer::computeColumn(const unsigned &x, const float angle,
                               const Coords<float> &fOrigin, Coords<float> &fSample) const
 {
-    float fDistanceToWall = 0;
+    float fDistance = 0;
     float fRayAngle = (angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
-    Coords<float> fEye(std::sin(fRayAngle), std::cos(fRayAngle));
+    Coords<float> fDirection(std::sin(fRayAngle), std::cos(fRayAngle));
 
-    while (fDistanceToWall < fDepth) {
-        fDistanceToWall += fRayResolution;
+    Coords<float> fRayDelta(std::abs(1 / fDirection.x), std::abs(1 / fDirection.y));
+    Coords<unsigned> uMapCheck(fOrigin);
+    Coords<float> fRayLength;
+    Coords<int> iStep;
 
-        Coords<unsigned> nTest = fOrigin + fEye * fDistanceToWall;
+    if (fDirection.x < 0) {
+        iStep.x = -1;
+        fRayLength.x = (fOrigin.x - float(uMapCheck.x)) * fRayDelta.x;
+    } else {
+        iStep.x = 1;
+        fRayLength.x = (float(uMapCheck.x) + 1.0f - fOrigin.x) * fRayDelta.x;
+    }
+    if (fDirection.y < 0) {
+        iStep.y = -1;
+        fRayLength.y = (fOrigin.y - float(uMapCheck.y)) * fRayDelta.y;
+    } else {
+        iStep.y = 1;
+        fRayLength.y = (float(uMapCheck.y) + 1.0f - fOrigin.y) * fRayDelta.y;
+    }
 
-        if (nTest.x >= map.width || nTest.y >= map.height) {
-            return fDepth;
+    while (map.at(uMapCheck) != '#' && fDistance < fDepth) {
+        if (fRayLength.x < fRayLength.y) {
+            uMapCheck.x += iStep.x;
+            fDistance = fRayLength.x;
+            fRayLength.x += fRayDelta.x;
         } else {
-            if (map.at(nTest) == '#') {
-                Coords<float> fBlockMid(nTest);
-                fBlockMid += 0.5f;
-                Coords<float> fTestPoint(fOrigin + fEye * fDistanceToWall);
-                float fTestAngle = std::atan2((fTestPoint.y - fBlockMid.y),
-                                              (fTestPoint.x - fBlockMid.x));
-                if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-                    fSample.x = fTestPoint.y - nTest.y;
-                else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-                    fSample.x = fTestPoint.x - nTest.x;
-                else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-                    fSample.x = fTestPoint.x - nTest.x;
-                else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-                    fSample.x = fTestPoint.y - nTest.y;
-                break;
-            }
+            uMapCheck.y += iStep.y;
+            fDistance = fRayLength.y;
+            fRayLength.y += fRayDelta.y;
         }
     }
-    return fDistanceToWall * std::cos(fRayAngle - angle);
+    Coords<float> fIntersection(fOrigin + fDirection * fDistance);
+    Coords<float> fBlockMid(uMapCheck);
+    fBlockMid += 0.5f;
+    float fTestAngle =
+        std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
+    if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
+        fSample.x = fIntersection.y - uMapCheck.y;
+    else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
+        fSample.x = fIntersection.x - uMapCheck.x;
+    else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
+        fSample.x = fIntersection.x - uMapCheck.x;
+    else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
+        fSample.x = fIntersection.y - uMapCheck.y;
+    return fDistance;
 }
 
 void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
