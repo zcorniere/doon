@@ -28,10 +28,8 @@ void ObjectManager::update(float fElapsedTime)
                     for (uCell.x = uTL.x; uCell.x <= uBR.x; uCell.x++) {
                         if (map.at(uCell) == '#') {
                             Coords<float> fNearestPoint(
-                                std::max(float(uCell.x),
-                                         std::min(fSolved.x, float(uCell.x + 1))),
-                                std::max(float(uCell.y),
-                                         std::min(fSolved.y, float(uCell.y + 1))));
+                                std::clamp<float>(fSolved.x, uCell.x, uCell.x + 1),
+                                std::clamp<float>(fSolved.y, uCell.y, uCell.y + 1));
 
                             Coords<float> fRayNear(fNearestPoint - fSolved);
                             float fOverlap = i->getSize() - fRayNear.mag();
