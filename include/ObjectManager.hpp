@@ -27,6 +27,10 @@ public:
     void computeCollision();
 
 private:
+    Coords<float> resolveWallCollision(std::unique_ptr<AObject> &,
+                                       const Coords<float> &) const;
+
+private:
     const Map &map;
     ThreadPool &pool;
 
