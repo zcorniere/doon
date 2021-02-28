@@ -1,4 +1,5 @@
 #include "Frame.hpp"
+#include "Logger.hpp"
 #include <cstring>
 
 Frame::Frame() {}
@@ -23,4 +24,18 @@ void Frame::create(const Coords<unsigned> &nSize)
     size = nSize;
     data.clear();
     data.resize(size.x * size.y);
+}
+
+void Frame::rotate()
+{
+    if (size.x != size.y) {
+        logger.warn("FRAME") << "Can't rotate a non-square Frame";
+        logger.endl();
+        return;
+    }
+    for (unsigned x = 0; x < size.x; ++x) {
+        for (unsigned y = 0; y < size.y; ++y) {
+            std::swap(data[size.y * y + x], data[size.x * x + y]);
+        }
+    }
 }

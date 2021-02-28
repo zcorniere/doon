@@ -12,6 +12,7 @@ class Storage
 {
 public:
     Storage(const std::filesystem::path &path);
+    Storage(const Storage &) = default;
     ~Storage();
     inline const Frame &get(const std::string &name) const
     {

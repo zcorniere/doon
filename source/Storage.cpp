@@ -10,8 +10,14 @@ Storage::Storage(const std::filesystem::path &path)
             try {
                 sf::Image img;
                 img.loadFromFile(f.path());
-                sprite_list.insert(
-                    {f.path().stem(), Frame(img.getPixelsPtr(), img.getSize())});
+
+                Frame fr(img.getPixelsPtr(), img.getSize());
+                // swap texture X/Y since they'll be used as vertical stripes
+                // better for cpu caching
+                fr.rotate();
+                sprite_list.insert({f.path().stem(), std::move(fr)});
+                logger.info("STORAGE") << "Loaded " << f.path();
+                logger.endl();
             } catch (const std::exception &e) {
                 logger.warn("STORAGE") << e.what();
                 logger.endl();

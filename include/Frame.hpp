@@ -16,6 +16,7 @@ public:
     ~Frame();
 
     void create(const Coords<unsigned> &);
+    void rotate();
     inline void setPixel(const Coords<unsigned> &pos, Pixel px)
     {
         data.at(pos.y * size.x + pos.x) = std::move(px);
