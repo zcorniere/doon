@@ -18,6 +18,17 @@
 class Renderer
 {
 public:
+    struct Ray {
+        float fFish = 0.0f;
+        float fRayAngle = 0.0f;
+        Coords<float> fOrigin;
+        Coords<float> fDirection;
+        float fDistance = 0.0f;
+        Coords<float> fContact;
+        Coords<float> fSample;
+    };
+
+public:
     Renderer(ThreadPool &, const Storage &, const Map &, const Coords<unsigned>);
     ~Renderer();
     const uint8_t *update(const ObjectManager &, const unsigned);
@@ -32,9 +43,8 @@ private:
                 std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
     }
 
-    float computeColumn(const unsigned &, const float, const Coords<float> &,
-                        Coords<float> &) const;
-    void drawColumn(const float &, const unsigned x, Coords<float> &);
+    void computeColumn(Ray &) const;
+    void drawColumn(const unsigned, Ray &);
 
     void drawObject(const std::unique_ptr<AObject> &, const Coords<float> &,
                     const float &);

@@ -7,8 +7,8 @@
 constexpr const float fFOV = M_PI / 4.0f;
 constexpr const float fDepth = 100;
 
-constexpr const char sWallTexture[] = "wall";
-constexpr const Pixel cFloor(0x32, 0x70, 0x34);
+constexpr const char sWallTexture[] = "redbrick";
+constexpr const char sFloorTexture[] = "greystone";
 
 Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map,
                    const Coords<unsigned> sze)
@@ -28,17 +28,21 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
     std::deque<std::future<void>> fur(size.x);
     std::deque<std::future<void>> qObj;
 
+    Renderer::Ray ray;
+    ray.fOrigin = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
+        ray.fRayAngle = (pPov->getAngle() - (fFOV / 2.0f)) + (float(i) / size.x) * fFOV;
+        ray.fFish = std::cos(ray.fRayAngle - pPov->getAngle());
+        ray.fDirection.x = std::sin(ray.fRayAngle);
+        ray.fDirection.y = std::cos(ray.fRayAngle);
         fur.at(i) = pool.push(
-            [this](int, const unsigned x, const float angle,
-                   const Coords<float> &fOrigin) {
-                Coords<float> fSample;
-                float fDistanceToWall = this->computeColumn(x, angle, fOrigin, fSample);
+            [this](int, const unsigned x, Renderer::Ray rayDef) {
+                this->computeColumn(rayDef);
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
-                          fDistanceToWall);
-                this->drawColumn(fDistanceToWall, x, fSample);
+                          rayDef.fDistance);
+                this->drawColumn(x, rayDef);
             },
-            i, pPov->getAngle(), pPov->getPosition());
+            i, ray);
     }
     std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
 
@@ -61,77 +65,74 @@ void Renderer::resize(Coords<unsigned> fNewCoords)
     img.create(size);
 }
 
-float Renderer::computeColumn(const unsigned &x, const float angle,
-                              const Coords<float> &fOrigin, Coords<float> &fSample) const
+void Renderer::computeColumn(Renderer::Ray &ray) const
 {
-    float fDistance = 0;
-    float fRayAngle = (angle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
-    Coords<float> fDirection(std::sin(fRayAngle), std::cos(fRayAngle));
-
-    Coords<float> fRayDelta(std::abs(1 / fDirection.x), std::abs(1 / fDirection.y));
-    Coords<unsigned> uMapCheck(fOrigin);
+    Coords<float> fRayDelta(std::abs(1 / ray.fDirection.x),
+                            std::abs(1 / ray.fDirection.y));
+    Coords<unsigned> uMapCheck(ray.fOrigin);
     Coords<float> fRayLength;
     Coords<int> iStep;
 
-    if (fDirection.x < 0) {
+    if (ray.fDirection.x < 0) {
         iStep.x = -1;
-        fRayLength.x = (fOrigin.x - float(uMapCheck.x)) * fRayDelta.x;
+        fRayLength.x = (ray.fOrigin.x - float(uMapCheck.x)) * fRayDelta.x;
     } else {
         iStep.x = 1;
-        fRayLength.x = (float(uMapCheck.x) + 1.0f - fOrigin.x) * fRayDelta.x;
+        fRayLength.x = (float(uMapCheck.x) + 1.0f - ray.fOrigin.x) * fRayDelta.x;
     }
-    if (fDirection.y < 0) {
+    if (ray.fDirection.y < 0) {
         iStep.y = -1;
-        fRayLength.y = (fOrigin.y - float(uMapCheck.y)) * fRayDelta.y;
+        fRayLength.y = (ray.fOrigin.y - float(uMapCheck.y)) * fRayDelta.y;
     } else {
         iStep.y = 1;
-        fRayLength.y = (float(uMapCheck.y) + 1.0f - fOrigin.y) * fRayDelta.y;
+        fRayLength.y = (float(uMapCheck.y) + 1.0f - ray.fOrigin.y) * fRayDelta.y;
     }
 
-    while (map.at(uMapCheck) != '#' && fDistance < fDepth) {
+    while (map.at(uMapCheck) != '#' && ray.fDistance < fDepth) {
         if (fRayLength.x < fRayLength.y) {
             uMapCheck.x += iStep.x;
-            fDistance = fRayLength.x;
+            ray.fDistance = fRayLength.x;
             fRayLength.x += fRayDelta.x;
         } else {
             uMapCheck.y += iStep.y;
-            fDistance = fRayLength.y;
+            ray.fDistance = fRayLength.y;
             fRayLength.y += fRayDelta.y;
         }
     }
-    Coords<float> fIntersection(fOrigin + fDirection * fDistance);
+    Coords<float> fIntersection(ray.fOrigin + ray.fDirection * ray.fDistance);
     Coords<float> fBlockMid(uMapCheck);
     fBlockMid += 0.5f;
     float fTestAngle =
         std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
     if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-        fSample.x = fIntersection.y - uMapCheck.y;
+        ray.fSample.x = fIntersection.y - uMapCheck.y;
     else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-        fSample.x = fIntersection.x - uMapCheck.x;
+        ray.fSample.x = fIntersection.x - uMapCheck.x;
     else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-        fSample.x = fIntersection.x - uMapCheck.x;
+        ray.fSample.x = fIntersection.x - uMapCheck.x;
     else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-        fSample.x = fIntersection.y - uMapCheck.y;
-    return fDistance;
+        ray.fSample.x = fIntersection.y - uMapCheck.y;
+    ray.fDistance *= ray.fFish;
 }
 
-void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
-                          Coords<float> &fSample)
+void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
 {
     const Frame &iWall(storage.get(sWallTexture));
     const Coords<unsigned> uWallSize(iWall.getSize());
+    const Frame &iFloor(storage.get(sFloorTexture));
+    const Coords<unsigned> uFloorSize(iFloor.getSize());
 
-    float fCeiling = (size.y >> 1) - (size.y / fDistanceToWall);
+    float fCeiling = (size.y >> 1) - (size.y / ray.fDistance);
     float fFloor = size.y - fCeiling;
 
-    float fShade = 1.0f - std::min(fDistanceToWall / fDepth, 1.0f);
+    float fShade = 1.0f - std::min(ray.fDistance / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
             img.setPixel(x, y, Color::Blue);
         } else if (y > fCeiling && y <= fFloor) {
-            if (fDistanceToWall < fDepth && fShade > 0) {
-                fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-                Coords<unsigned> uSampled = this->sampleCoords(fSample, uWallSize);
+            if (ray.fDistance < fDepth && fShade > 0) {
+                ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
+                Coords<unsigned> uSampled = this->sampleCoords(ray.fSample, uWallSize);
                 Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
                 sampled.b *= fShade;
                 sampled.r *= fShade;
@@ -141,7 +142,14 @@ void Renderer::drawColumn(const float &fDistanceToWall, const unsigned x,
                 img.setPixel(x, y, Color::Black);
             }
         } else {
-            img.setPixel(x, y, cFloor);
+            float fPlaneZ = (size.y / 2.0f) / (float(y) - (size.y / 2.0f));
+            Coords<float> fPlanePoint =
+                ray.fOrigin + ray.fDirection * fPlaneZ * 2.0f / ray.fFish;
+            Coords<unsigned> uPlane(fPlanePoint);
+            Coords<float> fSample = fPlanePoint - uPlane;
+            Coords<unsigned> uSampled = this->sampleCoords(fSample, uFloorSize);
+            Pixel sampled(iFloor.getPixel(uSampled.x, uSampled.y));
+            img.setPixel(x, y, sampled);
         }
     }
 }
