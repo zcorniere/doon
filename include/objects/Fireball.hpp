@@ -11,9 +11,8 @@ public:
     Fireball(Coords<float>, Coords<float>);
     ~Fireball();
 
-    virtual Coords<float> update(const float) final;
-    virtual void onCollision(const std::unique_ptr<AObject> &) final;
-    virtual void onSceneryCollision(const Map &, const Coords<float> &) final;
+    Coords<float> update(const float) final;
+    void onCollision(const std::unique_ptr<AObject> &) final;
 
 private:
     float fLifespan = uFireballLife;

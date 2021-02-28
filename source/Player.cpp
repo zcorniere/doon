@@ -16,8 +16,6 @@ Player::Player(const float x, const float y): Player(Coords(x, y)) {}
 
 Player::~Player() {}
 
-void Player::onSceneryCollision(const Map &, const Coords<float> &) {}
-
 Coords<float> Player::update(const float fElapsedTime)
 {
     Coords<float> nfPosition = fPosition + (fVelocity * fElapsedTime);

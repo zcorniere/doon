@@ -29,7 +29,27 @@ struct Coords {
     }
     inline T atan() const { return std::atan2(y, x); }
     inline T mag() const { return std::sqrt(x * x + y * y); };
+    inline T mag2() const { return x * x + y * y; };
+    inline Coords norm() const
+    {
+        T r = 1 / this->mag();
+        return *this * r;
+    };
+    inline Coords floor() const { return Coords(std::floor(x), std::floor(y)); }
+    inline Coords ceil() const { return Coords(std::ceil(x), std::ceil(y)); }
+    inline Coords min(const Coords &other) const
+    {
+        return Coords(std::min(x, other.x), std::min(y, other.y));
+    };
+    inline Coords max(const Coords &other) const
+    {
+        return Coords(std::max(x, other.x), std::max(y, other.y));
+    };
     inline T ratio() const { return x / y; };
+    inline T cross(const Coords &other) const
+    {
+        return T(this->x * other.y - this->y * other.y);
+    }
     inline T dot(const Coords &other) const
     {
         return T(this->x * other.x + this->y * other.y);

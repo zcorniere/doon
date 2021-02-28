@@ -14,12 +14,47 @@ void ObjectManager::update(float fElapsedTime)
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
             [&i, this](int, float fElapsedTime) {
-                Coords<float> next_coord(i->update(fElapsedTime));
-                if (map.at(next_coord) == '#') {
-                    i->onSceneryCollision(map, next_coord);
-                } else {
-                    i->setPosistion(next_coord);
+                Coords<float> fPotential(i->update(fElapsedTime));
+                Coords<float> fSolved(fPotential);
+                Coords<unsigned> uCurrent(i->getPosition().floor());
+                Coords<unsigned> uTarget(fSolved);
+
+                Coords<unsigned> uTL((uCurrent.min(uTarget) - 1).max({0, 0}));
+                Coords<unsigned> uBR((uCurrent.max(uTarget) + 1).min(map.getSize()));
+
+                Coords<unsigned> uCell;
+
+                for (uCell.y = uTL.y; uCell.y <= uBR.y; uCell.y++) {
+                    for (uCell.x = uTL.x; uCell.x <= uBR.x; uCell.x++) {
+                        if (map.at(uCell) == '#') {
+                            Coords<float> fNearestPoint(
+                                std::max(float(uCell.x),
+                                         std::min(fSolved.x, float(uCell.x + 1))),
+                                std::max(float(uCell.y),
+                                         std::min(fSolved.y, float(uCell.y + 1))));
+
+                            Coords<float> fRayNear(fNearestPoint - fSolved);
+                            float fOverlap = i->getSize() - fRayNear.mag();
+                            if (std::isnan(fOverlap)) fOverlap = 0;
+
+                            if (fOverlap > 0) {
+                                fSolved -= fRayNear.norm() * fOverlap;
+                                if (std::isnan(fSolved.x) || std::isnan(fSolved.y)) {
+                                    logger.err("COLLISION")
+                                        << "fSolved is nan, thus stopping collsion "
+                                           "detection; fSolved defaulted to object's "
+                                           "previous position";
+                                    logger.endl();
+                                    fSolved = i->getPosition();
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 }
+                if (fSolved != fPotential)
+                    i->onSceneryCollision(map, fSolved, fPotential);
+                i->setPosition(fPotential);
             },
             fElapsedTime));
     }

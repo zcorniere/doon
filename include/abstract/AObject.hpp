@@ -15,9 +15,10 @@ public:
     }
     virtual ~AObject(){};
     virtual void onCollision(const std::unique_ptr<AObject> &){};
-    virtual void onSceneryCollision(const Map &, const Coords<float> &)
+    virtual void onSceneryCollision(const Map &, const Coords<float> &fSolved,
+                                    Coords<float> &fPotential)
     {
-        this->setRemove(true);
+        fPotential = fSolved;
     };
 
     virtual Coords<float> update(const float) = 0;
@@ -48,7 +49,7 @@ public:
         fAngle = a;
     };
     template <typename T = float>
-    void inline setPosistion(Coords<T> a)
+    void inline setPosition(Coords<T> a)
     {
         fPosition = a;
     };
