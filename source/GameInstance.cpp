@@ -2,6 +2,7 @@
 #include "FrameLimiter.hpp"
 #include "Logger.hpp"
 #include "interface/IMovement.hpp"
+#include "objects/Barrel.hpp"
 #include "objects/Fireball.hpp"
 #include "objects/Poggers.hpp"
 #include <random>
@@ -29,7 +30,7 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
     logger.info("GAME_INSTANCE") << "Spawned Player at " << objs.at(0)->getPosition();
     logger.endl();
     if (!std::getenv("DOON_NO_POGGERS")) {
-        for (auto &i: map.getChars('P')) {
+        for (const auto &i: map.getChars('P')) {
             Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
             logger.info("GAME_INSTANCE") << "New Map Pogger: " << fi;
             logger.endl();
@@ -44,9 +45,14 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
             } else {
                 logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
                 logger.endl();
-                objs.addObject(std::make_unique<Poggers>(roll));
+                objs.addObject(std::make_unique<Poggers>(roll + 0.5f));
             }
         }
+    }
+    for (const auto &i: map.getChars('B')) {
+        logger.info("GAME_INSTANCE") << "New Barrel: " << i;
+        logger.endl();
+        objs.addObject(std::make_unique<Barrel>(i));
     }
 }
 
