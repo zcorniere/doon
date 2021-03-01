@@ -134,9 +134,7 @@ void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
                 ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
                 Coords<unsigned> uSampled = this->sampleCoords(ray.fSample, uWallSize);
                 Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
-                sampled.b *= fShade;
-                sampled.r *= fShade;
-                sampled.g *= fShade;
+                sampled.shade(fShade);
                 img.setPixel(x, y, sampled);
             } else {
                 img.setPixel(x, y, Color::Black);
@@ -185,10 +183,8 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
-    if (!(std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f) &&
-        fDistanceToPlayer < 0.5f && fDistanceToPlayer >= fDepth) {
-        return;
-    }
+    bool bInCamFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
+    if (!bInCamFOV || fDistanceToPlayer < 0.5f || fDistanceToPlayer >= fDepth) return;
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
     const Frame &iSprite(storage.get(texture));
     Coords<unsigned> uImgSize(iSprite.getSize());

@@ -19,6 +19,12 @@ public:
           a(std::move(col.a))
     {
     }
+    inline void shade(const float fShade)
+    {
+        r *= fShade;
+        g *= fShade;
+        b *= fShade;
+    }
 
 public:
     uint8_t r = 255;
