@@ -37,8 +37,8 @@ std::deque<Coords<unsigned>> Map::getChars(const char c) const
 
     for (unsigned i = 0; i < map.size(); ++i) {
         if (map.at(i) == c) {
-            unsigned uXpos = i / width;
-            Coords<unsigned> pos((i - uXpos) % height, uXpos);
+            unsigned uXpos = i % width;
+            Coords<unsigned> pos(uXpos, (i - uXpos) / width);
             ret.push_back(std::move(pos));
         }
     }
