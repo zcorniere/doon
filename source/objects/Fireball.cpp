@@ -29,4 +29,7 @@ Coords<float> Fireball::update(const float fElapsed)
     return fPosition + (fVelocity * fElapsed);
 }
 
-void Fireball::onCollision(const std::unique_ptr<AObject> &) { this->setRemove(true); }
+void Fireball::onCollision(const std::unique_ptr<AObject> &other) {
+    if (dynamic_cast<Poggers *>(other.get()))
+        this->setRemove(true);
+}
