@@ -8,12 +8,17 @@ Having fun, really. In more pratical term, the goal of this projet is to make so
 
 ## On Ubuntu
 ```bash
-# apt-get install libsfml-dev clang++ lld
+# apt-get install libsfml-dev clang++ lld make
 ```
 
 ## On Fedora
 ```bash
-# dnf install SFML-dev clang++ lld
+# dnf install SFML-dev clang++ lld make
+```
+
+## On Arch
+```bash
+# pacman -S sfml clang++ lld make
 ```
 
 # Building
