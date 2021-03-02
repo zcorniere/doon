@@ -1,4 +1,5 @@
 #include "objects/Fireball.hpp"
+#include "objects/Poggers.hpp"
 
 Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
     : AObject(pos, "fireball-0"), fVelocity(std::move(velocity))
@@ -10,12 +11,13 @@ Fireball::~Fireball() {}
 Coords<float> Fireball::update(const float fElapsed)
 {
     fLifespan -= fElapsed;
+    loop -= fElapsed;
     if (fLifespan <= 0.0f) {
         this->setRemove(true);
         return fPosition;
     }
-    if (loop++ == 5) {
-        loop = 0;
+    if (loop <= 0.0f) {
+        loop = fAnimationLoop;
         if (sTexture == "fireball-0") {
             sTexture = "fireball-1";
         } else if (sTexture == "fireball-1") {
@@ -29,7 +31,7 @@ Coords<float> Fireball::update(const float fElapsed)
     return fPosition + (fVelocity * fElapsed);
 }
 
-void Fireball::onCollision(const std::unique_ptr<AObject> &other) {
-    if (dynamic_cast<Poggers *>(other.get()))
-        this->setRemove(true);
+void Fireball::onCollision(const std::unique_ptr<AObject> &other)
+{
+    if (dynamic_cast<Poggers *>(other.get())) this->setRemove(true);
 }

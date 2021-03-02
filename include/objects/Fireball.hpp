@@ -3,7 +3,8 @@
 
 #include "abstract/AObject.hpp"
 
-constexpr const float uFireballLife = 10;
+constexpr const float fFireballLife = 10;
+constexpr const float fAnimationLoop = 0.10;
 
 class Fireball : public virtual AObject
 {
@@ -15,8 +16,8 @@ public:
     void onCollision(const std::unique_ptr<AObject> &) final;
 
 private:
-    float fLifespan = uFireballLife;
-    unsigned loop = 0;
+    float fLifespan = fFireballLife;
+    float loop = fAnimationLoop;
     Coords<float> fVelocity;
 };
 
