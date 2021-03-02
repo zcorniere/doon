@@ -54,9 +54,11 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
         }
     }
     for (const auto &i: map.getChars('B')) {
-        logger.info("GAME_INSTANCE") << "New Barrel: " << i;
+        Coords<float> fCoords(i);
+        fCoords += 0.5f;
+        logger.info("GAME_INSTANCE") << "New Barrel: " << fCoords;
         logger.endl();
-        objs.addObject(std::make_unique<Barrel>(i));
+        objs.addObject(std::make_unique<Barrel>(fCoords));
     }
 }
 
