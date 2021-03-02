@@ -22,8 +22,13 @@ int main()
     std::signal(SIGINT, sig_int_handler);
     std::signal(SIGTERM, sig_int_handler);
 
-    GameInstance game(WindowWidth, WindowHeight);
-    game.init();
-    game.run();
+    try {
+        GameInstance game(WindowWidth, WindowHeight);
+        game.init();
+        game.run();
+    } catch (const std::exception &e) {
+        logger.err() << e.what();
+        logger.endl();
+    }
     return 0;
 }

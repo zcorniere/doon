@@ -4,7 +4,6 @@
 #include "Map.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
-#include "concepts.hpp"
 #include <deque>
 #include <memory>
 
@@ -18,7 +17,7 @@ public:
     inline auto &at(const unsigned i) const { return qObjects.at(i); }
     inline auto &at(const unsigned i) { return qObjects.at(i); }
 
-    template <isAObject T>
+    template <std::derived_from<AObject> T>
     void addObject(std::unique_ptr<T> obj)
     {
         qObjects.push_back(std::move(obj));

@@ -5,7 +5,11 @@
 #include "objects/Barrel.hpp"
 #include "objects/Fireball.hpp"
 #include "objects/Poggers.hpp"
+#include <SFML/Graphics.hpp>
 #include <random>
+
+constexpr const char sMapPath[] = "./map";
+constexpr const char sAssetsPath[] = "./assets/";
 
 constexpr const char tIcon[] = "pogger";
 

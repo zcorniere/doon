@@ -6,10 +6,11 @@
 #include <unordered_map>
 #include <unordered_set>
 
-const std::unordered_set<std::string> valid_ext = {".jpg", ".png"};
-
 class Storage
 {
+public:
+    static const std::unordered_set<std::string> valid_ext;
+
 public:
     Storage(const std::filesystem::path &path);
     Storage(const Storage &) = default;

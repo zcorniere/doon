@@ -1,16 +1,11 @@
 #ifndef _ASHOOT_HPP_
 #define _ASHOOT_HPP_
 
-#include "ObjectManager.hpp"
-#include "concepts.hpp"
-
 constexpr const float fBulletSpeed = 16.0f;
 
-template <isAObject Bullet>
+template <std::derived_from<AObject> Bullet>
 class AShoot : public virtual AObject
 {
-    static_assert(std::is_base_of_v<AObject, Bullet>, "Bullets must be an AObject");
-
 public:
     virtual std::unique_ptr<AObject> shoot()
     {

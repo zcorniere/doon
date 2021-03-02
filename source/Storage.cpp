@@ -2,6 +2,8 @@
 #include "Logger.hpp"
 #include <SFML/Graphics/Image.hpp>
 
+const std::unordered_set<std::string> Storage::valid_ext = {".jpg", ".png"};
+
 Storage::Storage(const std::filesystem::path &path)
 {
     try {

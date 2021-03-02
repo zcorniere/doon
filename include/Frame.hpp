@@ -2,7 +2,6 @@
 #define _FRAME_HPP_
 
 #include "Coords.hpp"
-#include "Logger.hpp"
 #include "Pixel.hpp"
 #include <cstdint>
 #include <vector>

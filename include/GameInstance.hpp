@@ -4,14 +4,10 @@
 #include "Coords.hpp"
 #include "Map.hpp"
 #include "ObjectManager.hpp"
-#include "Player.hpp"
 #include "Renderer.hpp"
 #include "Storage.hpp"
 #include "ThreadPool.hpp"
-#include <SFML/Graphics.hpp>
-
-constexpr const char sMapPath[] = "./map";
-constexpr const char sAssetsPath[] = "./assets/";
+#include <SFML/Graphics/RenderWindow.hpp>
 
 class GameInstance
 {
