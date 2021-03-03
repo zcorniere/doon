@@ -77,8 +77,8 @@ void ObjectManager::computeCollision()
         if (s->needRemove()) continue;
         for (auto &i: qObjects) {
             if (s == i || i->needRemove()) continue;
-            if ((s->getPosition() - i->getPosition()).mag2() <=
-                std::pow(i->getSize() + s->getSize(), 2)) {
+            float distance = std::abs((s->getPosition() - i->getPosition()).mag());
+            if (distance <= i->getSize() || distance <= s->getSize()) {
                 s->onCollision(i);
                 i->onCollision(s);
             }
