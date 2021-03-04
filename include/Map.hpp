@@ -10,6 +10,7 @@ class Map
 {
 public:
     Map(const std::filesystem::path);
+    Map(const Map &) = default;
     ~Map();
     Coords<unsigned> getSize() const;
     inline char operator[](const std::size_t idx) const { return map[idx]; }

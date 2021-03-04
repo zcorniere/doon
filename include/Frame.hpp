@@ -12,6 +12,7 @@ public:
     explicit Frame();
     explicit Frame(const Coords<unsigned> &);
     explicit Frame(const uint8_t *, const Coords<unsigned> &);
+    Frame(const Frame &) = default;
     ~Frame();
 
     void create(const Coords<unsigned> &);

@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 #include <SFML/Graphics/Image.hpp>
 
+constexpr const char map_extention[] = ".map";
 const std::unordered_set<std::string> Storage::valid_ext = {".jpg", ".png"};
 
 Storage::Storage(const std::filesystem::path &path)
@@ -17,9 +18,9 @@ Storage::Storage(const std::filesystem::path &path)
                     // swap texture X/Y since they'll be used as vertical stripes
                     // better for cpu caching
                     fr.rotate();
-                    sprite_list.insert({f.path().stem(), std::move(fr)});
-                } else if (f.path().extension() == ".map") {
-                    map_list.insert({f.path().stem(), Map(f.path())});
+                    stor.insert({f.path().stem(), std::move(fr)});
+                } else if (f.path().extension() == map_extention) {
+                    stor.insert({f.path().stem(), Map(f.path())});
                 }
                 logger.info("STORAGE") << "Loaded " << f.path();
                 logger.endl();
