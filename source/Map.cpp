@@ -22,15 +22,6 @@ Map::~Map() {}
 
 Coords<unsigned> Map::getSize() const { return Coords(width, height); };
 
-char Map::at(const Coords<unsigned> &idx) const
-{
-    unsigned point = idx.y * width + idx.x;
-    if (point >= map.size())
-        return '#';
-    else
-        return map.at(point);
-}
-
 std::deque<Coords<unsigned>> Map::getChars(const char c) const
 {
     std::deque<Coords<unsigned>> ret;
