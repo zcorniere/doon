@@ -18,15 +18,16 @@ public:
     void run();
 
 private:
+    void populateMap();
     void handleInput(const float &);
 
 private:
     Coords<unsigned> uSize;
+    Storage storage;
+    const Map &map;
 
-    const Map map;
     ObjectManager objs;
     ThreadPool pool;
-    Storage storage;
     Renderer rendy;
 
     sf::RenderWindow win;

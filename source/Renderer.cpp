@@ -117,9 +117,9 @@ void Renderer::computeColumn(Renderer::Ray &ray) const
 
 void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
 {
-    const Frame &iWall(storage.get(sWallTexture));
+    const Frame &iWall(storage.get<Frame>(sWallTexture));
     const Coords<unsigned> uWallSize(iWall.getSize());
-    const Frame &iFloor(storage.get(sFloorTexture));
+    const Frame &iFloor(storage.get<Frame>(sFloorTexture));
     const Coords<unsigned> uFloorSize(iFloor.getSize());
 
     float fCeiling = (size.y >> 1) - (size.y / ray.fDistance);
@@ -156,7 +156,7 @@ const Pixel Renderer::sampleTexture(const Coords<float> &fSample,
                                     const std::string &texture) const
 {
     try {
-        const Frame &img(storage.get(texture));
+        const Frame &img(storage.get<Frame>(texture));
         const Coords<unsigned> imgSize = img.getSize();
         const Coords<unsigned> uSample(
             std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
@@ -173,7 +173,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
                           const Coords<float> &fCamPosition, const float &fEyeAngle)
 {
     std::string texture(obj->getTextureName().value());
-    if (!storage.contains(texture)) {
+    if (!storage.contains<Frame>(texture)) {
         logger.err("RENDERER") << "Texture not found : " << texture;
         logger.endl();
         obj->setRemove(true);
@@ -186,7 +186,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
     bool bInCamFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
     if (!bInCamFOV || fDistanceToPlayer < 0.5f || fDistanceToPlayer >= fDepth) return;
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const Frame &iSprite(storage.get(texture));
+    const Frame &iSprite(storage.get<Frame>(texture));
     Coords<unsigned> uImgSize(iSprite.getSize());
     float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;

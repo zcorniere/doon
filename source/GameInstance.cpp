@@ -8,17 +8,16 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 
-constexpr const char sMapPath[] = "./map";
 constexpr const char sAssetsPath[] = "./assets/";
 
 constexpr const char tIcon[] = "pogger";
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
     : uSize(windowWidth, windowHeight),
-      map(sMapPath),
+      storage(sAssetsPath),
+      map(storage.get<Map>("main")),
       objs(pool, map),
       pool(),
-      storage(sAssetsPath),
       rendy(pool, storage, map, uSize),
       win()
 {
@@ -33,40 +32,14 @@ GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeig
     objs.addObject(std::make_unique<Player>(map.getSize() / 2));
     logger.info("GAME_INSTANCE") << "Spawned Player at " << objs.at(0)->getPosition();
     logger.endl();
-    if (!std::getenv("DOON_NO_POGGERS")) {
-        for (const auto &i: map.getChars('P')) {
-            Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
-            logger.info("GAME_INSTANCE") << "New Map Pogger: " << fi;
-            logger.endl();
-            objs.addObject(std::make_unique<Poggers>(fi));
-        }
-        for (unsigned i = 0; i < 10; i++) {
-            Coords<float> roll(std::rand() % map.getSize().x,
-                               std::rand() % map.getSize().y);
-            roll += 0.5f;
-            if (map.at(roll) == '#' || map.at(roll) == 'P') {
-                i--;
-            } else {
-                logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
-                logger.endl();
-                objs.addObject(std::make_unique<Poggers>(roll + 0.5f));
-            }
-        }
-    }
-    for (const auto &i: map.getChars('B')) {
-        Coords<float> fCoords(i);
-        fCoords += 0.5f;
-        logger.info("GAME_INSTANCE") << "New Barrel: " << fCoords;
-        logger.endl();
-        objs.addObject(std::make_unique<Barrel>(fCoords));
-    }
+    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap();
 }
 
 GameInstance::~GameInstance(){};
 
 void GameInstance::init()
 {
-    const Frame &fr(storage.get(tIcon));
+    const Frame &fr(storage.get<Frame>(tIcon));
     const Coords<unsigned> &uIconSize(fr.getSize());
     sf::ContextSettings setting;
 
@@ -87,7 +60,8 @@ void GameInstance::run()
     sf::Texture crosshair;
     sf::Sprite crosshairSprite;
 
-    Coords<unsigned> crossPosition(uSize / 2 - storage.get("crosshair").getSize() / 2);
+    Coords<unsigned> crossPosition(uSize / 2 -
+                                   storage.get<Frame>("crosshair").getSize() / 2);
 
     crosshair.loadFromFile("./assets/crosshair.png");
     crosshairSprite.setTexture(crosshair);
@@ -122,6 +96,35 @@ void GameInstance::run()
     }
 }
 
+void GameInstance::populateMap()
+{
+    for (const auto &i: map.getChars('P')) {
+        Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
+        logger.info("GAME_INSTANCE") << "New Map Pogger: " << fi;
+        logger.endl();
+        objs.addObject(std::make_unique<Poggers>(fi));
+    }
+    for (unsigned i = 0; i < 10; i++) {
+        Coords<float> roll(std::rand() % map.getSize().x, std::rand() % map.getSize().y);
+        roll += 0.5f;
+        if (map.at(roll) == '#' || map.at(roll) == 'P') {
+            i--;
+        } else {
+            logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
+            logger.endl();
+            objs.addObject(std::make_unique<Poggers>(roll + 0.5f));
+        }
+    }
+
+    for (const auto &i: map.getChars('B')) {
+        Coords<float> fCoords(i);
+        fCoords += 0.5f;
+        logger.info("GAME_INSTANCE") << "New Barrel: " << fCoords;
+        logger.endl();
+        objs.addObject(std::make_unique<Barrel>(fCoords));
+    }
+}
+
 void GameInstance::handleInput(const float &fElapsedTime)
 {
     sf::Event event;
@@ -147,6 +150,10 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         logger.msg("PLAYER")
                             << player->getPosition() << ": " << player->getAngle();
                         logger.endl();
+                    } break;
+                    case sf::Keyboard::R: {
+                        objs.getObjects().at(0)->setPosition(map.getSize() / 2);
+                        objs.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::Space: {
                         auto pl = player->shoot();
