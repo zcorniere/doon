@@ -39,6 +39,7 @@ namespace Color
 static constexpr Pixel Black(0, 0, 0);
 static constexpr Pixel White(255, 255, 255);
 static constexpr Pixel Blue(0, 0, 255);
+static constexpr Pixel LightBlue(0, 128, 255);
 static constexpr Pixel Green(0, 255, 0);
 static constexpr Pixel Red(255, 0, 0);
 }    // namespace Color

@@ -128,7 +128,7 @@ void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
     float fShade = 1.0f - std::min(ray.fDistance / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
-            img.setPixel(x, y, Color::Blue);
+            img.setPixel(x, y, Color::LightBlue);
         } else if (y > fCeiling && y <= fFloor) {
             if (ray.fDistance < fDepth && fShade > 0) {
                 ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
