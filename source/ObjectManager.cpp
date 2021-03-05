@@ -4,20 +4,20 @@
 #include <execution>
 #include <functional>
 
-ObjectManager::ObjectManager(ThreadPool &p, const Map &m): map(m), pool(p) {}
+ObjectManager::ObjectManager(ThreadPool &p): pool(p) {}
 
 ObjectManager::~ObjectManager() {}
 
-void ObjectManager::update(float fElapsedTime)
+void ObjectManager::update(const Map &map, const float fElapsedTime)
 {
     std::deque<std::future<void>> fut;
 
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
-            [&i, this](int, float fElapsedTime) {
+            [&i, map, this](int, float fElapsedTime) {
                 Coords<float> fPotential(i->update(fElapsedTime));
                 if (fPotential == i->getPosition()) return;
-                Coords<float> fSolved(this->resolveWallCollision(i, fPotential));
+                Coords<float> fSolved(this->resolveWallCollision(map, i, fPotential));
                 if (fSolved != fPotential)
                     i->onSceneryCollision(map, fSolved, fPotential);
                 i->setPosition(fPotential);
@@ -30,7 +30,20 @@ void ObjectManager::update(float fElapsedTime)
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
 }
 
-Coords<float> ObjectManager::resolveWallCollision(std::unique_ptr<AObject> &obj,
+void ObjectManager::removeOOB(const Map &map)
+{
+    for (auto &i: qObjects) {
+        if (i->getPosition<unsigned>() >= map.getSize()) {
+            logger.warn("OUT_OF_BOUND")
+                << *(i->getTextureName()) << " is out of bound, removing.";
+            logger.endl();
+            i->setRemove(true);
+        }
+    }
+}
+
+Coords<float> ObjectManager::resolveWallCollision(const Map &map,
+                                                  std::unique_ptr<AObject> &obj,
                                                   const Coords<float> &fPotential) const
 {
     Coords<float> fSolved(fPotential);

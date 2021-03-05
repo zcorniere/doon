@@ -18,13 +18,13 @@ public:
     void run();
 
 private:
-    void populateMap();
+    void populateMap(const Map &);
     void handleInput(const float &);
 
 private:
+    std::string mapName;
     Coords<unsigned> uSize;
     Storage storage;
-    const Map &map;
 
     ObjectManager objs;
     ThreadPool pool;

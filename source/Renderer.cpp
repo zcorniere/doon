@@ -10,9 +10,8 @@ constexpr const float fDepth = 100;
 constexpr const char sWallTexture[] = "redbrick";
 constexpr const char sFloorTexture[] = "greystone";
 
-Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map,
-                   const Coords<unsigned> sze)
-    : size(std::move(sze)), pool(p), storage(s), map(map)
+Renderer::Renderer(ThreadPool &p, const Storage &s, const Coords<unsigned> sze)
+    : size(std::move(sze)), pool(p), storage(s)
 {
     qDepthBuffer.resize(size);
     img.create(size);
@@ -20,7 +19,8 @@ Renderer::Renderer(ThreadPool &p, const Storage &s, const Map &map,
 
 Renderer::~Renderer() {}
 
-const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovIndex)
+const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
+                                const unsigned uPovIndex)
 {
     const auto &pPov = obj.at(uPovIndex);
     Coords<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
@@ -32,12 +32,12 @@ const uint8_t *Renderer::update(const ObjectManager &obj, const unsigned uPovInd
     ray.fOrigin = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
-            [this](int, const float fAngle, const unsigned x, Renderer::Ray rayDef) {
+            [this, map](int, const float fAngle, const unsigned x, Renderer::Ray rayDef) {
                 rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
                 rayDef.fDirection.x = std::sin(rayDef.fRayAngle);
                 rayDef.fDirection.y = std::cos(rayDef.fRayAngle);
-                this->computeColumn(rayDef);
+                this->computeColumn(map, rayDef);
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           rayDef.fDistance);
                 this->drawColumn(x, rayDef);
@@ -65,7 +65,7 @@ void Renderer::resize(Coords<unsigned> fNewCoords)
     img.create(size);
 }
 
-void Renderer::computeColumn(Renderer::Ray &ray) const
+void Renderer::computeColumn(const Map &map, Renderer::Ray &ray) const
 {
     Coords<float> fRayDelta(std::abs(1 / ray.fDirection.x),
                             std::abs(1 / ray.fDirection.y));

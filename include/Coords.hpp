@@ -2,7 +2,6 @@
 #define _COORDS_HPP_
 
 #include <SFML/System/Vector2.hpp>
-#include <algorithm>
 #include <cmath>
 #include <compare>
 #include <iostream>
@@ -55,11 +54,13 @@ struct Coords {
         return T(this->x * other.x + this->y * other.y);
     };
 
-    inline auto operator<=>(const Coords &other) const = default;
-    inline auto operator<=>(const T &other) const
+    // inline std::strong_ordering operator<=>(const Coords &) const = default;
+    inline bool operator>=(const Coords &other) const
     {
-        return this->x <=> other && this->y <=> other;
-    };
+        return x >= other.x || y >= other.y;
+    }
+    inline bool operator==(const Coords &) const = default;
+    inline bool operator!=(const Coords &) const = default;
 
     inline Coords operator+(const Coords &other) const
     {
@@ -147,8 +148,6 @@ struct Coords {
     {
         return {static_cast<E>(this->x), static_cast<E>(this->y)};
     }
-
-    static inline T add(const Coords &co) { return co.x + co.y; };
 };
 
 namespace std

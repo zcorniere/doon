@@ -13,26 +13,19 @@ constexpr const char sAssetsPath[] = "./assets/";
 constexpr const char tIcon[] = "pogger";
 
 GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
-    : uSize(windowWidth, windowHeight),
+    : mapName("main"),
+      uSize(windowWidth, windowHeight),
       storage(sAssetsPath),
-      map(storage.get<Map>("main")),
-      objs(pool, map),
+      objs(pool),
       pool(),
-      rendy(pool, storage, map, uSize),
+      rendy(pool, storage, uSize),
       win()
 {
-    logger.msg() << "Map height :" << map.height;
-    logger.endl();
-    logger.msg() << "Map width :" << map.width;
-    logger.endl();
-    logger.raw() << map;
-    logger.endl();
-
     // Player is always the object placed at index 0
-    objs.addObject(std::make_unique<Player>(map.getSize() / 2));
+    objs.addObject(std::make_unique<Player>(storage.get<Map>(mapName).getSize() / 2));
     logger.info("GAME_INSTANCE") << "Spawned Player at " << objs.at(0)->getPosition();
     logger.endl();
-    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap();
+    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(storage.get<Map>(mapName));
 }
 
 GameInstance::~GameInstance(){};
@@ -72,6 +65,7 @@ void GameInstance::run()
 
     texture.create(uSize.x, uSize.y);
     while (win.isOpen()) {
+        const Map &map = storage.get<Map>(mapName);
         auto tp2 = std::chrono::system_clock::now();
         std::chrono::duration<float> elapsedTime = tp2 - tp1;
         tp1 = std::move(tp2);
@@ -84,9 +78,9 @@ void GameInstance::run()
         }
 
         this->handleInput(fElapsedTime);
-        objs.update(fElapsedTime);
+        objs.update(map, fElapsedTime);
         objs.computeCollision();
-        texture.update(rendy.update(objs, 0));
+        texture.update(rendy.update(map, objs, 0));
         sprite.setTexture(texture);
 
         win.draw(sprite);
@@ -96,7 +90,7 @@ void GameInstance::run()
     }
 }
 
-void GameInstance::populateMap()
+void GameInstance::populateMap(const Map &map)
 {
     for (const auto &i: map.getChars('P')) {
         Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
@@ -152,8 +146,16 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         logger.endl();
                     } break;
                     case sf::Keyboard::R: {
-                        objs.getObjects().at(0)->setPosition(map.getSize() / 2);
+                        objs.getObjects().at(0)->setPosition(
+                            storage.get<Map>(mapName).getSize() / 2);
                         objs.getObjects().at(0)->setAngle(0.0f);
+                    } break;
+                    case sf::Keyboard::M: {
+                        mapName = "s";
+                        objs.getObjects().at(0)->setPosition(
+                            storage.get<Map>(mapName).getSize() / 2);
+                        objs.getObjects().at(0)->setAngle(0.0f);
+                        objs.removeOOB(storage.get<Map>(mapName));
                     } break;
                     case sf::Keyboard::Space: {
                         auto pl = player->shoot();

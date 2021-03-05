@@ -10,7 +10,7 @@
 class ObjectManager
 {
 public:
-    ObjectManager(ThreadPool &, const Map &);
+    ObjectManager(ThreadPool &);
     ~ObjectManager();
 
     inline auto &getObjects() const { return qObjects; }
@@ -22,15 +22,15 @@ public:
     {
         qObjects.push_back(std::move(obj));
     }
-    void update(const float fElapsedTime);
+    void update(const Map &, const float);
     void computeCollision();
+    void removeOOB(const Map &);
 
 private:
-    Coords<float> resolveWallCollision(std::unique_ptr<AObject> &,
+    Coords<float> resolveWallCollision(const Map &, std::unique_ptr<AObject> &,
                                        const Coords<float> &) const;
 
 private:
-    const Map &map;
     ThreadPool &pool;
 
     std::deque<std::unique_ptr<AObject>> qObjects;

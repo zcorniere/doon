@@ -11,7 +11,6 @@ public:
     ~Barrel();
 
     Coords<float> update(const float) final;
-    void onCollision(const std::unique_ptr<AObject> &) final;
 };
 
 #endif    //__BARREL_HPP__
