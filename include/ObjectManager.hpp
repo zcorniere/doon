@@ -23,7 +23,7 @@ public:
         qObjects.push_back(std::move(obj));
     }
     void update(const Map &, const float);
-    void computeCollision();
+    void computeCollision(std::unique_ptr<AObject> &);
     void removeOOB(const Map &);
 
 private:

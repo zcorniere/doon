@@ -15,8 +15,10 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
             [&i, map, this](int, float fElapsedTime) {
+                if (i->needRemove()) return;
                 Coords<float> fPotential(i->update(fElapsedTime));
                 if (fPotential == i->getPosition()) return;
+                this->computeCollision(i);
                 Coords<float> fSolved(this->resolveWallCollision(map, i, fPotential));
                 if (fSolved != fPotential)
                     i->onSceneryCollision(map, fSolved, fPotential);
@@ -26,7 +28,6 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
     }
 
     std::for_each(std::execution::par, fut.begin(), fut.end(), [](auto &i) { i.wait(); });
-    this->computeCollision();
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
 }
 
@@ -34,9 +35,11 @@ void ObjectManager::removeOOB(const Map &map)
 {
     for (auto &i: qObjects) {
         if (i->getPosition<unsigned>() >= map.getSize()) {
-            logger.warn("OUT_OF_BOUND")
-                << *(i->getTextureName()) << " is out of bound, removing.";
-            logger.endl();
+            if (i->getTextureName()) {
+                logger.warn("OUT_OF_BOUND")
+                    << i->getTextureName().value() << " is out of bound, removing.";
+                logger.endl();
+            }
             i->setRemove(true);
         }
     }
@@ -84,17 +87,14 @@ Coords<float> ObjectManager::resolveWallCollision(const Map &map,
     return fSolved;
 }
 
-void ObjectManager::computeCollision()
+void ObjectManager::computeCollision(std::unique_ptr<AObject> &obj)
 {
-    for (auto &s: qObjects) {
-        if (s->needRemove()) continue;
-        for (auto &i: qObjects) {
-            if (s == i || i->needRemove()) continue;
-            float distance = std::abs((s->getPosition() - i->getPosition()).mag());
-            if (distance <= i->getSize() || distance <= s->getSize()) {
-                s->onCollision(i);
-                i->onCollision(s);
-            }
+    for (auto &i: qObjects) {
+        if (obj == i || i->needRemove()) continue;
+        if ((i->getPosition() - obj->getPosition()).mag2() <=
+            std::pow((i->getSize() * obj->getSize()), 2)) {
+            i->onCollision(obj);
+            obj->onCollision(i);
         }
     }
 }
