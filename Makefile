@@ -26,11 +26,7 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
-OPTIONAL_LIBS := -lpthread
-
-ifeq ($(shell ldconfig -p | grep libtbb.so | wc -l), $(shell echo 1))
-    OPTIONAL_LIBS += -ltbb
-endif
+OPTIONAL_LIBS := -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
@@ -44,6 +40,10 @@ SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
 all: $(NAME)
 .PHONY: all
+
+compile_command: all
+	sed -e '1s/^/[\'$$'\n''/' -e '$$s/,$$/\'$$'\n'']/' $(OBJ_FOLDER)/*.json > compile_commands.json
+.PHONY: compile_command
 
 trace: all
 .PHONY: trace
@@ -65,7 +65,7 @@ format:
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
 
 $(OBJ):$(OBJ_FOLDER)/%.o: %$(LANG)
-	$(CC) $(CFLAGS) -c -o $@ $< -MMD -MF $(DEP_FOLDER)/$*.d	\
+	$(CC) $(CFLAGS) -c -o $@ $< -MJ $(OBJ_FOLDER)/$*.json -MMD -MF $(DEP_FOLDER)/$*.d	\
 	&& printf "$(BOLD)$(CYAN)$< $(END)$(BOLD)has been blessed.$(END)\n"    \
 	|| printf "$(BOLD)$(RED) $< $(END)$(BOLD)has been cursed.$(END)\n"
 
