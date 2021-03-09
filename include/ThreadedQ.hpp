@@ -2,6 +2,7 @@
 #include <condition_variable>
 #include <deque>
 #include <mutex>
+#include <optional>
 
 #ifndef _THREADEDQ_HPP_
 #define _THREADEDQ_HPP_
@@ -26,16 +27,16 @@ public:
     ThreadedQ(const ThreadedQ<T> &) = delete;
     virtual ~ThreadedQ() { this->clear(); }
 
-    const T &front()
+    const std::optional<std::reference_wrapper<T &>> front()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw QError("queue is empty"); }
+        if (q.size() == 0) return std::nullopt;
         return q.front();
     }
-    const T &back()
+    const std::optional<std::reference_wrapper<T &>> back()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw QError("queue is empty"); }
+        if (q.size() == 0) return std::nullopt;
         return q.back();
     }
     bool empty()
@@ -53,27 +54,18 @@ public:
         std::scoped_lock lock(q_mut);
         q.clear();
     }
-    T pop_front()
+    std::optional<T> pop_front()
     {
         std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw QError("queue is empty"); }
+        if (q.size() == 0) return std::nullopt;
         T t = std::move(q.front());
         q.pop_front();
         return t;
     }
-    bool pop_front(T &t)
+    std::optional<T> pop_back()
     {
         std::scoped_lock lock(q_mut);
-        if (q.empty()) { return false; }
-        t = std::move(q.front());
-        q.pop_front();
-        return true;
-    }
-
-    T pop_back()
-    {
-        std::scoped_lock lock(q_mut);
-        if (q.size() == 0) { throw QError("queue is empty"); }
+        if (q.size() == 0) return std::nullopt;
         T t = std::move(q.front());
         q.pop_back();
         return t;

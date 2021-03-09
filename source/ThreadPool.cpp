@@ -26,14 +26,15 @@ void ThreadPool::resize(const unsigned size)
 void ThreadPool::new_thread(const unsigned id)
 {
     this->thread_p.at(id) = std::thread([this, id]() {
-        std::function<void(int)> work;
+        std::optional<std::function<void(int)>> work;
         logger.info("THREAD_POOL") << "New thread: " << id;
         logger.endl();
         while (1) {
             this->qWork.wait();
             if (this->bExit) break;
             try {
-                if (this->qWork.pop_front(work) && work) work(id);
+                work = this->qWork.pop_front();
+                if (work && work.has_value()) work->operator()(id);
             } catch (const std::exception &e) {
                 logger.err("THREAD_POOL") << id << " : " << e.what();
                 logger.endl();

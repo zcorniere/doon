@@ -11,7 +11,8 @@ void Logger::start()
             try {
                 qMsg.wait();
                 while (!qMsg.empty()) {
-                    std::cerr << qMsg.pop_front() << "\e[0m" << std::endl;
+                    auto i = qMsg.pop_front();
+                    if (i) { std::cerr << *i << "\e[0m" << std::endl; }
                 }
             } catch (const std::exception &e) {
                 std::cerr << "LOGGER ERROR:" << e.what() << std::endl;
