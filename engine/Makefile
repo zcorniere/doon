@@ -18,83 +18,51 @@ END := \033[0m
 BOLD := \033[1m
 RED := \033[31m
 GREEN := \033[32m
-CYAN := \033[36m
-
-OPTIONAL_LIBS := -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
-CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
-ifeq ($(MAKECMDGOALS), trace)
-    CFLAGS += -pg
-endif
+CFLAGS := -fPIC -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
 
 MAKEFLAGS += --no-print-directory --silent
 
-SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
+SAY := $(BOLD)[$(GREEN)*$(END)$(BOLD)]:
 
 all: $(NAME)
 .PHONY: all
 
-compile_command: all
-	sed -e '1s/^/[\'$$'\n''/' -e '$$s/,$$/\'$$'\n'']/' $(OBJ_FOLDER)/*.json > compile_commands.json
-.PHONY: compile_command
-
-trace: all
-.PHONY: trace
-
 start_compile:
-	printf "$(SAY) Praise for the almighty $(CYAN)library$(END)$(BOLD) !$(END)\n"
+	printf "$(SAY) Praise for the almighty $(GREEN)library$(END)$(BOLD) !$(END)\n"
 .PHONY: start_compile
 
 $(NAME): start_compile $(OBJ)
 	ar rc $(NAME) $(OBJ)
-	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
+	printf "$(SAY) Ameno ! $(GREEN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
 -include $(DEPS)
-
-format:
-	find . -regex '.*\.\(cpp\|hpp\)' -exec clang-format -style=file -i {} \;
-.PHONY: format
 
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
 
 $(OBJ):$(OBJ_FOLDER)/%.o: %$(LANG)
 	$(CC) $(CFLAGS) -c -o $@ $< -MJ $(OBJ_FOLDER)/$*.json -MMD -MF $(DEP_FOLDER)/$*.d	\
-	&& printf "$(BOLD)$(CYAN)$< $(END)$(BOLD)has been blessed.$(END)\n"    \
-	|| printf "$(BOLD)$(RED) $< $(END)$(BOLD)has been cursed.$(END)\n"
-
-clear:
-	printf "$(SAY) Purging heretics files...\n"
-	rm -fv source/*~
-	rm -fv *~
-	rm -fv include/*~
-	rm -fv vgcore.*
-	printf "$(SAY) Done.$(END)\n\n"
-.PHONY: clear
+	&& printf "$(BOLD)$(GREEN)$<$(END)$(BOLD) has awoken.$(END)\n"    \
+	|| printf "$(BOLD)$(RED) $<$(END)$(BOLD) has fall down.$(END)\n"
 
 clean:
 	printf "$(SAY) ...\n"
 	rm -vf $(OBJ)
 	rm -f $(DEPS)
-	printf "$(SAY) What ? I am just \"rewriting\" the holy book.$(END)\n\n"
+	printf "$(SAY) Huh ? They are heretics, don't worry about them.$(END)\n\n"
 .PHONY: clean
 
 fclean: clean
 	printf "$(BOLD)Deleting $(NAME)$(END)\n"
 	rm -f $(NAME)
-	printf "$(SAY) It is a false god. In such, it has been \"deleted\"$(END)\n\n"
+	printf "$(SAY) The heretics has been cleansed !$(END)\n\n"
 .PHONY: fclean
 
 re:
-	make clear
 	make fclean
 	make all
 .PHONY: re
-
-hello:
-	printf "$(SAY) I am Hu, a wandering believer. My praise are currently to $(NAME).$(END)\n"
-	printf "$(SAY) My big brother is named Ri. You may know him ?$(END)\n"
-.PHONY: hello
 
 $(OBJ_FOLDER) $(DEP_FOLDER):
 	mkdir -p $@

@@ -41,7 +41,9 @@ MAKEFLAGS += --no-print-directory --silent
 
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
-all: $(NAME)
+all:
+	make engine
+	make $(NAME)
 .PHONY: all
 
 compile_command: all
@@ -59,7 +61,7 @@ engine:
 	make -C $(ENGINE)
 .PHONY: engine
 
-$(NAME): engine start_compile $(OBJ)
+$(NAME): start_compile $(OBJ)
 	$(CC) -L $(ENGINE) -lraycaster -fuse-ld=lld -o $(NAME)  $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
 	printf "$(SAY) Praise $(CYAN)$(NAME)$(END)$(BOLD) !$(END)\n"
 
@@ -99,17 +101,11 @@ fclean: clean
 .PHONY: fclean
 
 re:
-	make -C $(ENGINE) clear
-	make -C $(ENGINE) fclean
 	make clear
 	make fclean
+	make -C $(ENGINE) fclean
 	make all
 .PHONY: re
-
-hello:
-	printf "$(SAY) I am Hu, a wandering believer. My praise are currently to $(NAME).$(END)\n"
-	printf "$(SAY) My big brother is named Ri. You may know him ?$(END)\n"
-.PHONY: hello
 
 $(OBJ_FOLDER) $(DEP_FOLDER):
 	mkdir -p $@
