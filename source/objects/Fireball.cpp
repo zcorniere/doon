@@ -4,6 +4,7 @@
 Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
     : AObject(pos, "fireball-0"), fVelocity(std::move(velocity))
 {
+    fSize = 0.8f;
 }
 
 Fireball::~Fireball() {}
