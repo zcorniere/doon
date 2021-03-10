@@ -19,11 +19,11 @@ Frame::Frame(const uint8_t *ptr, const Coords<unsigned> &uSize)
 
 Frame::~Frame() {}
 
-void Frame::create(const Coords<unsigned> &nSize)
+void Frame::create(const Coords<unsigned> &nSize, const Pixel pFill)
 {
     size = nSize;
     data.clear();
-    data.resize(size.x * size.y);
+    data.resize(size.x * size.y, pFill);
 }
 
 void Frame::rotate()

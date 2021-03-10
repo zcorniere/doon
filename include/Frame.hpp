@@ -15,7 +15,7 @@ public:
     Frame(const Frame &) = default;
     ~Frame();
 
-    void create(const Coords<unsigned> &);
+    void create(const Coords<unsigned> &, const Pixel = Color::Black);
     void rotate();
     inline void setPixel(const Coords<unsigned> &pos, Pixel px)
     {
