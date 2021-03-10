@@ -1,4 +1,5 @@
 # Object files
+engine/.object/*
 .object/*
 *.o
 

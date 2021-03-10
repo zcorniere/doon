@@ -1,25 +1,17 @@
-##
-## A Makefile with faith
-## Hu 2.0
-##
-
-NAME := doon
-
-ENGINE := ./engine/
-
-HEADP := include/
+NAME := libraycaster.a
+HEADP := ./include/
 
 SRC_FOLDER := source
-OBJ_FOLDER := .object
+OBJ_FOLDER := ../.object
 
 CC := clang++
 
 LANG := .cpp
-VPATH := $(SRC_FOLDER) $(SRC_FOLDER)/objects
+VPATH := $(SRC_FOLDER)
 SRC := $(notdir $(shell find $(SRC_FOLDER) -name '*$(LANG)'))
 OBJ := $(addprefix $(OBJ_FOLDER)/,$(SRC:$(LANG)=.o))
 
-DEP_FOLDER := .deps
+DEP_FOLDER := ../.deps
 DEPS := $(addprefix $(DEP_FOLDER)/, $(SRC:$(LANG)=.d))
 
 END := \033[0m
@@ -28,11 +20,10 @@ RED := \033[31m
 GREEN := \033[32m
 CYAN := \033[36m
 
-SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 OPTIONAL_LIBS := -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
-CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
+CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
 ifeq ($(MAKECMDGOALS), trace)
     CFLAGS += -pg
 endif
@@ -52,16 +43,12 @@ trace: all
 .PHONY: trace
 
 start_compile:
-	printf "$(SAY) Listen to our apostle $(CYAN)$(NAME)$(END)$(BOLD)!$(END)\n"
+	printf "$(SAY) Praise for the almighty $(CYAN)library$(END)$(BOLD) !$(END)\n"
 .PHONY: start_compile
 
-engine:
-	make -C $(ENGINE)
-.PHONY: engine
-
-$(NAME): engine start_compile $(OBJ)
-	$(CC) -L $(ENGINE) -lraycaster -fuse-ld=lld -o $(NAME)  $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
-	printf "$(SAY) Praise $(CYAN)$(NAME)$(END)$(BOLD) !$(END)\n"
+$(NAME): start_compile $(OBJ)
+	ar rc $(NAME) $(OBJ)
+	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
 
 -include $(DEPS)
 
@@ -99,8 +86,6 @@ fclean: clean
 .PHONY: fclean
 
 re:
-	make -C $(ENGINE) clear
-	make -C $(ENGINE) fclean
 	make clear
 	make fclean
 	make all
