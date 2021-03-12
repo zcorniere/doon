@@ -6,7 +6,6 @@
 #include "Frame.hpp"
 #include "Map.hpp"
 #include "ObjectManager.hpp"
-#include "Player.hpp"
 #include "Storage.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
