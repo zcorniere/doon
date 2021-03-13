@@ -29,6 +29,9 @@ public:
 
 public:
     Renderer(ThreadPool &, const Storage &, const Coords<unsigned>);
+    Renderer(const Renderer &) = delete;
+    Renderer(Renderer &) = delete;
+
     ~Renderer();
     const uint8_t *update(const Map &, const ObjectManager &, const unsigned);
     void resize(Coords<unsigned>);
