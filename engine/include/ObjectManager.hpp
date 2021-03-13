@@ -1,5 +1,4 @@
-#ifndef _OBJECTMANAGER_HPP_
-#define _OBJECTMANAGER_HPP_
+#pragma once
 
 #include "Map.hpp"
 #include "ThreadPool.hpp"
@@ -24,7 +23,6 @@ public:
     }
     void update(const Map &, const float);
     void computeCollision(std::unique_ptr<AObject> &);
-    void removeOOB(const Map &);
 
 private:
     Coords<float> resolveWallCollision(const Map &, std::unique_ptr<AObject> &,
@@ -35,5 +33,3 @@ private:
 
     std::deque<std::unique_ptr<AObject>> qObjects;
 };
-
-#endif    //_OBJECTMANAGER_HPP_

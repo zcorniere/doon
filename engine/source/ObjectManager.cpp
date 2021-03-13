@@ -31,20 +31,6 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
 }
 
-void ObjectManager::removeOOB(const Map &map)
-{
-    for (auto &i: qObjects) {
-        if (i->getPosition<unsigned>() >= map.getSize()) {
-            if (i->getTextureName()) {
-                logger.warn("OUT_OF_BOUND")
-                    << i->getTextureName().value() << " is out of bound, removing.";
-                logger.endl();
-            }
-            i->setRemove(true);
-        }
-    }
-}
-
 Coords<float> ObjectManager::resolveWallCollision(const Map &map,
                                                   std::unique_ptr<AObject> &obj,
                                                   const Coords<float> &fPotential) const
