@@ -33,7 +33,7 @@ OPTIONAL_LIBS := -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
-ifeq ($(MAKECMDGOALS), trace)
+ifeq ($(MAKECMDGOALS), profile)
     CFLAGS += -pg
 endif
 
@@ -50,8 +50,9 @@ compile_command: all
 	sed -e '1s/^/[\'$$'\n''/' -e '$$s/,$$/\'$$'\n'']/' $(OBJ_FOLDER)/*.json > compile_commands.json
 .PHONY: compile_command
 
-trace: all
-.PHONY: trace
+profile: $(NAME)
+	make -C $(ENGINE) profile
+.PHONY: profile
 
 start_compile:
 	printf "$(SAY) Listen to our apostle $(CYAN)$(NAME)$(END)$(BOLD)!$(END)\n"

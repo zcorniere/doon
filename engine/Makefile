@@ -21,6 +21,9 @@ GREEN := \033[32m
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -fPIC -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
+ifeq ($(MAKECMDGOALS), profile)
+    CFLAGS += -pg
+endif
 
 MAKEFLAGS += --no-print-directory --silent
 
@@ -28,6 +31,9 @@ SAY := $(BOLD)[$(GREEN)*$(END)$(BOLD)]:
 
 all: $(NAME)
 .PHONY: all
+
+profile: all
+.PHONY: profile
 
 start_compile:
 	printf "$(SAY) Praise for the almighty $(GREEN)library$(END)$(BOLD) !$(END)\n"
