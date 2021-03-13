@@ -14,14 +14,13 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
 
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
-            [&i, map, this](int, float fElapsedTime) {
+            [&i, &map, this](int, float fElapsedTime) {
                 if (i->needRemove()) return;
                 Coords<float> fPotential(i->update(fElapsedTime));
                 if (fPotential == i->getPosition()) return;
                 this->computeCollision(i);
                 Coords<float> fSolved(this->resolveWallCollision(map, i, fPotential));
-                if (fSolved != fPotential)
-                    i->onSceneryCollision(map, fSolved, fPotential);
+                if (fSolved != fPotential) i->onSceneryCollision(fSolved, fPotential);
                 i->setPosition(fPotential);
             },
             fElapsedTime));

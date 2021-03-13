@@ -2,7 +2,7 @@
 #define _AOBJECT_HPP_
 
 #include "Coords.hpp"
-#include "Map.hpp"
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -15,7 +15,7 @@ public:
     }
     virtual ~AObject(){};
     virtual void onCollision(const std::unique_ptr<AObject> &){};
-    virtual void onSceneryCollision(const Map &, const Coords<float> &fSolved,
+    virtual void onSceneryCollision(const Coords<float> &fSolved,
                                     Coords<float> &fPotential)
     {
         fPotential = fSolved;

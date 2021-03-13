@@ -32,7 +32,8 @@ const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
     ray.fOrigin = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
-            [this, map](int, const float fAngle, const unsigned x, Renderer::Ray rayDef) {
+            [this, &map](int, const float fAngle, const unsigned x,
+                         Renderer::Ray rayDef) {
                 rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
                 rayDef.fDirection.x = std::sin(rayDef.fRayAngle);
