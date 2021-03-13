@@ -1,9 +1,9 @@
 #ifndef _ASHOOT_HPP_
 #define _ASHOOT_HPP_
 
-#include <memory>
 #include "Coords.hpp"
 #include "abstract/AObject.hpp"
+#include <memory>
 constexpr const float fBulletSpeed = 16.0f;
 
 template <std::derived_from<AObject> Bullet>

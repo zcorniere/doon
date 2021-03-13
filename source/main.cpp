@@ -5,11 +5,6 @@
 constexpr const unsigned WindowWidth = 1280;
 constexpr const unsigned WindowHeight = 960;
 
-Logger logger;
-
-__attribute__((constructor)) void ctor() { logger.start(); }
-__attribute__((destructor)) void dtor() { logger.stop(); }
-
 void sig_int_handler(const int signal)
 {
     logger.err("SIGNAL") << "Received signal " << signal << ", exiting...";

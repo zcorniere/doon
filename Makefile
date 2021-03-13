@@ -4,7 +4,10 @@
 ##
 
 NAME := doon
-HEADP := ./include/
+
+ENGINE := ./engine/
+
+HEADP := include/
 
 SRC_FOLDER := source
 OBJ_FOLDER := .object
@@ -29,7 +32,7 @@ SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 OPTIONAL_LIBS := -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
-CFLAGS := -std=c++20 -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
+CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
 ifeq ($(MAKECMDGOALS), trace)
     CFLAGS += -pg
 endif
@@ -38,7 +41,9 @@ MAKEFLAGS += --no-print-directory --silent
 
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
-all: $(NAME)
+all:
+	make engine
+	make $(NAME)
 .PHONY: all
 
 compile_command: all
@@ -49,12 +54,16 @@ trace: all
 .PHONY: trace
 
 start_compile:
-	printf "$(SAY) Praise for the almighty $(CYAN)binary$(END)$(BOLD) !$(END)\n"
+	printf "$(SAY) Listen to our apostle $(CYAN)$(NAME)$(END)$(BOLD)!$(END)\n"
 .PHONY: start_compile
 
+engine:
+	make -C $(ENGINE)
+.PHONY: engine
+
 $(NAME): start_compile $(OBJ)
-	$(CC) -fuse-ld=lld -o $(NAME) -I $(HEADP) $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
-	printf "$(SAY) Ameno ! $(CYAN)$(NAME)$(END)$(BOLD) is among us !$(END)\n"
+	$(CC) -L $(ENGINE) -lraycaster -fuse-ld=lld -o $(NAME)  $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
+	printf "$(SAY) Praise $(CYAN)$(NAME)$(END)$(BOLD) !$(END)\n"
 
 -include $(DEPS)
 
@@ -94,13 +103,9 @@ fclean: clean
 re:
 	make clear
 	make fclean
+	make -C $(ENGINE) fclean
 	make all
 .PHONY: re
-
-hello:
-	printf "$(SAY) I am Hu, a wandering believer. My praise are currently to $(NAME).$(END)\n"
-	printf "$(SAY) My big brother is named Ri. You may know him ?$(END)\n"
-.PHONY: hello
 
 $(OBJ_FOLDER) $(DEP_FOLDER):
 	mkdir -p $@

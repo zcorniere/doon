@@ -1,6 +1,7 @@
 #include "GameInstance.hpp"
 #include "FrameLimiter.hpp"
 #include "Logger.hpp"
+#include "Player.hpp"
 #include "interface/IMovement.hpp"
 #include "objects/Barrel.hpp"
 #include "objects/Fireball.hpp"

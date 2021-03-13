@@ -1,5 +1,4 @@
-#ifndef _LOGGER_HPP_
-#define _LOGGER_HPP_
+#pragma once
 
 #include "ThreadedQ.hpp"
 #include <atomic>
@@ -34,7 +33,5 @@ private:
     ThreadedQ<std::string> qMsg;
     std::unordered_map<std::thread::id, std::stringstream> mBuffers;
 };
-
-#endif    //_LOGGER_HPP_
 
 extern Logger logger;

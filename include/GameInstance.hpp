@@ -7,15 +7,16 @@
 #include "Renderer.hpp"
 #include "Storage.hpp"
 #include "ThreadPool.hpp"
+#include "interface/IGame.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
-class GameInstance
+class GameInstance : public IGame
 {
 public:
     GameInstance(const unsigned, const unsigned);
     ~GameInstance();
-    void init();
-    void run();
+    void init() final;
+    void run() final;
 
 private:
     void populateMap(const Map &);

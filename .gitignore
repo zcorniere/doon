@@ -1,5 +1,5 @@
 # Object files
-.object/*
+**/.object/
 *.o
 
 # Libraries
@@ -24,6 +24,6 @@ gmon.sum
 capture.png
 
 # Dependencies
-.deps/
+**/.deps/
 *.d
 
