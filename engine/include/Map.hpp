@@ -21,6 +21,7 @@ public:
     }
 
     std::deque<Coords<unsigned>> getChars(const char c) const;
+    bool isLocationSolid(const Coords<unsigned> &) const;
 
 public:
     std::string map;

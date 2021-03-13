@@ -9,22 +9,15 @@
 #include <SFML/Graphics.hpp>
 #include <random>
 
-constexpr const char sAssetsPath[] = "./assets/";
-
 constexpr const char tIcon[] = "pogger";
 
-GameInstance::GameInstance(const unsigned windowWidth, const unsigned windowHeight)
-    : mapName("main"),
-      uSize(windowWidth, windowHeight),
-      storage(sAssetsPath),
-      objs(pool),
-      pool(),
-      rendy(pool, storage, uSize),
-      win()
+GameInstance::GameInstance(const Coords<unsigned> &u, Storage &s, ThreadPool &p,
+                           ObjectManager &o)
+    : IGame(u, s, p, o), mapName("main"), win()
 {
     // Player is always the object placed at index 0
-    objs.addObject(std::make_unique<Player>(storage.get<Map>(mapName).getSize() / 2));
-    logger.info("GAME_INSTANCE") << "Spawned Player at " << objs.at(0)->getPosition();
+    object.addObject(std::make_unique<Player>(storage.get<Map>(mapName).getSize() / 2));
+    logger.info("GAME_INSTANCE") << "Spawned Player at " << object.at(0)->getPosition();
     logger.endl();
     if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(storage.get<Map>(mapName));
 }
@@ -42,53 +35,49 @@ void GameInstance::init()
     win.setIcon(uIconSize.x, uIconSize.y, fr.getFramePtr());
     win.setVerticalSyncEnabled(true);
     win.setActive(false);
+    win.clear();
+    win.display();
+
+    texture.create(uSize.x, uSize.y);
+}
+
+void GameInstance::update(const float fElapsedTime)
+{
+    // sf::Texture crosshair;
+    // sf::Sprite crosshairSprite;
+
+    // Coords<unsigned> crossPosition(uSize / 2 -
+    //                               storage.get<Frame>("crosshair").getSize() / 2);
+
+    // crosshair.loadFromFile("./assets/crosshair.png");
+    // crosshairSprite.setTexture(crosshair);
+    // crosshairSprite.setPosition(crossPosition.x, crossPosition.y);
+
+    // float secs = 0;
+
+    // secs += fElapsedTime;
+    // if (secs >= 0.10f) {
+    win.setTitle(std::to_string(1.0f / fElapsedTime));
+    //    secs = 0;
+    //}
+
+    this->handleInput(fElapsedTime);
+}
+
+void GameInstance::drawToScreen(const uint8_t *const ptr)
+{
+    texture.update(ptr);
+    sprite.setTexture(texture);
+
+    win.draw(sprite);
     win.display();
 }
 
-void GameInstance::run()
-{
-    FrameLimiter<60> limiter;
-    sf::Texture texture;
-    sf::Sprite sprite;
+const Coords<unsigned> &GameInstance::getSize() const { return uSize; }
 
-    sf::Texture crosshair;
-    sf::Sprite crosshairSprite;
+bool GameInstance::isRunning() const { return win.isOpen(); }
 
-    Coords<unsigned> crossPosition(uSize / 2 -
-                                   storage.get<Frame>("crosshair").getSize() / 2);
-
-    crosshair.loadFromFile("./assets/crosshair.png");
-    crosshairSprite.setTexture(crosshair);
-    crosshairSprite.setPosition(crossPosition.x, crossPosition.y);
-
-    float secs = 0;
-    auto tp1 = std::chrono::system_clock::now();
-
-    texture.create(uSize.x, uSize.y);
-    while (win.isOpen()) {
-        const Map &map = storage.get<Map>(mapName);
-        auto tp2 = std::chrono::system_clock::now();
-        std::chrono::duration<float> elapsedTime = tp2 - tp1;
-        tp1 = std::move(tp2);
-
-        float fElapsedTime = elapsedTime.count();
-        secs += fElapsedTime;
-        if (secs >= 0.10f) {
-            win.setTitle(std::to_string(1.0f / fElapsedTime));
-            secs = 0;
-        }
-
-        this->handleInput(fElapsedTime);
-        objs.update(map, fElapsedTime);
-        texture.update(rendy.update(map, objs, 0));
-        sprite.setTexture(texture);
-
-        win.draw(sprite);
-        win.draw(crosshairSprite);
-        win.display();
-        limiter.sleep();
-    }
-}
+const std::string &GameInstance::getMapName() const { return mapName; }
 
 void GameInstance::populateMap(const Map &map)
 {
@@ -96,7 +85,7 @@ void GameInstance::populateMap(const Map &map)
         Coords<float> fi = static_cast<Coords<float>>(i) + 0.5f;
         logger.info("GAME_INSTANCE") << "New Map Pogger: " << fi;
         logger.endl();
-        objs.addObject(std::make_unique<Poggers>(fi));
+        object.addObject(std::make_unique<Poggers>(fi));
     }
     for (unsigned i = 0; i < 10; i++) {
         Coords<float> roll(std::rand() % map.getSize().x, std::rand() % map.getSize().y);
@@ -106,7 +95,7 @@ void GameInstance::populateMap(const Map &map)
         } else {
             logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
             logger.endl();
-            objs.addObject(std::make_unique<Poggers>(roll + 0.5f));
+            object.addObject(std::make_unique<Poggers>(roll + 0.5f));
         }
     }
 
@@ -115,7 +104,7 @@ void GameInstance::populateMap(const Map &map)
         fCoords += 0.5f;
         logger.info("GAME_INSTANCE") << "New Barrel: " << fCoords;
         logger.endl();
-        objs.addObject(std::make_unique<Barrel>(fCoords));
+        object.addObject(std::make_unique<Barrel>(fCoords));
     }
 }
 
@@ -124,7 +113,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
     sf::Event event;
     Player *player = nullptr;
 
-    if ((player = dynamic_cast<Player *>(objs.at(0).get())) == nullptr) {
+    if ((player = dynamic_cast<Player *>(object.at(0).get())) == nullptr) {
         logger.err("GAME_INSTANCE") << "Player not valid, aborting";
         logger.endl();
         std::abort();
@@ -134,32 +123,35 @@ void GameInstance::handleInput(const float &fElapsedTime)
     while (win.pollEvent(event)) {
         switch (event.type) {
             case sf::Event::Closed: win.close(); break;
-            case sf::Event::Resized:
-                rendy.resize(Coords(event.size.width, event.size.height));
-                break;
+            // case sf::Event::Resized:
+            //    rendy.resize(Coords(event.size.width, event.size.height));
+            //    break;
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
                     case sf::Keyboard::Escape: win.close(); break;
+                    case sf::Keyboard::H: {
+                        logger.debug() << "Screenshit !"; logger.endl();
+                        texture.copyToImage().saveToFile("capture.png");
+                    } break;
                     case sf::Keyboard::P: {
                         logger.msg("PLAYER")
                             << player->getPosition() << ": " << player->getAngle();
                         logger.endl();
                     } break;
                     case sf::Keyboard::R: {
-                        objs.getObjects().at(0)->setPosition(
+                        object.getObjects().at(0)->setPosition(
                             storage.get<Map>(mapName).getSize() / 2);
-                        objs.getObjects().at(0)->setAngle(0.0f);
+                        object.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::M: {
                         mapName = "s";
-                        objs.getObjects().at(0)->setPosition(
+                        object.getObjects().at(0)->setPosition(
                             storage.get<Map>(mapName).getSize() / 2);
-                        objs.getObjects().at(0)->setAngle(0.0f);
-                        objs.removeOOB(storage.get<Map>(mapName));
+                        object.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::Space: {
                         auto pl = player->shoot();
-                        if (pl) objs.addObject(std::move(pl));
+                        if (pl) object.addObject(std::move(pl));
                     } break;
                     case sf::Keyboard::LShift: player->fSpeedModifier = 0.5; break;
                     default: break;

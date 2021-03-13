@@ -46,7 +46,7 @@ Coords<float> ObjectManager::resolveWallCollision(const Map &map,
     Coords<unsigned> uCell;
     for (uCell.y = uTL.y; uCell.y <= uBR.y; uCell.y++) {
         for (uCell.x = uTL.x; uCell.x <= uBR.x; uCell.x++) {
-            if (map.at(uCell) == '#') {
+            if (map.isLocationSolid(uCell)) {
                 Coords<float> fNearestPoint(
                     std::clamp<float>(fSolved.x, uCell.x, uCell.x + 1),
                     std::clamp<float>(fSolved.y, uCell.y, uCell.y + 1));

@@ -1,9 +1,13 @@
+#include "Engine.hpp"
 #include "GameInstance.hpp"
 #include "Logger.hpp"
 #include <csignal>
 
 constexpr const unsigned WindowWidth = 1280;
 constexpr const unsigned WindowHeight = 960;
+constexpr const Coords<unsigned> uSize(WindowWidth, WindowHeight);
+
+constexpr const char sAssetsPath[] = "./assets/";
 
 void sig_int_handler(const int signal)
 {
@@ -17,10 +21,8 @@ try {
     std::signal(SIGINT, sig_int_handler);
     std::signal(SIGTERM, sig_int_handler);
 
-    GameInstance game(WindowWidth, WindowHeight);
-    game.init();
-    game.run();
-    return 0;
+    Engine<GameInstance> game(uSize, sAssetsPath);
+    return game.run();
 } catch (const std::exception &e) {
     logger.err() << e.what();
     logger.endl();

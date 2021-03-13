@@ -36,6 +36,11 @@ std::deque<Coords<unsigned>> Map::getChars(const char c) const
     return ret;
 }
 
+bool Map::isLocationSolid(const Coords<unsigned> &idx) const
+{
+    return this->at(idx) == '#';
+}
+
 std::ostream &operator<<(std::ostream &os, const Map &other)
 {
     for (unsigned i = 0; i < other.map.size(); i++) {

@@ -57,6 +57,7 @@ const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
                   [](auto &i) { i.wait(); });
+
     return img.getFramePtr();
 }
 
@@ -89,7 +90,7 @@ void Renderer::computeColumn(const Map &map, Renderer::Ray &ray) const
         fRayLength.y = (float(uMapCheck.y) + 1.0f - ray.fOrigin.y) * fRayDelta.y;
     }
 
-    while (map.at(uMapCheck) != '#' && ray.fDistance < fDepth) {
+    while (!map.isLocationSolid(uMapCheck) && ray.fDistance < fDepth) {
         if (fRayLength.x < fRayLength.y) {
             uMapCheck.x += iStep.x;
             ray.fDistance = fRayLength.x;
@@ -131,15 +132,11 @@ void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
         if (y <= fCeiling) {
             img.setPixel(x, y, Color::LightBlue);
         } else if (y > fCeiling && y <= fFloor) {
-            if (ray.fDistance < fDepth && fShade > 0) {
-                ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-                Coords<unsigned> uSampled = this->sampleCoords(ray.fSample, uWallSize);
-                Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
-                sampled.shade(fShade);
-                img.setPixel(x, y, sampled);
-            } else {
-                img.setPixel(x, y, Color::Black);
-            }
+            ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
+            Coords<unsigned> uSampled = this->sampleCoords(ray.fSample, uWallSize);
+            Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
+            sampled.shade(fShade);
+            img.setPixel(x, y, sampled);
         } else {
             float fPlaneZ = (size.y / 2.0f) / (float(y) - (size.y / 2.0f));
             Coords<float> fPlanePoint =
