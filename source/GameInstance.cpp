@@ -39,20 +39,20 @@ void GameInstance::init()
     win.display();
 
     texture.create(uSize.x, uSize.y);
+
+    std::pair<sf::Texture, sf::Sprite> crosshair;
+    extraSprites.push_back(std::move(crosshair));
+    const Frame &cros(storage.get<Frame>("crosshair"));
+    Coords<unsigned> crossPosition(uSize / 2 - cros.getSize() / 2);
+    crosshair.first.create(cros.getSize().x, cros.getSize().y);
+    crosshair.first.update(cros.getFramePtr());
+    crosshair.second.setPosition(crossPosition.x, crossPosition.y);
+    extraSprites.push_back(std::move(crosshair));
+    extraSprites.back().second.setTexture(extraSprites.back().first);
 }
 
 void GameInstance::update(const float fElapsedTime)
 {
-    // sf::Texture crosshair;
-    // sf::Sprite crosshairSprite;
-
-    // Coords<unsigned> crossPosition(uSize / 2 -
-    //                               storage.get<Frame>("crosshair").getSize() / 2);
-
-    // crosshair.loadFromFile("./assets/crosshair.png");
-    // crosshairSprite.setTexture(crosshair);
-    // crosshairSprite.setPosition(crossPosition.x, crossPosition.y);
-
     // float secs = 0;
 
     // secs += fElapsedTime;
@@ -70,6 +70,7 @@ void GameInstance::drawToScreen(const uint8_t *const ptr)
     sprite.setTexture(texture);
 
     win.draw(sprite);
+    for (auto &[_, i]: extraSprites) { win.draw(i); }
     win.display();
 }
 
@@ -130,7 +131,8 @@ void GameInstance::handleInput(const float &fElapsedTime)
                 switch (event.key.code) {
                     case sf::Keyboard::Escape: win.close(); break;
                     case sf::Keyboard::H: {
-                        logger.debug() << "Screenshit !"; logger.endl();
+                        logger.debug() << "Screenshit !";
+                        logger.endl();
                         texture.copyToImage().saveToFile("capture.png");
                     } break;
                     case sf::Keyboard::P: {

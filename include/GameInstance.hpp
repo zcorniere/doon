@@ -24,6 +24,7 @@ private:
     void handleInput(const float &);
 
 private:
+    std::deque<std::pair<sf::Texture, sf::Sprite>> extraSprites;
     std::string mapName;
     sf::RenderWindow win;
     sf::Texture texture;
