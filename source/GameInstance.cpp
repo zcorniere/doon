@@ -53,13 +53,13 @@ void GameInstance::init()
 
 void GameInstance::update(const float fElapsedTime)
 {
-    // float secs = 0;
+    static float secs = 0;
 
-    // secs += fElapsedTime;
-    // if (secs >= 0.10f) {
-    win.setTitle(std::to_string(1.0f / fElapsedTime));
-    //    secs = 0;
-    //}
+    secs += fElapsedTime;
+    if (secs >= 0.10f) {
+        win.setTitle(std::to_string(1.0f / fElapsedTime));
+        secs = 0;
+    }
 
     this->handleInput(fElapsedTime);
 }
