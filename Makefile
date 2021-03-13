@@ -68,7 +68,7 @@ $(NAME): start_compile $(OBJ)
 -include $(DEPS)
 
 format:
-	find . -regex '.*\.\(cpp\|hpp\)' -exec clang-format -style=file -i {} \;
+	find $(SRC_FOLDER) $(ENGINE) $(HEADP) -regex '.*\.\(cpp\|hpp\)' -exec clang-format -style=file -i {} \;
 .PHONY: format
 
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
