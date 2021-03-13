@@ -15,6 +15,7 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
     for (auto &i: qObjects) {
         fut.push_back(pool.push(
             [&i, &map, this](int, float fElapsedTime) {
+                if (map.isLocationSolid(i->getPosition())) i->setRemove(true);
                 if (i->needRemove()) return;
                 Coords<float> fPotential(i->update(fElapsedTime));
                 if (fPotential == i->getPosition()) return;
