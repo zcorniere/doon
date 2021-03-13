@@ -96,7 +96,7 @@ void GameInstance::populateMap(const Map &map)
         } else {
             logger.info("GAME_INSTANCE") << "New Pogger: " << roll;
             logger.endl();
-            object.addObject(std::make_unique<Poggers>(roll + 0.5f));
+            object.addObject(std::make_unique<Poggers>(roll));
         }
     }
 
