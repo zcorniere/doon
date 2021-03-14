@@ -2,26 +2,30 @@
 #define _MAP_HPP_
 
 #include "Coords.hpp"
+#include "interface/IMap.hpp"
 #include <deque>
 #include <filesystem>
 #include <string>
 
-class Map
+class Map: public IMap
 {
 public:
     Map(const std::filesystem::path);
-    Map(const Map &) = default;
     ~Map();
     Coords<unsigned> getSize() const;
-    inline char operator[](const std::size_t idx) const { return map[idx]; }
-    inline char at(const std::size_t idx) const { return map.at(idx); }
-    inline char at(const Coords<unsigned> &idx) const
+    inline char at(const Coords<unsigned> &idx) final
+    {
+        return map.at(idx.y * width + idx.x);
+    }
+    inline char at(const Coords<unsigned> &idx) const final
     {
         return map.at(idx.y * width + idx.x);
     }
 
     std::deque<Coords<unsigned>> getChars(const char c) const;
-    bool isLocationSolid(const Coords<unsigned> &) const;
+    bool isLocationSolid(const Coords<unsigned> &) const final;
+
+    const std::string &getTextureName(const char)const final;
 
 public:
     std::string map;

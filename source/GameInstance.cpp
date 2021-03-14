@@ -10,10 +10,11 @@
 #include <random>
 
 constexpr const char tIcon[] = "pogger";
+constexpr const char sAssetsPath[] = "./assets/";
 
-GameInstance::GameInstance(const Coords<unsigned> &u, Storage &s, ThreadPool &p,
+GameInstance::GameInstance(const Coords<unsigned> &u, ThreadPool &p,
                            ObjectManager &o)
-    : IGame(u, s, p, o), mapName("main"), win()
+    : IGame(u, p, o), storage(sAssetsPath), mapName("main"), win()
 {
     // Player is always the object placed at index 0
     object.addObject(std::make_unique<Player>(storage.get<Map>(mapName).getSize() / 2));
@@ -78,7 +79,9 @@ const Coords<unsigned> &GameInstance::getSize() const { return uSize; }
 
 bool GameInstance::isRunning() const { return win.isOpen(); }
 
-const std::string &GameInstance::getMapName() const { return mapName; }
+const Map &GameInstance::getMap() const { return storage.get<Map>(mapName); }
+
+const Frame &GameInstance::getTexture(const std::string &name) const { return storage.get<Frame>(name); }
 
 void GameInstance::populateMap(const Map &map)
 {

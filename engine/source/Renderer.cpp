@@ -7,11 +7,10 @@
 constexpr const float fFOV = M_PI / 4.0f;
 constexpr const float fDepth = 100;
 
-constexpr const char sWallTexture[] = "redbrick";
 constexpr const char sFloorTexture[] = "greystone";
 
-Renderer::Renderer(ThreadPool &p, const Storage &s, const Coords<unsigned> sze)
-    : size(std::move(sze)), pool(p), storage(s)
+Renderer::Renderer(ThreadPool &p, const Coords<unsigned> sze)
+    : size(std::move(sze)), pool(p)
 {
     qDepthBuffer.resize(size);
     img.create(size);
@@ -19,7 +18,7 @@ Renderer::Renderer(ThreadPool &p, const Storage &s, const Coords<unsigned> sze)
 
 Renderer::~Renderer() {}
 
-const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
+const uint8_t *Renderer::update(const IGame &game, const IMap &map, const ObjectManager &obj,
                                 const unsigned uPovIndex)
 {
     const auto &pPov = obj.at(uPovIndex);
@@ -32,7 +31,7 @@ const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
     ray.fOrigin = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
-            [this, &map](int, const float fAngle, const unsigned x,
+            [this, &game, &map](int, const float fAngle, const unsigned x,
                          Renderer::Ray rayDef) {
                 rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
@@ -41,7 +40,7 @@ const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
                 this->computeColumn(map, rayDef);
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           rayDef.fDistance);
-                this->drawColumn(x, rayDef);
+                this->drawColumn(map, game, x, rayDef);
             },
             pPov->getAngle(), i, ray);
     }
@@ -50,8 +49,8 @@ const uint8_t *Renderer::update(const Map &map, const ObjectManager &obj,
     for (const auto &i: obj.getObjects()) {
         if (obj.at(uPovIndex) == i || !i->getTextureName()) continue;
         qObj.push_back(pool.push(
-            [this, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
-                this->drawObject(i, fCamPosition, fEyeAngle);
+            [this, &game, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
+                this->drawObject(game, i, fCamPosition, fEyeAngle);
             },
             pPov->getPosition(), fEyeAngle));
     }
@@ -67,7 +66,7 @@ void Renderer::resize(Coords<unsigned> fNewCoords)
     img.create(size);
 }
 
-void Renderer::computeColumn(const Map &map, Renderer::Ray &ray) const
+void Renderer::computeColumn(const IMap &map, Renderer::Ray &ray) const
 {
     Coords<float> fRayDelta(std::abs(1 / ray.fDirection.x),
                             std::abs(1 / ray.fDirection.y));
@@ -101,6 +100,7 @@ void Renderer::computeColumn(const Map &map, Renderer::Ray &ray) const
             fRayLength.y += fRayDelta.y;
         }
     }
+    ray.cHit = map.at(uMapCheck);
     Coords<float> fIntersection(ray.fOrigin + ray.fDirection * ray.fDistance);
     Coords<float> fBlockMid(uMapCheck);
     fBlockMid += 0.5f;
@@ -117,11 +117,11 @@ void Renderer::computeColumn(const Map &map, Renderer::Ray &ray) const
     ray.fDistance *= ray.fFish;
 }
 
-void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
+void Renderer::drawColumn(const IMap &map, const IGame &game, const unsigned x, Renderer::Ray &ray)
 {
-    const Frame &iWall(storage.get<Frame>(sWallTexture));
+    const Frame &iWall(game.getTexture(map.getTextureName(ray.cHit)));
     const Coords<unsigned> uWallSize(iWall.getSize());
-    const Frame &iFloor(storage.get<Frame>(sFloorTexture));
+    const Frame &iFloor(game.getTexture(sFloorTexture));
     const Coords<unsigned> uFloorSize(iFloor.getSize());
 
     float fCeiling = (size.y >> 1) - (size.y / ray.fDistance);
@@ -150,33 +150,10 @@ void Renderer::drawColumn(const unsigned x, Renderer::Ray &ray)
     }
 }
 
-const Pixel Renderer::sampleTexture(const Coords<float> &fSample,
-                                    const std::string &texture) const
-{
-    try {
-        const Frame &img(storage.get<Frame>(texture));
-        const Coords<unsigned> imgSize = img.getSize();
-        const Coords<unsigned> uSample(
-            std::min(unsigned(fSample.x * imgSize.x), imgSize.x - 1),
-            std::min(unsigned(fSample.y * imgSize.y), imgSize.y - 1));
-        return img.getPixel(uSample.x, uSample.y);
-    } catch (const std::out_of_range &oor) {
-        logger.err("RENDERER") << "Missing texture : " << texture << "!";
-        logger.endl();
-        return sf::Color::Black;
-    }
-}
-
-void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
+void Renderer::drawObject(const IGame &game, const std::unique_ptr<AObject> &obj,
                           const Coords<float> &fCamPosition, const float &fEyeAngle)
 {
     std::string texture(obj->getTextureName().value());
-    if (!storage.contains<Frame>(texture)) {
-        logger.err("RENDERER") << "Texture not found : " << texture;
-        logger.endl();
-        obj->setRemove(true);
-        return;
-    }
     Coords<float> fVec(obj->getPosition<float>() - fCamPosition);
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
@@ -184,7 +161,7 @@ void Renderer::drawObject(const std::unique_ptr<AObject> &obj,
     bool bInCamFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
     if (!bInCamFOV || fDistanceToPlayer < 0.5f || fDistanceToPlayer >= fDepth) return;
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const Frame &iSprite(storage.get<Frame>(texture));
+    const Frame &iSprite(game.getTexture(texture));
     Coords<unsigned> uImgSize(iSprite.getSize());
     float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
     float fObjFloor = size.y - fObjCeiling;

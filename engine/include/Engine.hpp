@@ -5,9 +5,9 @@
 #include "Logger.hpp"
 #include "ObjectManager.hpp"
 #include "Renderer.hpp"
-#include "Storage.hpp"
 #include "ThreadPool.hpp"
 #include "interface/IGame.hpp"
+#include "interface/IMap.hpp"
 #include <chrono>
 
 template <std::derived_from<IGame> T, unsigned FPS = 60>
@@ -15,12 +15,12 @@ class Engine
 {
 public:
     Engine() = delete;
-    Engine(const Coords<unsigned> size, const std::string &sAssets)
-        : stor(sAssets),
+    Engine(const Coords<unsigned> size)
+        :
           pool(),
-          rendy(pool, stor, size),
+          rendy(pool, size),
           objects(pool),
-          game(size, stor, pool, objects)
+          game(size, pool, objects)
     {
     }
     ~Engine() = default;
@@ -32,7 +32,7 @@ public:
 
         game.init();
         while (game.isRunning()) {
-            const Map &map(stor.get<Map>(game.getMapName()));
+            const IMap &map(game.getMap());
             auto tp2 = std::chrono::system_clock::now();
             std::chrono::duration<float> elapsedTime(tp2 - tp1);
             float fElapsedTime = elapsedTime.count();
@@ -40,7 +40,7 @@ public:
 
             game.update(fElapsedTime);
             objects.update(map, fElapsedTime);
-            frame_ptr = rendy.update(map, objects, 0);
+            frame_ptr = rendy.update(game, map, objects, 0);
 
             if (frame_ptr == nullptr) {
                 logger.err("ENGINE") << "Frame pointer is null !";
@@ -54,7 +54,6 @@ public:
     }
 
 private:
-    Storage stor;
     ThreadPool pool;
     Renderer rendy;
     ObjectManager objects;

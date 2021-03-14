@@ -2,6 +2,11 @@
 #include <fstream>
 #include <streambuf>
 
+const std::string sWallTexture = "redbrick";
+const std::string sWoodTexture = "wood";
+
+const std::string sFloorTexture = "greystone";
+
 Map::Map(const std::filesystem::path path)
 {
     std::ifstream file(path);
@@ -38,7 +43,17 @@ std::deque<Coords<unsigned>> Map::getChars(const char c) const
 
 bool Map::isLocationSolid(const Coords<unsigned> &idx) const
 {
-    return this->at(idx) == '#';
+    auto c = this->at(idx);
+    return c == '#' || c == 'w';
+}
+
+const std::string &Map::getTextureName(const char c)const {
+    switch (c) {
+        case '#': return sWallTexture;
+        case '.': return sFloorTexture;
+        case 'w': return sWoodTexture;
+        default: return sWallTexture;
+    }
 }
 
 std::ostream &operator<<(std::ostream &os, const Map &other)

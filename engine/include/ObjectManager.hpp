@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Map.hpp"
+#include "interface/IMap.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
 #include <deque>
@@ -21,11 +21,11 @@ public:
     {
         qObjects.push_back(std::move(obj));
     }
-    void update(const Map &, const float);
+    void update(const IMap &, const float);
     void computeCollision(std::unique_ptr<AObject> &);
 
 private:
-    Coords<float> resolveWallCollision(const Map &, std::unique_ptr<AObject> &,
+    Coords<float> resolveWallCollision(const IMap &, std::unique_ptr<AObject> &,
                                        const Coords<float> &) const;
 
 private:

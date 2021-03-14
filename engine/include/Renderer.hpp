@@ -4,9 +4,9 @@
 #include "Coords.hpp"
 #include "DepthBuffer.hpp"
 #include "Frame.hpp"
-#include "Map.hpp"
+#include "interface/IMap.hpp"
+#include "interface/IGame.hpp"
 #include "ObjectManager.hpp"
-#include "Storage.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
 #include <atomic>
@@ -25,19 +25,19 @@ public:
         float fDistance = 0.0f;
         Coords<float> fContact;
         Coords<float> fSample;
+        char cHit;
     };
 
 public:
-    Renderer(ThreadPool &, const Storage &, const Coords<unsigned>);
+    Renderer(ThreadPool &, const Coords<unsigned>);
     Renderer(const Renderer &) = delete;
     Renderer(Renderer &) = delete;
 
     ~Renderer();
-    const uint8_t *update(const Map &, const ObjectManager &, const unsigned);
+    const uint8_t *update(const IGame &, const IMap &, const ObjectManager &, const unsigned);
     void resize(Coords<unsigned>);
 
 private:
-    const Pixel sampleTexture(const Coords<float> &, const std::string &) const;
     const Coords<unsigned> sampleCoords(const Coords<float> &fSample,
                                         const Coords<float> &fSize) const
     {
@@ -45,10 +45,9 @@ private:
                 std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
     }
 
-    void computeColumn(const Map &, Ray &) const;
-    void drawColumn(const unsigned, Ray &);
-
-    void drawObject(const std::unique_ptr<AObject> &, const Coords<float> &,
+    void computeColumn(const IMap &, Ray &) const;
+    void drawColumn(const IMap &, const IGame &, const unsigned, Ray &);
+    void drawObject(const IGame &, const std::unique_ptr<AObject> &, const Coords<float> &,
                     const float &);
 
 private:
@@ -58,7 +57,6 @@ private:
     DepthBuffer qDepthBuffer;
 
     ThreadPool &pool;
-    const Storage &storage;
 };
 
 #endif    //_RENDERER_HPP_

@@ -8,7 +8,7 @@ ObjectManager::ObjectManager(ThreadPool &p): pool(p) {}
 
 ObjectManager::~ObjectManager() {}
 
-void ObjectManager::update(const Map &map, const float fElapsedTime)
+void ObjectManager::update(const IMap &map, const float fElapsedTime)
 {
     std::deque<std::future<void>> fut;
 
@@ -31,7 +31,7 @@ void ObjectManager::update(const Map &map, const float fElapsedTime)
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
 }
 
-Coords<float> ObjectManager::resolveWallCollision(const Map &map,
+Coords<float> ObjectManager::resolveWallCollision(const IMap &map,
                                                   std::unique_ptr<AObject> &obj,
                                                   const Coords<float> &fPotential) const
 {
