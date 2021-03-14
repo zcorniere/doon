@@ -33,10 +33,10 @@ const uint8_t *Renderer::update(const IGame &game, const IMap &map,
         fur.at(i) = pool.push(
             [this, &game, &map](int, const float fAngle, const unsigned x,
                                 Renderer::Ray rayDef) {
-                rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
-                rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
-                rayDef.fDirection.x = std::sin(rayDef.fRayAngle);
-                rayDef.fDirection.y = std::cos(rayDef.fRayAngle);
+                float fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
+                rayDef.fFish = std::cos(fRayAngle - fAngle);
+                rayDef.fDirection.x = std::sin(fRayAngle);
+                rayDef.fDirection.y = std::cos(fRayAngle);
                 this->computeColumn(map, rayDef);
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           rayDef.fDistance);
