@@ -7,7 +7,7 @@
 #include <filesystem>
 #include <string>
 
-class Map: public IMap
+class Map : public IMap
 {
 public:
     Map(const std::filesystem::path);
@@ -25,7 +25,7 @@ public:
     std::deque<Coords<unsigned>> getChars(const char c) const;
     bool isLocationSolid(const Coords<unsigned> &) const final;
 
-    const std::string &getTextureName(const char)const final;
+    const std::string &getTextureName(const char) const final;
 
 public:
     std::string map;

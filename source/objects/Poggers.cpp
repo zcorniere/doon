@@ -5,10 +5,6 @@ Poggers::Poggers(Coords<float> pos): AObject(std::move(pos), "pogger"), ALife(1)
     fSize = 1.0f;
 }
 
-Poggers::Poggers(float x, float y): Poggers(Coords(x, y)) {}
-
-Poggers::~Poggers() {}
-
 Coords<float> Poggers::update(const float)
 {
     if (timeout < PoggerTimeout) {

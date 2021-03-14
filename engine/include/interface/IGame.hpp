@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Coords.hpp"
-#include "interface/IMap.hpp"
-#include "ObjectManager.hpp"
 #include "Frame.hpp"
+#include "ObjectManager.hpp"
 #include "ThreadPool.hpp"
+#include "interface/IMap.hpp"
 
 class IGame
 {
@@ -19,7 +19,7 @@ public:
     virtual const Coords<unsigned> &getSize() const = 0;
     virtual bool isRunning() const = 0;
     virtual const IMap &getMap() const = 0;
-    virtual const Frame &getTexture(const std::string &)const = 0;
+    virtual const Frame &getTexture(const std::string &) const = 0;
 
 protected:
     Coords<unsigned> uSize;

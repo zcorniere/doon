@@ -16,11 +16,7 @@ class Engine
 public:
     Engine() = delete;
     Engine(const Coords<unsigned> size)
-        :
-          pool(),
-          rendy(pool, size),
-          objects(pool),
-          game(size, pool, objects)
+        : pool(), rendy(pool, size), objects(pool), game(size, pool, objects)
     {
     }
     ~Engine() = default;

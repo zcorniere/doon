@@ -10,8 +10,6 @@ class Poggers : public virtual AObject, public virtual ALife
 {
 public:
     Poggers(Coords<float>);
-    Poggers(float, float);
-    ~Poggers();
 
     virtual Coords<float> update(const float) final;
     virtual void onCollision(const std::unique_ptr<AObject> &other) final;

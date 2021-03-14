@@ -4,7 +4,6 @@
 
 const std::string sWallTexture = "redbrick";
 const std::string sWoodTexture = "wood";
-
 const std::string sFloorTexture = "greystone";
 
 Map::Map(const std::filesystem::path path)
@@ -47,7 +46,8 @@ bool Map::isLocationSolid(const Coords<unsigned> &idx) const
     return c == '#' || c == 'w';
 }
 
-const std::string &Map::getTextureName(const char c)const {
+const std::string &Map::getTextureName(const char c) const
+{
     switch (c) {
         case '#': return sWallTexture;
         case '.': return sFloorTexture;

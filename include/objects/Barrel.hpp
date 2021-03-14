@@ -7,8 +7,6 @@ class Barrel : public virtual AObject
 {
 public:
     Barrel(Coords<float>);
-    Barrel(float, float);
-    ~Barrel();
 
     Coords<float> update(const float) final;
 };

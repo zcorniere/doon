@@ -18,8 +18,8 @@ Renderer::Renderer(ThreadPool &p, const Coords<unsigned> sze)
 
 Renderer::~Renderer() {}
 
-const uint8_t *Renderer::update(const IGame &game, const IMap &map, const ObjectManager &obj,
-                                const unsigned uPovIndex)
+const uint8_t *Renderer::update(const IGame &game, const IMap &map,
+                                const ObjectManager &obj, const unsigned uPovIndex)
 {
     const auto &pPov = obj.at(uPovIndex);
     Coords<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
@@ -32,7 +32,7 @@ const uint8_t *Renderer::update(const IGame &game, const IMap &map, const Object
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
             [this, &game, &map](int, const float fAngle, const unsigned x,
-                         Renderer::Ray rayDef) {
+                                Renderer::Ray rayDef) {
                 rayDef.fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.fFish = std::cos(rayDef.fRayAngle - fAngle);
                 rayDef.fDirection.x = std::sin(rayDef.fRayAngle);
@@ -49,7 +49,8 @@ const uint8_t *Renderer::update(const IGame &game, const IMap &map, const Object
     for (const auto &i: obj.getObjects()) {
         if (obj.at(uPovIndex) == i || !i->getTextureName()) continue;
         qObj.push_back(pool.push(
-            [this, &game, &i](int, const Coords<float> &fCamPosition, const float &fEyeAngle) {
+            [this, &game, &i](int, const Coords<float> &fCamPosition,
+                              const float &fEyeAngle) {
                 this->drawObject(game, i, fCamPosition, fEyeAngle);
             },
             pPov->getPosition(), fEyeAngle));
@@ -117,7 +118,8 @@ void Renderer::computeColumn(const IMap &map, Renderer::Ray &ray) const
     ray.fDistance *= ray.fFish;
 }
 
-void Renderer::drawColumn(const IMap &map, const IGame &game, const unsigned x, Renderer::Ray &ray)
+void Renderer::drawColumn(const IMap &map, const IGame &game, const unsigned x,
+                          Renderer::Ray &ray)
 {
     const Frame &iWall(game.getTexture(map.getTextureName(ray.cHit)));
     const Coords<unsigned> uWallSize(iWall.getSize());

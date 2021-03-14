@@ -12,8 +12,7 @@
 constexpr const char tIcon[] = "pogger";
 constexpr const char sAssetsPath[] = "./assets/";
 
-GameInstance::GameInstance(const Coords<unsigned> &u, ThreadPool &p,
-                           ObjectManager &o)
+GameInstance::GameInstance(const Coords<unsigned> &u, ThreadPool &p, ObjectManager &o)
     : IGame(u, p, o), storage(sAssetsPath), mapName("main"), win()
 {
     // Player is always the object placed at index 0
@@ -81,7 +80,10 @@ bool GameInstance::isRunning() const { return win.isOpen(); }
 
 const Map &GameInstance::getMap() const { return storage.get<Map>(mapName); }
 
-const Frame &GameInstance::getTexture(const std::string &name) const { return storage.get<Frame>(name); }
+const Frame &GameInstance::getTexture(const std::string &name) const
+{
+    return storage.get<Frame>(name);
+}
 
 void GameInstance::populateMap(const Map &map)
 {

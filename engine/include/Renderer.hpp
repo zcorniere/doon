@@ -4,11 +4,11 @@
 #include "Coords.hpp"
 #include "DepthBuffer.hpp"
 #include "Frame.hpp"
-#include "interface/IMap.hpp"
-#include "interface/IGame.hpp"
 #include "ObjectManager.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
+#include "interface/IGame.hpp"
+#include "interface/IMap.hpp"
 #include <atomic>
 #include <execution>
 #include <memory>
@@ -34,7 +34,8 @@ public:
     Renderer(Renderer &) = delete;
 
     ~Renderer();
-    const uint8_t *update(const IGame &, const IMap &, const ObjectManager &, const unsigned);
+    const uint8_t *update(const IGame &, const IMap &, const ObjectManager &,
+                          const unsigned);
     void resize(Coords<unsigned>);
 
 private:
@@ -47,8 +48,8 @@ private:
 
     void computeColumn(const IMap &, Ray &) const;
     void drawColumn(const IMap &, const IGame &, const unsigned, Ray &);
-    void drawObject(const IGame &, const std::unique_ptr<AObject> &, const Coords<float> &,
-                    const float &);
+    void drawObject(const IGame &, const std::unique_ptr<AObject> &,
+                    const Coords<float> &, const float &);
 
 private:
     Frame img;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "interface/IMap.hpp"
 #include "ThreadPool.hpp"
 #include "abstract/AObject.hpp"
+#include "interface/IMap.hpp"
 #include <deque>
 #include <memory>
 

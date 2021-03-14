@@ -20,7 +20,7 @@ public:
     const Coords<unsigned> &getSize() const final;
     bool isRunning() const final;
     const Map &getMap() const final;
-    const Frame &getTexture(const std::string &)const final;
+    const Frame &getTexture(const std::string &) const final;
 
 private:
     void populateMap(const Map &);
