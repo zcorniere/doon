@@ -24,9 +24,25 @@ public:
         return std::any_cast<const T &>(stor.at(name));
     }
     template <typename T>
+    inline T &get(const std::string &name)
+    {
+        return std::any_cast<T &>(stor.at(name));
+    }
+    template <typename T>
     inline bool contains(const std::string &name) const
     {
         return stor.contains(name) && (stor.at(name).type() == typeid(T));
+    }
+
+    template <typename T>
+    std::deque<std::string> getAll() const
+    {
+        std::deque<std::string> ret;
+
+        for (auto &[i, e]: stor) {
+            if (e.type() == typeid(T)) ret.push_back(i);
+        }
+        return ret;
     }
 
 private:
