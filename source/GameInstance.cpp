@@ -13,7 +13,7 @@ constexpr const char tIcon[] = "pogger";
 constexpr const char sAssetsPath[] = "./assets/";
 
 GameInstance::GameInstance(const Coords<unsigned> &u, ThreadPool &p, ObjectManager &o)
-    : IGame(u, p, o), storage(sAssetsPath), mapName("main"), win()
+    : IGame(u, p, o), storage(sAssetsPath), maps(storage), win()
 {
     // Player is always the object placed at index 0
     object.addObject(std::make_unique<Player>(this->getMap().getSize() / 2));
@@ -78,7 +78,7 @@ const Coords<unsigned> &GameInstance::getSize() const { return uSize; }
 
 bool GameInstance::isRunning() const { return win.isOpen(); }
 
-const Map &GameInstance::getMap() const { return storage.get<Map>(mapName); }
+const Map &GameInstance::getMap() const { return maps.get(); }
 
 const Frame &GameInstance::getTexture(const std::string &name) const
 {
@@ -147,10 +147,11 @@ void GameInstance::handleInput(const float &fElapsedTime)
                     } break;
                     case sf::Keyboard::R: {
                         object.getObjects().at(0)->setPosition(this->getMap().getSize() /
+                                                               2);
                         object.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::M: {
-                        mapName = "s";
+                        ++maps;
                         object.getObjects().at(0)->setPosition(this->getMap().getSize() /
                                                                2);
                         object.getObjects().at(0)->setAngle(0.0f);

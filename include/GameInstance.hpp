@@ -4,6 +4,7 @@
 #include "Coords.hpp"
 #include "Map.hpp"
 #include "Storage.hpp"
+#include "MapManager.hpp"
 #include "interface/IGame.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -28,8 +29,8 @@ private:
 
 private:
     Storage storage;
+    MapManager maps;
     std::deque<std::pair<sf::Texture, sf::Sprite>> extraSprites;
-    std::string mapName;
     sf::RenderWindow win;
     sf::Texture texture;
     sf::Sprite sprite;
