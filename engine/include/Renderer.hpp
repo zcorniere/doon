@@ -22,9 +22,13 @@ public:
         Coords<float> fOrigin;
         Coords<float> fDirection;
         float fDistance = 0.0f;
-        Coords<float> fContact;
         Coords<float> fSample;
         char cHit;
+        Coords<unsigned> uMap;
+
+        void correctDistance();
+        void shoot(const IMap &);
+        void sample();
     };
 
 public:
@@ -45,7 +49,7 @@ private:
                 std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
     }
 
-    void computeColumn(const IMap &, Ray &) const;
+    void sampleColumn(Ray &) const;
     void drawColumn(const IMap &, const IGame &, const unsigned, Ray &);
     void drawObject(const IGame &, const std::unique_ptr<AObject> &,
                     const Coords<float> &, const float &);

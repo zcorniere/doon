@@ -9,6 +9,60 @@ constexpr const float fDepth = 100;
 
 constexpr const char sFloorTexture[] = "greystone";
 
+void Renderer::Ray::shoot(const IMap &map)
+{
+    Coords<float> fRayDelta(std::abs(1 / this->fDirection.x),
+                            std::abs(1 / this->fDirection.y));
+    Coords<float> fRayLength;
+    Coords<int> iStep;
+
+    if (this->fDirection.x < 0) {
+        iStep.x = -1;
+        fRayLength.x = (this->fOrigin.x - float(this->uMap.x)) * fRayDelta.x;
+    } else {
+        iStep.x = 1;
+        fRayLength.x = (float(this->uMap.x) + 1.0f - this->fOrigin.x) * fRayDelta.x;
+    }
+    if (this->fDirection.y < 0) {
+        iStep.y = -1;
+        fRayLength.y = (this->fOrigin.y - float(this->uMap.y)) * fRayDelta.y;
+    } else {
+        iStep.y = 1;
+        fRayLength.y = (float(this->uMap.y) + 1.0f - this->fOrigin.y) * fRayDelta.y;
+    }
+
+    while (!map.isLocationSolid(this->uMap) && this->fDistance < fDepth) {
+        if (fRayLength.x < fRayLength.y) {
+            this->uMap.x += iStep.x;
+            this->fDistance = fRayLength.x;
+            fRayLength.x += fRayDelta.x;
+        } else {
+            this->uMap.y += iStep.y;
+            this->fDistance = fRayLength.y;
+            fRayLength.y += fRayDelta.y;
+        }
+    }
+    this->cHit = map.at(this->uMap);
+}
+
+void Renderer::Ray::sample()
+{
+    Coords<float> fIntersection(this->fOrigin + this->fDirection * this->fDistance);
+    Coords<float> fBlockMid(this->uMap);
+    fBlockMid += 0.5f;
+    float fTestAngle =
+        std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
+    if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
+        this->fSample.x = fIntersection.y - this->uMap.y;
+    else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
+        this->fSample.x = fIntersection.x - this->uMap.x;
+    else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
+        this->fSample.x = fIntersection.x - this->uMap.x;
+    else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
+        this->fSample.x = fIntersection.y - this->uMap.y;
+}
+void Renderer::Ray::correctDistance() { this->fDistance *= this->fFish; }
+
 Renderer::Renderer(ThreadPool &p, const Coords<unsigned> sze)
     : size(std::move(sze)), pool(p)
 {
@@ -29,6 +83,7 @@ const uint8_t *Renderer::update(const IGame &game, const IMap &map,
 
     Renderer::Ray ray;
     ray.fOrigin = pPov->getPosition();
+    ray.uMap = pPov->getPosition();
     for (unsigned i = 0; i < size.x; ++i) {
         fur.at(i) = pool.push(
             [this, &game, &map](int, const float fAngle, const unsigned x,
@@ -37,7 +92,9 @@ const uint8_t *Renderer::update(const IGame &game, const IMap &map,
                 rayDef.fFish = std::cos(fRayAngle - fAngle);
                 rayDef.fDirection.x = std::sin(fRayAngle);
                 rayDef.fDirection.y = std::cos(fRayAngle);
-                this->computeColumn(map, rayDef);
+                rayDef.shoot(map);
+                rayDef.sample();
+                rayDef.correctDistance();
                 std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
                           rayDef.fDistance);
                 this->drawColumn(map, game, x, rayDef);
@@ -65,57 +122,6 @@ void Renderer::resize(Coords<unsigned> fNewCoords)
 {
     size = std::move(fNewCoords);
     img.create(size);
-}
-
-void Renderer::computeColumn(const IMap &map, Renderer::Ray &ray) const
-{
-    Coords<float> fRayDelta(std::abs(1 / ray.fDirection.x),
-                            std::abs(1 / ray.fDirection.y));
-    Coords<unsigned> uMapCheck(ray.fOrigin);
-    Coords<float> fRayLength;
-    Coords<int> iStep;
-
-    if (ray.fDirection.x < 0) {
-        iStep.x = -1;
-        fRayLength.x = (ray.fOrigin.x - float(uMapCheck.x)) * fRayDelta.x;
-    } else {
-        iStep.x = 1;
-        fRayLength.x = (float(uMapCheck.x) + 1.0f - ray.fOrigin.x) * fRayDelta.x;
-    }
-    if (ray.fDirection.y < 0) {
-        iStep.y = -1;
-        fRayLength.y = (ray.fOrigin.y - float(uMapCheck.y)) * fRayDelta.y;
-    } else {
-        iStep.y = 1;
-        fRayLength.y = (float(uMapCheck.y) + 1.0f - ray.fOrigin.y) * fRayDelta.y;
-    }
-
-    while (!map.isLocationSolid(uMapCheck) && ray.fDistance < fDepth) {
-        if (fRayLength.x < fRayLength.y) {
-            uMapCheck.x += iStep.x;
-            ray.fDistance = fRayLength.x;
-            fRayLength.x += fRayDelta.x;
-        } else {
-            uMapCheck.y += iStep.y;
-            ray.fDistance = fRayLength.y;
-            fRayLength.y += fRayDelta.y;
-        }
-    }
-    ray.cHit = map.at(uMapCheck);
-    Coords<float> fIntersection(ray.fOrigin + ray.fDirection * ray.fDistance);
-    Coords<float> fBlockMid(uMapCheck);
-    fBlockMid += 0.5f;
-    float fTestAngle =
-        std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
-    if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-        ray.fSample.x = fIntersection.y - uMapCheck.y;
-    else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-        ray.fSample.x = fIntersection.x - uMapCheck.x;
-    else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-        ray.fSample.x = fIntersection.x - uMapCheck.x;
-    else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-        ray.fSample.x = fIntersection.y - uMapCheck.y;
-    ray.fDistance *= ray.fFish;
 }
 
 void Renderer::drawColumn(const IMap &map, const IGame &game, const unsigned x,
