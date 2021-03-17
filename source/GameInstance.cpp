@@ -16,10 +16,10 @@ GameInstance::GameInstance(const Coords<unsigned> &u, ThreadPool &p, ObjectManag
     : IGame(u, p, o), storage(sAssetsPath), mapName("main"), win()
 {
     // Player is always the object placed at index 0
-    object.addObject(std::make_unique<Player>(storage.get<Map>(mapName).getSize() / 2));
+    object.addObject(std::make_unique<Player>(this->getMap().getSize() / 2));
     logger.info("GAME_INSTANCE") << "Spawned Player at " << object.at(0)->getPosition();
     logger.endl();
-    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(storage.get<Map>(mapName));
+    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(this->getMap());
 }
 
 GameInstance::~GameInstance(){};
@@ -146,14 +146,13 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         logger.endl();
                     } break;
                     case sf::Keyboard::R: {
-                        object.getObjects().at(0)->setPosition(
-                            storage.get<Map>(mapName).getSize() / 2);
+                        object.getObjects().at(0)->setPosition(this->getMap().getSize() /
                         object.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::M: {
                         mapName = "s";
-                        object.getObjects().at(0)->setPosition(
-                            storage.get<Map>(mapName).getSize() / 2);
+                        object.getObjects().at(0)->setPosition(this->getMap().getSize() /
+                                                               2);
                         object.getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::Space: {
