@@ -1,11 +1,11 @@
 #include "objects/Poggers.hpp"
 
-Poggers::Poggers(Coords<float> pos): AObject(std::move(pos), "pogger"), ALife(1)
+Poggers::Poggers(Vector<float> pos): AObject(std::move(pos), "pogger"), ALife(1)
 {
-    fSize = 1.0f;
+    fRadius = 1.0f;
 }
 
-Coords<float> Poggers::update(const float)
+Vector<float> Poggers::update(const float)
 {
     if (timeout < PoggerTimeout) {
         timeout--;

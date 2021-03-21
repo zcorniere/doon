@@ -1,7 +1,7 @@
 #ifndef _PLAYER_HPP_
 #define _PLAYER_HPP_
 
-#include "Coords.hpp"
+#include "Vector.hpp"
 #include "abstract/ALife.hpp"
 #include "abstract/AObject.hpp"
 #include "abstract/AShoot.hpp"
@@ -15,18 +15,17 @@ class Player : public virtual ALife,
                public virtual AObject
 {
 public:
-    Player(Coords<float>);
+    Player(Vector<float>);
     Player(const float, const float);
     ~Player();
-    virtual Coords<float> update(const float fElapsedTime) final;
+    virtual Vector<float> update(const float fElapsedTime) final;
 
     virtual void rotate(const Movement::Rotation, const float) final;
     virtual void move(const Movement::Move, const float) final;
-
-    virtual std::unique_ptr<AObject> shoot() final;
+    virtual void shoot() final;
 
 public:
-    Coords<float> fVelocity = 0;
+    Vector<float> fVelocity = 0;
     float fRotationVelocity = 0;
     float fSpeedModifier = 1;
     float fCooldown = 0.0f;

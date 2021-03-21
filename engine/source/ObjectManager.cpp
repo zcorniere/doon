@@ -1,5 +1,6 @@
 #include "ObjectManager.hpp"
 #include "Logger.hpp"
+#include "MapManager.hpp"
 #include "ThreadManager.hpp"
 #include <cmath>
 #include <execution>
@@ -9,8 +10,9 @@ ObjectManager::ObjectManager() {}
 
 ObjectManager::~ObjectManager() {}
 
-void ObjectManager::update(const Map &map, const float fElapsedTime)
+void ObjectManager::update(const float fElapsedTime)
 {
+    const Map &map = map_manager->get();
     std::deque<std::future<void>> fut;
 
     for (auto &i: qObjects) {

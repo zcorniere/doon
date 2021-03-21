@@ -1,15 +1,15 @@
 #include "objects/Fireball.hpp"
 #include "objects/Poggers.hpp"
 
-Fireball::Fireball(Coords<float> pos, Coords<float> velocity)
+Fireball::Fireball(Vector<float> pos, Vector<float> velocity)
     : AObject(pos, "fireball-0"), fVelocity(std::move(velocity))
 {
-    fSize = 0.8f;
+    fRadius = 0.8f;
 }
 
 Fireball::~Fireball() {}
 
-Coords<float> Fireball::update(const float fElapsed)
+Vector<float> Fireball::update(const float fElapsed)
 {
     fLifespan -= fElapsed;
     loop -= fElapsed;

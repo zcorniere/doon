@@ -1,5 +1,5 @@
 #include "objects/Barrel.hpp"
 
-Barrel::Barrel(Coords<float> pos): AObject(std::move(pos), "barrel") { fSize = 0.25f; }
+Barrel::Barrel(Vector<float> pos): AObject(std::move(pos), "barrel") { fRadius = 0.25f; }
 
-Coords<float> Barrel::update(const float) { return fPosition; }
+Vector<float> Barrel::update(const float) { return fPosition; }
