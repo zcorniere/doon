@@ -29,7 +29,7 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
-OPTIONAL_LIBS := -lpthread -ltbb
+OPTIONAL_LIBS := -lpng -lpthread -ltbb
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
