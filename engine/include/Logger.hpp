@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ThreadedQ.hpp"
+#include "Vector.hpp"
 #include <atomic>
 #include <iostream>
 #include <memory>
@@ -34,4 +35,4 @@ private:
     std::unordered_map<std::thread::id, std::stringstream> mBuffers;
 };
 
-extern Logger logger;
+extern Logger *logger;

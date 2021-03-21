@@ -1,8 +1,7 @@
-#ifndef _FRAME_HPP_
-#define _FRAME_HPP_
+#pragma once
 
-#include "Coords.hpp"
 #include "Pixel.hpp"
+#include "Vector.hpp"
 #include <cstdint>
 #include <vector>
 
@@ -10,14 +9,15 @@ class Frame
 {
 public:
     explicit Frame();
-    explicit Frame(const Coords<unsigned> &);
-    explicit Frame(const uint8_t *, const Coords<unsigned> &);
+    explicit Frame(const Vector<unsigned> &);
+    explicit Frame(const uint8_t *, const Vector<unsigned> &);
     Frame(const Frame &) = default;
     ~Frame();
 
-    void create(const Coords<unsigned> &, const Pixel = Color::Black);
+    void create(const Vector<unsigned> &, const Pixel = Color::Black);
     void rotate();
-    inline void setPixel(const Coords<unsigned> &pos, Pixel px)
+
+    inline void setPixel(const Vector<unsigned> &pos, Pixel px)
     {
         data.at(pos.y * size.x + pos.x) = std::move(px);
     }
@@ -27,8 +27,8 @@ public:
     }
 
     inline const uint8_t *getFramePtr() const { return (uint8_t *)data.data(); }
-    inline const Coords<unsigned> &getSize() const { return size; }
-    inline const Pixel &getPixel(const Coords<unsigned> &pos) const
+    inline const Vector<unsigned> &getSize() const { return size; }
+    inline const Pixel &getPixel(const Vector<unsigned> &pos) const
     {
         return data.at(pos.y * size.x + pos.x);
     }
@@ -38,8 +38,6 @@ public:
     }
 
 private:
-    Coords<unsigned> size;
+    Vector<unsigned> size;
     std::vector<Pixel> data;
 };
-
-#endif    //_FRAME_HPP_

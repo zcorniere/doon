@@ -1,5 +1,4 @@
-#ifndef _THREADPOOL_HPP_
-#define _THREADPOOL_HPP_
+#pragma once
 
 #include "ThreadedQ.hpp"
 #include <atomic>
@@ -9,14 +8,15 @@
 #include <thread>
 #include <type_traits>
 
-class ThreadPool
+class ThreadManager
 {
 public:
-    ThreadPool();
-    ThreadPool(const unsigned size);
-    ThreadPool(const ThreadPool &) = delete;
-    ThreadPool(ThreadPool &) = delete;
-    ~ThreadPool();
+    ThreadManager();
+    ThreadManager(const unsigned size);
+    ThreadManager(const ThreadManager &) = delete;
+    ThreadManager(ThreadManager &) = delete;
+    ~ThreadManager();
+    void start();
     void stop();
     size_t size() { return thread_p.size(); }
     void resize(const unsigned size);
@@ -41,4 +41,5 @@ private:
     std::atomic_bool bExit = false;
     std::deque<std::thread> thread_p;
 };
-#endif
+
+extern ThreadManager *thread_manager;
