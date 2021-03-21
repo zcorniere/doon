@@ -12,7 +12,6 @@ class ThreadManager
 {
 public:
     ThreadManager();
-    ThreadManager(const unsigned size);
     ThreadManager(const ThreadManager &) = delete;
     ThreadManager(ThreadManager &) = delete;
     ~ThreadManager();
