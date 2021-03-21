@@ -30,7 +30,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
     ray.uMap = pPov->getPosition();
     for (unsigned x = 0; x < size.x; ++x) {
         fur.at(x) = thread_manager->push(
-            [this, &map, &x](int, const float fAngle, Ray rayDef) {
+            [this, &map, x](int, const float fAngle, Ray rayDef) {
                 float fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.fFish = std::cos(fRayAngle - fAngle);
                 rayDef.fDirection.x = std::sin(fRayAngle);
@@ -63,6 +63,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
 void RenderManager::resize(Vector<unsigned> fNewVector)
 {
     size = std::move(fNewVector);
+    qDepthBuffer.resize(size);
     img.create(size);
 }
 

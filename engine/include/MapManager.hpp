@@ -10,6 +10,7 @@ public:
     MapManager();
     ~MapManager();
 
+    void start();
     MapManager &operator++();
     MapManager &operator--();
     const std::string &getName() const;

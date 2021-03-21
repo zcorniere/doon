@@ -1,9 +1,15 @@
 #include "MapManager.hpp"
 #include "StorageManager.hpp"
 
-MapManager::MapManager(): mapList(storage_manager->getAll<Map>()), idx(0){};
+MapManager::MapManager(){};
 
 MapManager::~MapManager() {}
+
+void MapManager::start()
+{
+    mapList = storage_manager->getAll<Map>();
+    idx = 0;
+}
 
 MapManager &MapManager::operator++()
 {
