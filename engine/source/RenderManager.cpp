@@ -44,7 +44,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
             },
             pPov->getAngle(), ray);
     }
-    std::for_each(std::execution::par, fur.begin(), fur.end(), [](auto &i) { i.wait(); });
+    std::for_each(fur.begin(), fur.end(), [](auto &i) { i.get(); });
 
     for (const auto &i: object_manager->getObjects()) {
         if (pPov == i || !i->getTextureName()) continue;
@@ -55,7 +55,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
             pPov->getPosition(), fEyeAngle));
     }
     std::for_each(std::execution::par, qObj.begin(), qObj.end(),
-                  [](auto &i) { i.wait(); });
+                  [](auto &i) { i.get(); });
 
     return img.getFramePtr();
 }
