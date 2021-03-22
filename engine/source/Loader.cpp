@@ -54,7 +54,10 @@ Frame Loader::loadPng(const std::filesystem::path &path)
             png_bytep px = &(row[x * 4]);
             frame.setPixel(x, y, Pixel(px[0], px[1], px[2], px[3]));
         }
+        free(row);
     }
+    free(row_pointer);
+    png_destroy_read_struct(&png, &info, nullptr);
     fclose(fp);
     return frame;
 }
