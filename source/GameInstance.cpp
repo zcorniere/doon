@@ -45,7 +45,6 @@ void GameInstance::init()
     texture.create(uSize.x, uSize.y);
 
     std::pair<sf::Texture, sf::Sprite> crosshair;
-    extraSprites.push_back(std::move(crosshair));
     const Frame &cros(storage_manager->get<Frame>("crosshair"));
     Vector<unsigned> crossPosition(uSize / 2 - cros.getSize() / 2);
     crosshair.first.create(cros.getSize().x, cros.getSize().y);
@@ -135,7 +134,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
                 switch (event.key.code) {
                     case sf::Keyboard::Escape: win.close(); break;
                     case sf::Keyboard::H: {
-                        logger->debug() << "Screenshit !";
+                        logger->debug() << "Screenshot !";
                         logger->endl();
                         texture.copyToImage().saveToFile("capture.png");
                     } break;
@@ -150,7 +149,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
                         object_manager->getObjects().at(0)->setAngle(0.0f);
                     } break;
                     case sf::Keyboard::M: {
-                        ++map_manager;
+                        ++(*map_manager);
                         object_manager->getObjects().at(0)->setPosition(
                             map_manager->get().getSize() / 2);
                         object_manager->getObjects().at(0)->setAngle(0.0f);
