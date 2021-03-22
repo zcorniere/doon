@@ -25,16 +25,13 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
     std::deque<std::future<void>> fur(size.x);
     std::deque<std::future<void>> qObj;
 
-    Ray ray;
-    ray.fOrigin = pPov->getPosition();
-    ray.uMap = pPov->getPosition();
+    Ray ray(pPov->getPosition());
     for (unsigned x = 0; x < size.x; ++x) {
         fur.at(x) = thread_manager->push(
             [this, &map, x](int, const float fAngle, Ray rayDef) {
                 float fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
+                rayDef.setRayDirection(fRayAngle);
                 rayDef.fFish = std::cos(fRayAngle - fAngle);
-                rayDef.fDirection.x = std::sin(fRayAngle);
-                rayDef.fDirection.y = std::cos(fRayAngle);
                 rayDef.shoot(map);
                 rayDef.sample();
                 rayDef.fDistance *= rayDef.fFish;
