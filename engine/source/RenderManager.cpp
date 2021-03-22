@@ -6,7 +6,6 @@
 #include "StorageManager.hpp"
 #include "ThreadManager.hpp"
 #include <cmath>
-#include <execution>
 #include <unordered_set>
 
 constexpr const float fFOV = M_PI / 4.0f;
@@ -51,8 +50,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
             },
             pPov->getPosition(), fEyeAngle));
     }
-    std::for_each(std::execution::par, qObj.begin(), qObj.end(),
-                  [](auto &i) { i.get(); });
+    std::for_each(qObj.begin(), qObj.end(), [](auto &i) { i.get(); });
 
     return img.getFramePtr();
 }

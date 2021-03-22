@@ -3,7 +3,6 @@
 #include "MapManager.hpp"
 #include "ThreadManager.hpp"
 #include <cmath>
-#include <execution>
 #include <functional>
 
 ObjectManager::ObjectManager() {}
@@ -30,7 +29,7 @@ void ObjectManager::update(const float fElapsedTime)
             fElapsedTime));
     }
 
-    std::for_each(std::execution::par, fut.begin(), fut.end(), [](auto &i) { i.wait(); });
+    std::for_each(fut.begin(), fut.end(), [](auto &i) { i.wait(); });
     std::erase_if(qObjects, [](auto &i) { return i->needRemove(); });
 }
 
