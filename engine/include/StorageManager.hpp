@@ -19,17 +19,17 @@ public:
 
     unsigned load(const std::filesystem::path &);
     template <typename T>
-    inline const T &get(const std::string &name) const
+    constexpr const T &get(const std::string &name) const
     {
         return std::any_cast<const T &>(stor.at(name));
     }
     template <typename T>
-    inline T &get(const std::string &name)
+    constexpr T &get(const std::string &name)
     {
         return std::any_cast<T &>(stor.at(name));
     }
     template <typename T>
-    inline bool contains(const std::string &name) const
+    constexpr bool contains(const std::string &name) const
     {
         return stor.contains(name) && (stor.at(name).type() == typeid(T));
     }

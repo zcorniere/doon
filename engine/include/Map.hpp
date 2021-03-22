@@ -11,8 +11,8 @@ public:
     Map(const std::filesystem::path);
     ~Map();
     Vector<unsigned> getSize() const;
-    inline char at(const Vector<unsigned> &idx) { return map.at(idx.y * width + idx.x); }
-    inline char at(const Vector<unsigned> &idx) const
+    constexpr char &at(const Vector<unsigned> &idx) { return map.at(idx.y * width + idx.x); }
+    constexpr const char &at(const Vector<unsigned> &idx) const
     {
         return map.at(idx.y * width + idx.x);
     }
