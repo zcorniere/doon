@@ -24,8 +24,8 @@ public:
     void resize(Vector<unsigned>);
 
 private:
-    constexpr const Vector<unsigned> sampleVector(const Vector<float> &fSample,
-                                                  const Vector<float> &fSize) const
+    constexpr static Vector<unsigned> sampleVector(const Vector<float> &fSample,
+                                                   const Vector<float> &fSize)
     {
         return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
                 std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};

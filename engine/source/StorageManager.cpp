@@ -1,6 +1,6 @@
 #include "StorageManager.hpp"
-#include "Logger.hpp"
 #include "Loader.hpp"
+#include "Logger.hpp"
 
 constexpr const char map_extention[] = ".map";
 const std::unordered_set<std::string> StorageManager::valid_ext = {".jpg", ".png"};

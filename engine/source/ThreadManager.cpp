@@ -35,7 +35,7 @@ void ThreadManager::new_thread(const unsigned id)
             if (this->bExit) break;
             try {
                 work = this->qWork.pop_front();
-                if (work && work.has_value()) work->operator()(id);
+                if (work && work.has_value()) (*work)(id);
             } catch (const std::exception &e) {
                 logger->err("THREAD_POOL") << id << " : " << e.what();
                 logger->endl();
