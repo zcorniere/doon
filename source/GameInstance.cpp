@@ -127,9 +127,9 @@ void GameInstance::handleInput(const float &fElapsedTime)
     while (win.pollEvent(event)) {
         switch (event.type) {
             case sf::Event::Closed: win.close(); break;
-            // case sf::Event::Resized:
-            //    rendy.resize(Vector(event.size.width, event.size.height));
-            //    break;
+            case sf::Event::Resized:
+                render_manager->resize(Vector(event.size.width, event.size.height));
+                break;
             case sf::Event::KeyPressed: {
                 switch (event.key.code) {
                     case sf::Keyboard::Escape: win.close(); break;
