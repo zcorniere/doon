@@ -29,7 +29,7 @@ GREEN := \033[32m
 CYAN := \033[36m
 
 SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
-OPTIONAL_LIBS := -lpthread -ltbb
+OPTIONAL_LIBS := -lpng -lpthread
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
 CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
@@ -42,8 +42,8 @@ MAKEFLAGS += --no-print-directory --silent
 SAY := $(BOLD)[$(CYAN)壺$(END)$(BOLD)]:
 
 all:
-	make engine
-	make $(NAME)
+	$(MAKE) engine
+	$(MAKE) $(NAME)
 .PHONY: all
 
 compile_command: all
@@ -51,7 +51,7 @@ compile_command: all
 .PHONY: compile_command
 
 profile: $(NAME)
-	make -C $(ENGINE) profile
+	$(MAKE) -C $(ENGINE) profile
 .PHONY: profile
 
 start_compile:
@@ -59,7 +59,7 @@ start_compile:
 .PHONY: start_compile
 
 engine:
-	make -C $(ENGINE)
+	$(MAKE) -C $(ENGINE)
 .PHONY: engine
 
 $(NAME): start_compile $(OBJ)
@@ -102,10 +102,10 @@ fclean: clean
 .PHONY: fclean
 
 re:
-	make clear
-	make fclean
-	make -C $(ENGINE) fclean
-	make all
+	$(MAKE) clear
+	$(MAKE) fclean
+	$(MAKE) -C $(ENGINE) fclean
+	$(MAKE) all
 .PHONY: re
 
 $(OBJ_FOLDER) $(DEP_FOLDER):

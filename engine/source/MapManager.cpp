@@ -1,8 +1,15 @@
 #include "MapManager.hpp"
+#include "StorageManager.hpp"
 
-MapManager::MapManager(Storage &s): stor(s), mapList(stor.getAll<Map>()), idx(0){};
+MapManager::MapManager(){};
 
 MapManager::~MapManager() {}
+
+void MapManager::start()
+{
+    mapList = storage_manager->getAll<Map>();
+    idx = 0;
+}
 
 MapManager &MapManager::operator++()
 {
@@ -22,6 +29,6 @@ MapManager &MapManager::operator--()
 
 const std::string &MapManager::getName() const { return mapList.at(idx); }
 
-const Map &MapManager::get() const { return stor.get<Map>(this->getName()); }
+const Map &MapManager::get() const { return storage_manager->get<Map>(this->getName()); }
 
-Map &MapManager::get() { return stor.get<Map>(this->getName()); }
+Map &MapManager::get() { return storage_manager->get<Map>(this->getName()); }

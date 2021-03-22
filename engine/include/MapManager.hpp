@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Map.hpp"
-#include "Storage.hpp"
 #include <deque>
 #include <string>
 
 class MapManager
 {
 public:
-    MapManager(Storage &);
+    MapManager();
     ~MapManager();
 
+    void start();
     MapManager &operator++();
     MapManager &operator--();
     const std::string &getName() const;
@@ -18,7 +18,8 @@ public:
     Map &get();
 
 private:
-    Storage &stor;
     std::deque<std::string> mapList;
     unsigned idx = 0;
 };
+
+extern MapManager *map_manager;

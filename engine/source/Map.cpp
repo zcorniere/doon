@@ -24,23 +24,23 @@ Map::Map(const std::filesystem::path path)
 
 Map::~Map() {}
 
-Coords<unsigned> Map::getSize() const { return Coords(width, height); };
+Vector<unsigned> Map::getSize() const { return Vector<unsigned>(width, height); };
 
-std::deque<Coords<unsigned>> Map::getChars(const char c) const
+std::deque<Vector<unsigned>> Map::getChars(const char c) const
 {
-    std::deque<Coords<unsigned>> ret;
+    std::deque<Vector<unsigned>> ret;
 
     for (unsigned i = 0; i < map.size(); ++i) {
         if (map.at(i) == c) {
             unsigned uXpos = i % width;
-            Coords<unsigned> pos(uXpos, (i - uXpos) / width);
+            Vector<unsigned> pos(uXpos, (i - uXpos) / width);
             ret.push_back(std::move(pos));
         }
     }
     return ret;
 }
 
-bool Map::isLocationSolid(const Coords<unsigned> &idx) const
+bool Map::isLocationSolid(const Vector<unsigned> &idx) const
 {
     auto c = this->at(idx);
     return c == '#' || c == 'w';

@@ -1,7 +1,6 @@
-#ifndef _AOBJECT_HPP_
-#define _AOBJECT_HPP_
+#pragma once
 
-#include "Coords.hpp"
+#include "Vector.hpp"
 #include <memory>
 #include <optional>
 #include <string>
@@ -9,58 +8,56 @@
 class AObject
 {
 public:
-    AObject(const Coords<float> pos, std::optional<std::string> text)
+    AObject(const Vector<float> pos, std::optional<std::string> text)
         : fPosition(std::move(pos)), sTexture(std::move(text))
     {
     }
     virtual ~AObject(){};
     virtual void onCollision(const std::unique_ptr<AObject> &){};
-    virtual void onSceneryCollision(const Coords<float> &fSolved,
-                                    Coords<float> &fPotential)
+    virtual void onSceneryCollision(const Vector<float> &fSolved,
+                                    Vector<float> &fPotential)
     {
         fPotential = fSolved;
     };
 
-    virtual Coords<float> update(const float) = 0;
+    virtual Vector<float> update(const float) = 0;
 
-    inline std::optional<std::string> getTextureName() const { return sTexture; };
-    inline void setRemove(bool vis) { bRemove = vis; };
-    inline bool needRemove() const { return bRemove; };
+    std::optional<std::string> getTextureName() const { return sTexture; };
+    constexpr void setRemove(bool vis) { bRemove = vis; };
+    constexpr bool needRemove() const { return bRemove; };
 
     template <typename T = float>
-    Coords<T> inline getPosition() const
+    constexpr Vector<T> getPosition() const
     {
-        return static_cast<Coords<T>>(fPosition);
+        return static_cast<Vector<T>>(fPosition);
     };
     template <typename T = float>
-    T inline getAngle() const
+    constexpr T getAngle() const
     {
         return static_cast<T>(fAngle);
     };
     template <typename T = float>
-    T inline getSize() const
+    constexpr T getRadius() const
     {
-        return static_cast<T>(fSize);
+        return static_cast<T>(fRadius);
     };
 
     template <typename T = float>
-    void inline setAngle(T a)
+    constexpr void setAngle(T a)
     {
         fAngle = a;
     };
     template <typename T = float>
-    void inline setPosition(Coords<T> a)
+    constexpr void setPosition(Vector<T> a)
     {
         fPosition = a;
     };
 
 protected:
-    Coords<float> fPosition;
+    Vector<float> fPosition;
     float fAngle = 0.0f;
-    float fSize = 0.5f;
+    float fRadius = 0.5f;
 
     std::optional<std::string> sTexture;
     bool bRemove = false;
 };
-
-#endif    //_AOBJECT_HPP_

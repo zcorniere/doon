@@ -9,9 +9,9 @@ constexpr const short PoggerTimeout = 10;
 class Poggers : public virtual AObject, public virtual ALife
 {
 public:
-    Poggers(Coords<float>);
+    Poggers(Vector<float>);
 
-    virtual Coords<float> update(const float) final;
+    virtual Vector<float> update(const float) final;
     virtual void onCollision(const std::unique_ptr<AObject> &other) final;
 
 private:

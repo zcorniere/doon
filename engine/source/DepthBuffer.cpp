@@ -4,7 +4,7 @@ DepthBuffer::DepthBuffer() {}
 
 DepthBuffer::~DepthBuffer() {}
 
-void DepthBuffer::resize(const Coords<unsigned> &p)
+void DepthBuffer::resize(const Vector<unsigned> &p)
 {
     buf.resize(p.x);
     std::for_each(buf.begin(), buf.end(), [p](auto &i) { i.resize(p.y); });

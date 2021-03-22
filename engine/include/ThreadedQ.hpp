@@ -1,11 +1,10 @@
+#pragma once
+
 #include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <optional>
-
-#ifndef _THREADEDQ_HPP_
-#define _THREADEDQ_HPP_
 
 class QError : public std::exception
 {
@@ -115,5 +114,3 @@ private:
     std::mutex mutBlocking;
     std::condition_variable vBlocking;
 };
-
-#endif    //_THREADEDQ_HPP_

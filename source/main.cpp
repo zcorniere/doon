@@ -1,28 +1,31 @@
-#include "Engine.hpp"
 #include "GameInstance.hpp"
 #include "Logger.hpp"
-#include <csignal>
+#include "MapManager.hpp"
+#include "RenderManager.hpp"
+#include "StorageManager.hpp"
+#include "ThreadManager.hpp"
+#include "Vector.hpp"
+
+constexpr const char sAssetsPath[] = "./assets/";
 
 constexpr const unsigned WindowWidth = 1280;
 constexpr const unsigned WindowHeight = 960;
-constexpr const Coords<unsigned> uSize(WindowWidth, WindowHeight);
-
-void sig_int_handler(const int signal)
-{
-    logger.err("SIGNAL") << "Received signal " << signal << ", exiting...";
-    logger.endl();
-    std::exit(signal);
-}
+constexpr const Vector<unsigned> uSize(WindowWidth, WindowHeight);
 
 int main()
 try {
-    std::signal(SIGINT, sig_int_handler);
-    std::signal(SIGTERM, sig_int_handler);
+    logger->start();
+    thread_manager->start();
+    storage_manager->load(sAssetsPath);
+    map_manager->start();
+    render_manager->resize(uSize);
+    GameInstance game(uSize);
 
-    Engine<GameInstance> game(uSize);
-    return game.run();
+    game.init();
+    game.run();
+    return 0;
 } catch (const std::exception &e) {
-    logger.err() << e.what();
-    logger.endl();
-    return 1;
+    logger->err() << e.what();
+    logger->endl();
+    return 84;
 }

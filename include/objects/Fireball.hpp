@@ -9,16 +9,16 @@ constexpr const float fAnimationLoop = 0.10;
 class Fireball : public virtual AObject
 {
 public:
-    Fireball(Coords<float>, Coords<float>);
+    Fireball(Vector<float>, Vector<float>);
     ~Fireball();
 
-    Coords<float> update(const float) final;
+    Vector<float> update(const float) final;
     void onCollision(const std::unique_ptr<AObject> &) final;
 
 private:
     float fLifespan = fFireballLife;
     float loop = fAnimationLoop;
-    Coords<float> fVelocity;
+    Vector<float> fVelocity;
 };
 
 #endif    //_FIREBALL_HPP_

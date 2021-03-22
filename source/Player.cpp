@@ -8,17 +8,17 @@ constexpr const float fRotationSpeed = 1.0f;
 
 constexpr const float fCooldownShoot = 0.5f;
 
-Player::Player(Coords<float> fPosition)
+Player::Player(Vector<float> fPosition)
     : ALife(5), AObject(fPosition, std::optional<std::string>())
 {
 }
-Player::Player(const float x, const float y): Player(Coords(x, y)) {}
+Player::Player(const float x, const float y): Player(Vector(x, y)) {}
 
 Player::~Player() {}
 
-Coords<float> Player::update(const float fElapsedTime)
+Vector<float> Player::update(const float fElapsedTime)
 {
-    Coords<float> nfPosition = fPosition + (fVelocity * fElapsedTime);
+    Vector<float> nfPosition = fPosition + (fVelocity * fElapsedTime);
     fVelocity = {0, 0};
     if (fCooldown > 0.0f) fCooldown -= fElapsedTime;
     return nfPosition;
@@ -59,15 +59,13 @@ void Player::move(const Movement::Move dir, const float)
     }
 }
 
-std::unique_ptr<AObject> Player::shoot()
+void Player::shoot()
 {
     if (fCooldown <= 0.0f) {
-        auto i = this->AShoot::shoot();
+        this->AShoot::shoot();
         fCooldown = fCooldownShoot;
-        return i;
     } else {
-        logger.info("PLAYER") << "Shoot in cooldown ! (" << fCooldown << ")";
-        logger.endl();
+        logger->info("PLAYER") << "Shoot in cooldown ! (" << fCooldown << ")";
+        logger->endl();
     }
-    return nullptr;
 }

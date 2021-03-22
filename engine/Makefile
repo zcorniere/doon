@@ -66,8 +66,8 @@ fclean: clean
 .PHONY: fclean
 
 re:
-	make fclean
-	make all
+	$(MAKE) fclean
+	$(MAKE) all
 .PHONY: re
 
 $(OBJ_FOLDER) $(DEP_FOLDER):

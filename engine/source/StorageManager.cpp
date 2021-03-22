@@ -1,20 +1,17 @@
-#include "Storage.hpp"
+#include "StorageManager.hpp"
+#include "Loader.hpp"
 #include "Logger.hpp"
-#include <SFML/Graphics/Image.hpp>
 
 constexpr const char map_extention[] = ".map";
-const std::unordered_set<std::string> Storage::valid_ext = {".jpg", ".png"};
+const std::unordered_set<std::string> StorageManager::valid_ext = {".jpg", ".png"};
 
-Storage::Storage(const std::filesystem::path &path)
+unsigned StorageManager::load(const std::filesystem::path &path)
 {
     try {
         for (auto &f: std::filesystem::directory_iterator(path)) {
             try {
                 if (valid_ext.contains(f.path().extension())) {
-                    sf::Image img;
-                    img.loadFromFile(f.path());
-
-                    Frame fr(img.getPixelsPtr(), img.getSize());
+                    Frame fr(Loader::loadPng(f));
                     // swap texture X/Y since they'll be used as vertical stripes
                     // better for cpu caching
                     fr.rotate();
@@ -22,17 +19,18 @@ Storage::Storage(const std::filesystem::path &path)
                 } else if (f.path().extension() == map_extention) {
                     stor.insert({f.path().stem(), Map(f.path())});
                 }
-                logger.info("STORAGE") << "Loaded " << f.path();
-                logger.endl();
+                logger->info("STORAGE") << "Loaded " << f.path();
+                logger->endl();
             } catch (const std::exception &e) {
-                logger.warn("STORAGE") << e.what();
-                logger.endl();
+                logger->warn("STORAGE") << e.what();
+                logger->endl();
             }
         }
     } catch (const std::exception &e) {
-        logger.err("STORAGE") << e.what();
-        logger.endl();
+        logger->err("STORAGE") << e.what();
+        logger->endl();
     }
+    return stor.size();
 }
 
-Storage::~Storage() {}
+StorageManager::~StorageManager() {}

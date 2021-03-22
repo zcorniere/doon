@@ -4,22 +4,22 @@
 
 Frame::Frame() {}
 
-Frame::Frame(const Coords<unsigned> &size) { this->create(size); }
+Frame::Frame(const Vector<unsigned> &size) { this->create(size); }
 
-Frame::Frame(const uint8_t *ptr, const Coords<unsigned> &uSize)
+Frame::Frame(const uint8_t *ptr, const Vector<unsigned> &uSize)
 {
     this->create(uSize);
     if (ptr)
         std::memcpy(data.data(), ptr, uSize.x * uSize.y * 4);
     else {
-        logger.err("FRAME") << "Invalid pixel ptr";
-        logger.endl();
+        logger->err("FRAME") << "Invalid pixel ptr";
+        logger->endl();
     }
 }
 
 Frame::~Frame() {}
 
-void Frame::create(const Coords<unsigned> &nSize, const Pixel pFill)
+void Frame::create(const Vector<unsigned> &nSize, const Pixel pFill)
 {
     size = nSize;
     data.clear();
@@ -29,8 +29,8 @@ void Frame::create(const Coords<unsigned> &nSize, const Pixel pFill)
 void Frame::rotate()
 {
     if (size.x != size.y) {
-        logger.warn("FRAME") << "Can't rotate a non-square Frame";
-        logger.endl();
+        logger->warn("FRAME") << "Can't rotate a non-square Frame";
+        logger->endl();
         return;
     }
     for (unsigned x = 0; x < size.x; ++x) {

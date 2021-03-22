@@ -1,5 +1,4 @@
-#ifndef _STORAGE_HPP_
-#define _STORAGE_HPP_
+#pragma once
 
 #include "Frame.hpp"
 #include "Map.hpp"
@@ -8,28 +7,29 @@
 #include <unordered_map>
 #include <unordered_set>
 
-class Storage
+class StorageManager
 {
 public:
     static const std::unordered_set<std::string> valid_ext;
 
 public:
-    Storage(const std::filesystem::path &path);
-    Storage(const Storage &) = default;
-    ~Storage();
+    StorageManager() = default;
+    StorageManager(const StorageManager &) = delete;
+    ~StorageManager();
 
+    unsigned load(const std::filesystem::path &);
     template <typename T>
-    inline const T &get(const std::string &name) const
+    constexpr const T &get(const std::string &name) const
     {
         return std::any_cast<const T &>(stor.at(name));
     }
     template <typename T>
-    inline T &get(const std::string &name)
+    constexpr T &get(const std::string &name)
     {
         return std::any_cast<T &>(stor.at(name));
     }
     template <typename T>
-    inline bool contains(const std::string &name) const
+    constexpr bool contains(const std::string &name) const
     {
         return stor.contains(name) && (stor.at(name).type() == typeid(T));
     }
@@ -49,4 +49,4 @@ private:
     std::unordered_map<std::string, std::any> stor;
 };
 
-#endif    //_STORAGE_HPP_
+extern StorageManager *storage_manager;
