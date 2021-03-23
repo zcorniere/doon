@@ -1,5 +1,4 @@
-#ifndef _GAMEINSTANCE_HPP_
-#define _GAMEINSTANCE_HPP_
+#pragma once
 
 #include "Frame.hpp"
 #include "Map.hpp"
@@ -28,5 +27,3 @@ private:
     sf::Texture texture;
     sf::Sprite sprite;
 };
-
-#endif    //_GAMEINSTANCE_HPP_

@@ -83,7 +83,7 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
             sampled.shade(fShade);
             img.setPixel(x, y, sampled);
         } else {
-            float fPlaneZ = (size.y / 2.0f) / (float(y) - (size.y / 2.0f));
+            float fPlaneZ = (size.y >> 1) / (float(y) - (size.y >> 1));
             Vector<float> fPlanePoint =
                 ray.fOrigin + ray.fDirection * fPlaneZ * 2.0f / ray.fFish;
             Vector<unsigned> uPlane(fPlanePoint);

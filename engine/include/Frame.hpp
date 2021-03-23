@@ -26,8 +26,11 @@ public:
         data.at(y * size.x + x) = std::move(px);
     }
 
-    constexpr const uint8_t *getFramePtr() const { return (uint8_t *)data.data(); }
-    constexpr const Vector<unsigned> &getSize() const { return size; }
+    constexpr const uint8_t *getFramePtr() const noexcept
+    {
+        return (uint8_t *)data.data();
+    }
+    constexpr const Vector<unsigned> &getSize() const noexcept { return size; }
     constexpr const Pixel &getPixel(const Vector<unsigned> &pos) const
     {
         return data.at(pos.y * size.x + pos.x);

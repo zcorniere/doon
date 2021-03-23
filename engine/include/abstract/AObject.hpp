@@ -22,9 +22,9 @@ public:
 
     virtual Vector<float> update(const float) = 0;
 
-    std::optional<std::string> getTextureName() const { return sTexture; };
-    constexpr void setRemove(bool vis) { bRemove = vis; };
-    constexpr bool needRemove() const { return bRemove; };
+    std::optional<std::string> getTextureName() const noexcept { return sTexture; };
+    constexpr void setRemove(bool vis) noexcept { bRemove = vis; };
+    constexpr bool needRemove() const noexcept { return bRemove; };
 
     template <typename T = float>
     constexpr Vector<T> getPosition() const
@@ -43,12 +43,12 @@ public:
     };
 
     template <typename T = float>
-    constexpr void setAngle(T a)
+    constexpr void setAngle(T a) noexcept
     {
         fAngle = a;
     };
     template <typename T = float>
-    constexpr void setPosition(Vector<T> a)
+    constexpr void setPosition(Vector<T> a) noexcept
     {
         fPosition = a;
     };

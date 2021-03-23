@@ -37,7 +37,7 @@ void Ray::shoot(const Map &map)
     this->cHit = map.at(this->uMap);
 }
 
-void Ray::sample()
+void Ray::sample() noexcept
 {
     Vector<float> fIntersection(this->fOrigin + this->fDirection * this->fDistance);
     Vector<float> fBlockMid(this->uMap);
