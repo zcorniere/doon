@@ -31,7 +31,7 @@ void Logger::stop()
 
 void Logger::flush()
 {
-    std::unique_lock<std::mutex> lBuffers;
+    std::unique_lock<std::mutex> lBuffers(mutBuffer);
 
     for (auto &[_, i]: mBuffers) {
         std::string msg(i.str());
@@ -84,6 +84,7 @@ std::stringstream &Logger::msg(const std::string &msg)
 
 std::stringstream &Logger::raw()
 {
+    std::unique_lock<std::mutex> lBuffers(mutBuffer);
     if (!mBuffers.contains(std::this_thread::get_id())) {
         mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
     }
