@@ -58,9 +58,9 @@ void GameInstance::run()
 {
     float secs = 0;
     FrameLimiter<60> limiter;
-    auto tp1 = std::chrono::system_clock::now();
+    auto tp1 = std::chrono::high_resolution_clock::now();
     while (win.isOpen()) {
-        auto tp2 = std::chrono::system_clock::now();
+        auto tp2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsedTime(tp2 - tp1);
         float fElapsedTime = elapsedTime.count();
         tp1 = std::move(tp2);
