@@ -41,20 +41,20 @@ void Player::move(const Movement::Move dir, const float)
 {
     switch (dir) {
         case Movement::Forward: {
-            fVelocity.x = sinf(fAngle) * fMovementSpeed * fSpeedModifier;
-            fVelocity.y = cosf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.x = std::sin(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = std::cos(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Backward: {
-            fVelocity.x = -sinf(fAngle) * fMovementSpeed * fSpeedModifier;
-            fVelocity.y = -cosf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.x = -std::sin(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = -std::cos(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Left: {
-            fVelocity.x = -cosf(fAngle) * fMovementSpeed * fSpeedModifier;
-            fVelocity.y = sinf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.x = -std::cos(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = std::sin(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
         case Movement::Right: {
-            fVelocity.x = cosf(fAngle) * fMovementSpeed * fSpeedModifier;
-            fVelocity.y = -sinf(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.x = std::cos(fAngle) * fMovementSpeed * fSpeedModifier;
+            fVelocity.y = -std::sin(fAngle) * fMovementSpeed * fSpeedModifier;
         } break;
     }
 }
