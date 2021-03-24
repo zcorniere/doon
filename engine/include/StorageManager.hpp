@@ -4,14 +4,12 @@
 #include "Map.hpp"
 #include <any>
 #include <filesystem>
+#include <fstream>
 #include <unordered_map>
 #include <unordered_set>
 
 class StorageManager
 {
-public:
-    static const std::unordered_set<std::string> valid_ext;
-
 public:
     StorageManager() = default;
     StorageManager(const StorageManager &) = delete;

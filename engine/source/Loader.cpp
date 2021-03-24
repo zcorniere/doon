@@ -1,9 +1,13 @@
 #include "Loader.hpp"
+#include "Frame.hpp"
+#include "Map.hpp"
+#include <fstream>
 #include <png.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-Frame Loader::loadPng(const std::filesystem::path &path)
+template <>
+Frame Loader::load(const std::filesystem::path &path)
 {
     Vector<unsigned> imageSize;
     FILE *fp = fopen(path.c_str(), "rb");
@@ -12,11 +16,11 @@ Frame Loader::loadPng(const std::filesystem::path &path)
     png_byte bit_depth;
     png_bytep *row_pointer = nullptr;
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png) throw Loader::LoaderError("error preparing loading png");
+    if (!png) throw std::runtime_error("error preparing loading png");
     png_infop info = png_create_info_struct(png);
-    if (!info) throw Loader::LoaderError("error preparing loading png");
+    if (!info) throw std::runtime_error("error preparing loading png");
 
-    if (setjmp(png_jmpbuf(png))) throw Loader::LoaderError("error preparing loading png");
+    if (setjmp(png_jmpbuf(png))) throw std::runtime_error("error preparing loading png");
     png_init_io(png, fp);
     png_read_info(png, info);
 
@@ -61,4 +65,23 @@ Frame Loader::loadPng(const std::filesystem::path &path)
     png_destroy_read_struct(&png, &info, nullptr);
     fclose(fp);
     return frame;
+}
+
+template <>
+Map Loader::load(const std::filesystem::path &path)
+{
+    Map cur;
+    std::ifstream file(path);
+
+    if (!file.is_open()) { throw std::runtime_error("Can't open file"); }
+    cur.map = std::string(std::istreambuf_iterator<char>(file),
+                          std::istreambuf_iterator<char>());
+    cur.width = cur.map.find_first_of('\n');
+    if (cur.map.size() < cur.width) { throw std::runtime_error("Bad format"); };
+
+    cur.map.erase(std::remove(cur.map.begin(), cur.map.end(), '\n'), cur.map.end());
+
+    if (cur.map.size() % cur.width != 0) { throw std::runtime_error("Not a Cube"); }
+    cur.height = cur.map.size() / cur.width;
+    return cur;
 }

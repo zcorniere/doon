@@ -8,7 +8,7 @@
 class Map
 {
 public:
-    Map(const std::filesystem::path);
+    Map();
     ~Map();
     Vector<unsigned> getSize() const;
     constexpr char &at(const Vector<unsigned> &idx)
