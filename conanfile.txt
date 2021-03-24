@@ -1,0 +1,11 @@
+[requires]
+libpng/1.6.37
+zlib/1.2.11@conan/stable
+sfml/2.5.1@bincrafters/stable
+
+[options]
+sfml:graphics=True
+sfml:window=True
+
+[generators]
+cmake

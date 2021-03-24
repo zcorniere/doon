@@ -1,29 +1,35 @@
-# Object files
-**/.object/
+# Ignore the deps and obj files
 *.o
-
-# Libraries
-*.a
-
-# Executables
-*.out
-doon
-a.out
-unit_tests
-vgcore.*
-
-# Garbage
-*~
-compile_commands.json
-compile_flags.txt
-.clangd/
-.cache/
-.ccls-cache/
-gmon.out
-gmon.sum
-capture.png
-
-# Dependencies
-**/.deps/
 *.d
+.clangd/
+compile_commands.json
 
+# Ignore the binaries
+r-type_client
+r-type_server
+
+# Ignore the CMake build file
+CMakeFiles
+CMakeCache.txt
+.ccls-cache/*
+*.cmake
+Makefile
+.cache/*
+
+# Ignore the build directory
+build/
+release
+cmake-build-*
+
+# Ignore JetBrains IDE files
+.idea
+
+# Ignore doc
+doc
+
+# Run scripts
+run.bat
+run.sh
+
+# Ignore static directory
+static
