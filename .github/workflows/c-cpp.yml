@@ -12,8 +12,15 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Get Package
-        run: sudo apt-get update && sudo apt-get install -y libsfml-dev
+      - name: Get Conan
+        uses: turtlebrowser/get-conan@v1.0
       - uses: actions/checkout@v2
-      - name: make
-        run: make
+      - name: Set up conan
+        run: >
+          conan remote add epitech https://api.bintray.com/conan/epitech/public-conan &&
+          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan &&
+          mkdir build &&
+          cd build &&
+          conan install .. --build=missing
+      - name: build conan
+        uses: ashutoshvarma/action-cmake-build@v1
