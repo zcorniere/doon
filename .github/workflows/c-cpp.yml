@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set up conan
         run: >
+          conan config init &&
+          conan profile update settings.compiler.libcxx=libstdc++11 default &&
           conan remote add epitech https://api.bintray.com/conan/epitech/public-conan &&
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan &&
           mkdir build &&
