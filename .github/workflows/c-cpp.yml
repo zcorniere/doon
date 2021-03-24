@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
 
     steps:
       - name: Get Conan
@@ -24,5 +24,7 @@ jobs:
           mkdir build &&
           cd build &&
           conan install .. --build=missing
-      - name: build conan
-        uses: ashutoshvarma/action-cmake-build@v1
+      - name: Build conan
+        run: >
+          cmake .. &&
+          make -j
