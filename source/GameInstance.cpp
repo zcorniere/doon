@@ -57,13 +57,9 @@ void GameInstance::init()
 void GameInstance::run()
 {
     float secs = 0;
-    FrameLimiter<60> limiter;
-    auto tp1 = std::chrono::high_resolution_clock::now();
+    float fElapsedTime = 0;
     while (win.isOpen()) {
-        auto tp2 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> elapsedTime(tp2 - tp1);
-        float fElapsedTime = elapsedTime.count();
-        tp1 = std::move(tp2);
+        auto tp1 = std::chrono::high_resolution_clock::now();
 
         secs += fElapsedTime;
         if (secs >= 0.10f) {
@@ -79,7 +75,9 @@ void GameInstance::run()
         win.draw(sprite);
         for (auto &[_, i]: extraSprites) { win.draw(i); }
         win.display();
-        limiter.sleep();
+        auto tp2 = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> elapsedTime(tp2 - tp1);
+        fElapsedTime = elapsedTime.count();
     }
 }
 
