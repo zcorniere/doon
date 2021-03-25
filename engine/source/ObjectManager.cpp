@@ -38,7 +38,7 @@ Vector<float> ObjectManager::resolveWallCollision(const Map &map,
                                                   const Vector<float> &fPotential) const
 {
     Vector<float> fSolved(fPotential);
-    Vector<unsigned> uCurrent(obj->getPosition().floor());
+    Vector<unsigned> uCurrent(obj->getPosition());
     Vector<unsigned> uTarget(fSolved);
 
     Vector<unsigned> uTL(std::min(uCurrent.x, uTarget.x) - 1,
@@ -46,13 +46,13 @@ Vector<float> ObjectManager::resolveWallCollision(const Map &map,
     Vector<unsigned> uBR(std::max(uCurrent.x, uTarget.x) + 1,
                          std::max(uCurrent.y, uTarget.y) + 1);
 
-    Vector<unsigned> uCell;
-    for (uCell.y = uTL.y; uCell.y <= uBR.y; uCell.y++) {
-        for (uCell.x = uTL.x; uCell.x <= uBR.x; uCell.x++) {
-            if (map.isLocationSolid(uCell)) {
+    Vector<float> fCell(0.5, 0.5);
+    for (fCell.y = uTL.y; fCell.y <= uBR.y; fCell.y++) {
+        for (fCell.x = uTL.x; fCell.x <= uBR.x; fCell.x++) {
+            if (map.isLocationSolid(fCell)) {
                 Vector<float> fNearestPoint(
-                    std::clamp<float>(fSolved.x, uCell.x, uCell.x + 1),
-                    std::clamp<float>(fSolved.y, uCell.y, uCell.y + 1));
+                    std::clamp<float>(fSolved.x, fCell.x, fCell.x + 1),
+                    std::clamp<float>(fSolved.y, fCell.y, fCell.y + 1));
 
                 Vector<float> fRayNear(fNearestPoint - fSolved);
                 float fOverlap = obj->getRadius() - fRayNear.mag();
