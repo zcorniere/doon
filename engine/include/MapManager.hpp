@@ -11,6 +11,7 @@ public:
     ~MapManager();
 
     void start();
+    void start(const std::string &);
     MapManager &operator++();
     MapManager &operator--();
     const std::string &getName() const;

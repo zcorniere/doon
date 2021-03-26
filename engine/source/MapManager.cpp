@@ -11,6 +11,17 @@ void MapManager::start()
     idx = 0;
 }
 
+void MapManager::start(const std::string &m)
+{
+    this->start();
+    for (unsigned i = 0; i < mapList.size(); ++i) {
+        if (mapList.at(i) == m) {
+            idx = i;
+            break;
+        }
+    }
+}
+
 MapManager &MapManager::operator++()
 {
     idx++;

@@ -7,6 +7,7 @@
 #include "Vector.hpp"
 
 constexpr const char sAssetsPath[] = "./assets/";
+constexpr const char sBaseMap[] = "main";
 
 constexpr const unsigned WindowWidth = 1280;
 constexpr const unsigned WindowHeight = 960;
@@ -17,7 +18,7 @@ try {
     logger->start();
     thread_manager->start();
     storage_manager->load(sAssetsPath);
-    map_manager->start();
+    map_manager->start(sBaseMap);
     render_manager->resize(uSize);
     GameInstance game(uSize);
 
