@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 constexpr const float fFOV = M_PI / 4.0f;
+constexpr const char sSkyTexture[] = "sky";
 constexpr const char sFloorTexture[] = "greystone";
 
 RenderManager::RenderManager() {}
@@ -64,6 +65,8 @@ void RenderManager::resize(Vector<unsigned> fNewVector)
 
 void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
 {
+    const Frame &iSky(storage_manager->get<Frame>(sSkyTexture));
+    const Vector<unsigned> uSkySize(iSky.getSize());
     const Frame &iWall(storage_manager->get<Frame>(map.getTextureName(ray.cHit)));
     const Vector<unsigned> uWallSize(iWall.getSize());
     const Frame &iFloor(storage_manager->get<Frame>(sFloorTexture));
@@ -75,11 +78,18 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
     float fShade = 1.0f - std::min(ray.fDistance / fDepth, 1.0f);
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
-            img.setPixel(x, y, Color::LightBlue);
+            float fPlaneZ = (size.y >> 1) / ((size.y >> 1) - float(y));
+            Vector<float> fPlanePoint =
+                ray.fOrigin + ray.fDirection * fPlaneZ * 2.0f / ray.fFish;
+            Vector<unsigned> uPlane(fPlanePoint);
+            Vector<float> fSample = fPlanePoint - uPlane;
+            Vector<unsigned> uSampled = this->sampleVector(fSample, uSkySize);
+            Pixel sampled(iSky.getPixel(uSampled));
+            img.setPixel(x, y, sampled);
         } else if (y > fCeiling && y <= fFloor) {
             ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
             Vector<unsigned> uSampled = this->sampleVector(ray.fSample, uWallSize);
-            Pixel sampled(iWall.getPixel(uSampled.x, uSampled.y));
+            Pixel sampled(iWall.getPixel(uSampled));
             sampled.shade(fShade);
             img.setPixel(x, y, sampled);
         } else {
@@ -89,7 +99,7 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
             Vector<unsigned> uPlane(fPlanePoint);
             Vector<float> fSample = fPlanePoint - uPlane;
             Vector<unsigned> uSampled = this->sampleVector(fSample, uFloorSize);
-            Pixel sampled(iFloor.getPixel(uSampled.x, uSampled.y));
+            Pixel sampled(iFloor.getPixel(uSampled));
             img.setPixel(x, y, sampled);
         }
     }
