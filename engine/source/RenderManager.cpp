@@ -35,8 +35,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
                 rayDef.shoot(map);
                 rayDef.sample();
                 rayDef.fDistance *= rayDef.fFish;
-                std::fill(qDepthBuffer.at(x).begin(), qDepthBuffer.at(x).end(),
-                          rayDef.fDistance);
+                qDepthBuffer.fill(x, rayDef.fDistance);
                 this->drawColumn(map, x, rayDef);
             },
             pPov->getAngle(), ray);

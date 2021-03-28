@@ -17,11 +17,11 @@ public:
     ~ThreadManager();
     void start();
     void stop();
-    size_t size() { return thread_p.size(); }
+    constexpr size_t size() { return thread_p.size(); }
     void resize(const unsigned size);
 
     template <class F, typename... Args>
-    auto push(F &&f, Args &&...args) -> std::future<decltype(f(0, args...))>
+    inline auto push(F &&f, Args &&...args) -> std::future<decltype(f(0, args...))>
     {
         auto packagedFunction =
             std::make_shared<std::packaged_task<decltype(f(0, args...))(int)>>(std::bind(
