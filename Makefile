@@ -12,7 +12,8 @@ HEADP := include/
 SRC_FOLDER := source
 OBJ_FOLDER := .object
 
-CC := clang++
+CXX := clang++
+CC := clang
 
 LANG := .cpp
 VPATH := $(SRC_FOLDER) $(SRC_FOLDER)/objects
@@ -32,7 +33,7 @@ SFML_LIBS := -lsfml-graphics -lsfml-window -lsfml-system
 OPTIONAL_LIBS := -lpng -lpthread
 
 OP_FLAGS := -Ofast -fassociative-math -ffast-math
-CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -Wall -Wextra $(OP_FLAGS)
+CFLAGS := -std=c++20 -I $(ENGINE)$(HEADP) -I $(HEADP) -pedantic-errors -Wall -Wextra $(OP_FLAGS)
 ifeq ($(MAKECMDGOALS), profile)
     CFLAGS += -pg
 endif
@@ -63,7 +64,7 @@ engine:
 .PHONY: engine
 
 $(NAME): start_compile $(OBJ)
-	$(CC) -L $(ENGINE) -lraycaster -fuse-ld=lld -o $(NAME)  $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
+	$(CXX) -fuse-ld=lld -o $(NAME) $(ENGINE)/libraycaster.a $(OBJ) $(CFLAGS) $(OPTIONAL_LIBS) $(SFML_LIBS)
 	printf "$(SAY) Praise $(CYAN)$(NAME)$(END)$(BOLD) !$(END)\n"
 
 -include $(DEPS)
@@ -75,7 +76,7 @@ format:
 $(OBJ): | $(OBJ_FOLDER) $(DEP_FOLDER)
 
 $(OBJ):$(OBJ_FOLDER)/%.o: %$(LANG)
-	$(CC) $(CFLAGS) -c -o $@ $< -MJ $(OBJ_FOLDER)/$*.json -MMD -MF $(DEP_FOLDER)/$*.d	\
+	$(CXX) $(CFLAGS) -c -o $@ $< -MJ $(OBJ_FOLDER)/$*.json -MMD -MF $(DEP_FOLDER)/$*.d	\
 	&& printf "$(BOLD)$(CYAN)$< $(END)$(BOLD)has been blessed.$(END)\n"    \
 	|| printf "$(BOLD)$(RED) $< $(END)$(BOLD)has been cursed.$(END)\n"
 
