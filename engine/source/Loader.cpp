@@ -1,5 +1,6 @@
 #include "Loader.hpp"
 #include "Frame.hpp"
+#include "Logger.hpp"
 #include "Map.hpp"
 #include <fstream>
 #include <png.h>
@@ -8,15 +9,19 @@
 
 template <>
 Frame Loader::load(const std::filesystem::path &path)
-{
-    Vector<unsigned> imageSize;
-    FILE *fp = fopen(path.c_str(), "rb");
+try {
+    Vector<uint32_t> imageSize;
+    png_uint_32 color_type;
+    png_uint_32 bit_depth;
     Frame frame;
-    png_byte color_type;
-    png_byte bit_depth;
     png_bytep *row_pointer = nullptr;
+
+    FILE *fp = fopen(path.c_str(), "rb");
+    if (!fp) throw std::runtime_error("can't open file");
+
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) throw std::runtime_error("error preparing loading png");
+
     png_infop info = png_create_info_struct(png);
     if (!info) throw std::runtime_error("error preparing loading png");
 
@@ -65,6 +70,12 @@ Frame Loader::load(const std::filesystem::path &path)
     png_destroy_read_struct(&png, &info, nullptr);
     fclose(fp);
     return frame;
+} catch (const std::runtime_error &re) {
+    logger->err("LOADER_PNG") << re.what() << ", using panic texture";
+    logger->endl();
+    Frame panic;
+    panic.create({64, 64}, Color::Red);
+    return panic;
 }
 
 template <>
@@ -74,8 +85,9 @@ Map Loader::load(const std::filesystem::path &path)
     std::ifstream file(path);
 
     if (!file.is_open()) { throw std::runtime_error("Can't open file"); }
-    cur.map = std::string(std::istreambuf_iterator<char>(file),
-                          std::istreambuf_iterator<char>());
+    cur.map = std::string(std::istreambuf_iterator<char>(file), {});
+    file.close();
+
     cur.width = cur.map.find_first_of('\n');
     if (cur.map.size() < cur.width) { throw std::runtime_error("Bad format"); };
 
