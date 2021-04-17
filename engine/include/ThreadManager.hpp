@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ThreadedQ.hpp"
 #include <atomic>
 #include <functional>
 #include <future>
 #include <memory>
+#include <queue>
 #include <thread>
 #include <type_traits>
 
@@ -15,7 +15,7 @@ public:
     ThreadManager(const ThreadManager &) = delete;
     ThreadManager(ThreadManager &) = delete;
     ~ThreadManager();
-    void start();
+    void start(const unsigned = std::thread::hardware_concurrency());
     void stop();
     constexpr size_t size() { return thread_p.size(); }
     void resize(const unsigned size);
@@ -28,7 +28,10 @@ public:
                 std::forward<F>(f), std::placeholders::_1, std::forward<Args>(args)...));
         std::function<void(int id)> storageFunc(
             [packagedFunction](int id) { (*packagedFunction)(id); });
-        qWork.push_back(storageFunc);
+        {
+            const std::scoped_lock lock(q_mut);
+            qWork.push(storageFunc);
+        }
         return packagedFunction->get_future();
     }
 
@@ -36,7 +39,9 @@ private:
     void new_thread(const unsigned i);
 
 private:
-    ThreadedQ<std::function<void(int)>> qWork;
+    std::mutex q_mut;
+    std::queue<std::function<void(int)>> qWork;
+
     std::atomic_bool bExit = false;
     std::deque<std::thread> thread_p;
 };
