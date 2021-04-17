@@ -54,7 +54,8 @@ struct Vector {
         return T(this->x * other.x + this->y * other.y);
     };
 
-    constexpr auto operator<=>(const Vector &) const noexcept = default;
+    constexpr std::strong_ordering operator<=>(const Vector &) const noexcept = default;
+
     constexpr Vector operator+(const Vector &other) const noexcept
     {
         return {this->x + other.x, this->y + other.y};

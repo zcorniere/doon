@@ -14,7 +14,7 @@ public:
     constexpr float &at(const unsigned x, const unsigned y) { return buf.at(x).at(y); }
     constexpr void fill(const unsigned x, const float value)
     {
-            std::fill(buf.at(x).begin(), buf.at(x).end(), value);
+        std::fill(buf.at(x).begin(), buf.at(x).end(), value);
     }
     void resize(const Vector<unsigned> &p);
     void resize(const unsigned x, const unsigned y);

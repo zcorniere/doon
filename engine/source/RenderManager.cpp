@@ -107,44 +107,43 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
 void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
                                const Vector<float> &fCamPosition, const float &fEyeAngle)
 {
-    std::string texture(obj->getTextureName().value());
-    Vector<float> fVec(obj->getPosition<float>() - fCamPosition);
+    Vector<float> fVec(obj->getPosition() - fCamPosition);
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
 
-    bool bInCamFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
-    if (!bInCamFOV || fDistanceToPlayer < 0.5f || fDistanceToPlayer >= fDepth) return;
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
-    const Frame &iSprite(storage_manager->get<Frame>(texture));
-    Vector<unsigned> uImgSize(iSprite.getSize());
-    float fObjCeiling = (size.y >> 1) - size.y / fDistanceToPlayer;
-    float fObjFloor = size.y - fObjCeiling;
+    const Frame &iSprite(storage_manager->get<Frame>(obj->getTextureName().value()));
+    const Vector<unsigned> uImgSize(iSprite.getSize());
 
-    if (fObjCeiling < 0 || fObjFloor < 0) return;
-    Vector<float> fObject;
-    fObject.y = fObjFloor - fObjCeiling;
-    fObject.x = fObject.y / (float(uImgSize.y) / uImgSize.x);
-    float fMiddleOfObject =
-        (0.5f * (fObjectAngle / (fFOV / 2.0f)) + 0.5f) * (float(size.x));
+    bool bInCamFOV = std::abs(fObjectAngle) < (fFOV + (1.0f / fDistanceToPlayer)) / 2.0f;
+    if (!bInCamFOV || fDistanceToPlayer < 0.5f) return;
 
-    Vector<float> fObj;
-    for (fObj.x = 0; fObj.x < fObject.x; ++fObj.x) {
-        for (fObj.y = 0; fObj.y < fObject.y; ++fObj.y) {
-            unsigned uObjectColumn = fMiddleOfObject + fObj.x - (fObject.x / 2.0f);
-            if (uObjectColumn < size.x) {
-                Vector<unsigned> uSample = this->sampleVector(fObj / fObject, uImgSize);
-                Pixel sample = iSprite.getPixel(uSample.x, uSample.y);
-                if (sample.a == 0) continue;
-                if (qDepthBuffer.at(uObjectColumn, fObjCeiling + fObj.y) >=
-                    fDistanceToPlayer) {
-                    sample.b *= fShade;
-                    sample.r *= fShade;
-                    sample.g *= fShade;
-                    img.setPixel(uObjectColumn, fObjCeiling + fObj.y, sample);
-                    qDepthBuffer.at(uObjectColumn, fObjCeiling + fObj.y) =
-                        fDistanceToPlayer;
+    Vector<float> fFloorPoint;
+    fFloorPoint.x = (0.5f * ((fObjectAngle / (fFOV * 0.5f))) + 0.5f) * size.x;
+    fFloorPoint.y = (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle);
+
+    Vector<float> fObjectSize(obj->getRadius());
+    fObjectSize *= size.y << 1;
+    fObjectSize /= fDistanceToPlayer;
+
+    Vector<float> fObjectTopLeft;
+    fObjectTopLeft.x = fFloorPoint.x - fObjectSize.x / 2.0f;
+    fObjectTopLeft.y = fFloorPoint.y - fObjectSize.y;
+
+    for (float y = 0; y < fObjectSize.y; y++) {
+        for (float x = 0; x < fObjectSize.x; x++) {
+            Vector<float> fSample;
+            fSample.x = x / fObjectSize.x;
+            fSample.y = y / fObjectSize.y;
+
+            Pixel sample = iSprite.getPixel(this->sampleVector(fSample, uImgSize));
+            Vector<unsigned> a(fObjectTopLeft.x + x, fObjectTopLeft.y + y);
+            if (a.x >= 0 && a.x < size.x && a.y >= 0 && a.y < size.y && sample.a == 255)
+                if (qDepthBuffer.at(a) >= fDistanceToPlayer) {
+                    sample.shade(fShade);
+                    img.setPixel(a, sample);
+                    qDepthBuffer.at(a) = fDistanceToPlayer;
                 }
-            }
         }
     }
 }
