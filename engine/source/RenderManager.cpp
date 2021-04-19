@@ -110,6 +110,8 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
     Vector<float> fVec(obj->getPosition() - fCamPosition);
     float fDistanceToPlayer(fVec.mag());
     float fObjectAngle(fEyeAngle - fVec.atan());
+    if (fObjectAngle < -3.14159f) fObjectAngle += 2.0f * 3.14159f;
+    if (fObjectAngle > 3.14159f) fObjectAngle -= 2.0f * 3.14159f;
 
     const float fShade = 1.0f - std::min(fDistanceToPlayer / fDepth, 1.0f);
     const Frame &iSprite(storage_manager->get<Frame>(obj->getTextureName().value()));
@@ -120,9 +122,9 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
 
     Vector<float> fFloorPoint;
     fFloorPoint.x = (0.5f * ((fObjectAngle / (fFOV * 0.5f))) + 0.5f) * size.x;
-    fFloorPoint.y = (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle);
+    fFloorPoint.y = (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle / 2.0f);
 
-    Vector<float> fObjectSize(obj->getRadius());
+    Vector<float> fObjectSize(obj->getSize());
     fObjectSize *= size.y << 1;
     fObjectSize /= fDistanceToPlayer;
 
