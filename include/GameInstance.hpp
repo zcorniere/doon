@@ -6,6 +6,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <tuple>
+#include <vector>
 
 class GameInstance
 {
@@ -22,7 +24,7 @@ private:
 
 private:
     Vector<unsigned> uSize;
-    std::deque<std::pair<sf::Texture, sf::Sprite>> extraSprites;
+    std::vector<std::tuple<sf::Texture, sf::Sprite>> extraSprites;
     sf::RenderWindow win;
     sf::Texture texture;
     sf::Sprite sprite;

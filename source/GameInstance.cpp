@@ -44,14 +44,17 @@ void GameInstance::init()
 
     texture.create(uSize.x, uSize.y);
 
-    std::pair<sf::Texture, sf::Sprite> crosshair;
     const Frame &cros(storage_manager->get<Frame>("crosshair"));
     Vector<unsigned> crossPosition(uSize / 2 - cros.getSize() / 2);
-    crosshair.first.create(cros.getSize().x, cros.getSize().y);
-    crosshair.first.update(cros.getFramePtr());
-    crosshair.second.setPosition(crossPosition.x, crossPosition.y);
-    extraSprites.push_back(std::move(crosshair));
-    extraSprites.back().second.setTexture(extraSprites.back().first);
+    extraSprites.emplace_back();
+    {
+        sf::Texture &tex = std::get<0>(extraSprites.back());
+        sf::Sprite &spr = std::get<1>(extraSprites.back());
+        tex.create(cros.getSize().x, cros.getSize().y);
+        tex.update(cros.getFramePtr());
+        spr.setPosition(crossPosition.x, crossPosition.y);
+        spr.setTexture(tex);
+    }
 }
 
 void GameInstance::run()
@@ -73,7 +76,7 @@ void GameInstance::run()
         sprite.setTexture(texture);
 
         win.draw(sprite);
-        for (auto &[_, i]: extraSprites) { win.draw(i); }
+        for (const auto &[_, i]: extraSprites) { win.draw(i); }
         win.display();
         auto tp2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsedTime(tp2 - tp1);
