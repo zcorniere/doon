@@ -15,7 +15,11 @@ public:
     StorageManager(const StorageManager &) = delete;
     ~StorageManager();
 
-    unsigned load(const std::filesystem::path &);
+    unsigned load_directory(const std::filesystem::path &, const bool = false);
+
+    template <typename T>
+    static T load(const std::filesystem::path &);
+
     template <typename T>
     constexpr const T &get(const std::string &name) const
     {
@@ -33,11 +37,11 @@ public:
     }
 
     template <typename T>
-    std::deque<std::string> getAll() const
+    std::vector<std::string> getAll() const
     {
-        std::deque<std::string> ret;
+        std::vector<std::string> ret;
 
-        for (auto &[i, e]: stor) {
+        for (const auto &[i, e]: stor) {
             if (e.type() == typeid(T)) ret.push_back(i);
         }
         return ret;

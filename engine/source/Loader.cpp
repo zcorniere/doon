@@ -1,14 +1,14 @@
-#include "Loader.hpp"
 #include "Frame.hpp"
 #include "Logger.hpp"
 #include "Map.hpp"
+#include "StorageManager.hpp"
 #include <fstream>
 #include <png.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 template <>
-Frame Loader::load(const std::filesystem::path &path)
+Frame StorageManager::load(const std::filesystem::path &path)
 try {
     Vector<uint32_t> imageSize;
     png_uint_32 color_type;
@@ -79,8 +79,8 @@ try {
 }
 
 template <>
-Map Loader::load(const std::filesystem::path &path)
-{
+Map StorageManager::load(const std::filesystem::path &path)
+try {
     Map cur;
     std::ifstream file(path);
 
@@ -96,4 +96,8 @@ Map Loader::load(const std::filesystem::path &path)
     if (cur.map.size() % cur.width != 0) { throw std::runtime_error("Not a Cube"); }
     cur.height = cur.map.size() / cur.width;
     return cur;
+} catch (const std::runtime_error &re) {
+    logger->err("LOAD_MAP") << re.what() << ", using empty map";
+    logger->endl();
+    return Map();
 }

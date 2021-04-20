@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Map.hpp"
-#include <deque>
+#include <vector>
 #include <string>
 
 class MapManager
@@ -19,7 +19,7 @@ public:
     Map &get();
 
 private:
-    std::deque<std::string> mapList;
+    std::vector<std::string> mapList;
     unsigned idx = 0;
 };
 

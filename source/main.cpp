@@ -17,7 +17,7 @@ int main()
 try {
     logger->start();
     thread_manager->start();
-    storage_manager->load(sAssetsPath);
+    storage_manager->load_directory(sAssetsPath);
     map_manager->start(sBaseMap);
     render_manager->resize(uSize);
     GameInstance game(uSize);
