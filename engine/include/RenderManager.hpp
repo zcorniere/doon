@@ -6,7 +6,6 @@
 #include "Vector.hpp"
 #include "abstract/AObject.hpp"
 #include <atomic>
-#include <execution>
 #include <memory>
 #include <unordered_map>
 
@@ -24,11 +23,12 @@ public:
     void resize(Vector<unsigned>);
 
 private:
-    constexpr static Vector<unsigned> sampleVector(const Vector<float> &fSample,
-                                                   const Vector<float> &fSize)
+    template <typename S, typename Si>
+    constexpr static Vector<Si> sampleVector(const Vector<S> &fSample,
+                                             const Vector<Si> &fSize)
     {
-        return {std::min(unsigned(fSample.x * fSize.x), unsigned(fSize.x) - 1),
-                std::min(unsigned(fSample.y * fSize.y), unsigned(fSize.y) - 1)};
+        return {std::min(Si(fSample.x * fSize.x), Si(fSize.x) - 1),
+                std::min(Si(fSample.y * fSize.y), Si(fSize.y) - 1)};
     }
 
     void sampleColumn(Ray &) const;
