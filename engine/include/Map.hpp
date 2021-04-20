@@ -10,14 +10,15 @@ class Map
 public:
     Map();
     ~Map();
-    Vector<unsigned> getSize() const;
+    constexpr const Vector<unsigned> &getSize() const { return size; }
+
     constexpr char &at(const Vector<unsigned> &idx)
     {
-        return map.at(idx.y * width + idx.x);
+        return map.at(idx.y * size.x + idx.x);
     }
     constexpr const char &at(const Vector<unsigned> &idx) const
     {
-        return map.at(idx.y * width + idx.x);
+        return map.at(idx.y * size.x + idx.x);
     }
 
     std::deque<Vector<unsigned>> getChars(const char c) const;
@@ -27,8 +28,7 @@ public:
 
 public:
     std::string map;
-    unsigned width;
-    unsigned height;
+    Vector<unsigned> size;
 };
 
 std::ostream &operator<<(std::ostream &, const Map &);

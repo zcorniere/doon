@@ -88,13 +88,13 @@ try {
     cur.map = std::string(std::istreambuf_iterator<char>(file), {});
     file.close();
 
-    cur.width = cur.map.find_first_of('\n');
-    if (cur.map.size() < cur.width) { throw std::runtime_error("Bad format"); };
+    cur.size.x = cur.map.find_first_of('\n');
+    if (cur.map.size() < cur.size.x) { throw std::runtime_error("Bad format"); };
 
     cur.map.erase(std::remove(cur.map.begin(), cur.map.end(), '\n'), cur.map.end());
 
-    if (cur.map.size() % cur.width != 0) { throw std::runtime_error("Not a Cube"); }
-    cur.height = cur.map.size() / cur.width;
+    if (cur.map.size() % cur.size.x != 0) { throw std::runtime_error("Not a Cube"); }
+    cur.size.y = cur.map.size() / cur.size.x;
     return cur;
 } catch (const std::runtime_error &re) {
     logger->err("LOAD_MAP") << re.what() << ", using empty map";
