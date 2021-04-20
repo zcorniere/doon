@@ -122,7 +122,8 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
 
     Vector<float> fFloorPoint;
     fFloorPoint.x = (0.5f * ((fObjectAngle / (fFOV * 0.5f))) + 0.5f) * size.x;
-    fFloorPoint.y = (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle / 2.0f);
+    fFloorPoint.y =
+        (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle / 2.0f);
 
     Vector<float> fObjectSize(obj->getSize());
     fObjectSize *= size.y << 1;
