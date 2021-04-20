@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Map.hpp"
-#include <vector>
 #include <string>
+#include <vector>
 
 class MapManager
 {
