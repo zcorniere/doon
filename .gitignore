@@ -27,3 +27,12 @@ capture.png
 **/.deps/
 *.d
 
+# Ignore the CMake build file
+CMakeFiles
+CMakeCache.txt
+*.cmake
+Makefile
+
+# Ignore the build directory
+build/
+cmake-build-*
