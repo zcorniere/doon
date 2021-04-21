@@ -1,11 +1,12 @@
 #pragma once
 
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
 #include "Frame.hpp"
 #include "Map.hpp"
 #include "Vector.hpp"
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
+#include "VulkanWrapper.hpp"
 #include <tuple>
 #include <vector>
 
@@ -24,8 +25,7 @@ private:
 
 private:
     Vector<unsigned> uSize;
-    std::vector<std::tuple<sf::Texture, sf::Sprite>> extraSprites;
-    sf::RenderWindow win;
-    sf::Texture texture;
-    sf::Sprite sprite;
+    VulkanWrapper vulkan;
+    // std::vector<std::tuple<sf::Texture, sf::Sprite>> extraSprites;
+    GLFWwindow *window = nullptr;
 };

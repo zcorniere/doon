@@ -16,71 +16,96 @@
 
 constexpr const char tIcon[] = "pogger";
 
-GameInstance::GameInstance(const Vector<unsigned> &u): uSize(u), win()
+GameInstance::GameInstance(const Vector<unsigned> &u): uSize(u), vulkan(u)
 {
+    glfwInit();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    window = glfwCreateWindow(uSize.x, uSize.y, "N/A", nullptr, nullptr);
+
     // Player is always the object placed at index 0
-    object_manager->addObject(std::make_unique<Player>(map_manager->get().getSize() / 2));
-    logger->info("GAME_INSTANCE")
-        << "Spawned Player at " << object_manager->at(0)->getPosition();
-    logger->endl();
-    if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(map_manager->get());
+    // object_manager->addObject(std::make_unique<Player>(map_manager->get().getSize() /
+    // 2)); logger->info("GAME_INSTANCE")
+    //    << "Spawned Player at " << object_manager->at(0)->getPosition();
+    // logger->endl();
+    // if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(map_manager->get());
 }
 
-GameInstance::~GameInstance(){};
+GameInstance::~GameInstance()
+{
+    if (window != nullptr) { glfwDestroyWindow(window); }
+    glfwTerminate();
+}
 
 void GameInstance::init()
 {
-    const Frame &fr(storage_manager->get<Frame>(tIcon));
-    const Vector<unsigned> &uIconSize(fr.getSize());
-    sf::ContextSettings setting;
+    // const Frame &fr(storage_manager->get<Frame>(tIcon));
+    // const Vector<unsigned> &uIconSize(fr.getSize());
+    // sf::ContextSettings setting;
 
-    setting.antialiasingLevel = 2;
-    win.create(sf::VideoMode(uSize.x, uSize.y), "N/A", sf::Style::Close, setting);
-    win.setIcon(uIconSize.x, uIconSize.y, fr.getFramePtr());
-    win.setVerticalSyncEnabled(true);
-    win.setActive(false);
-    win.clear();
-    win.display();
+    // setting.antialiasingLevel = 2;
+    // win.create(sf::VideoMode(uSize.x, uSize.y), "N/A", sf::Style::Close, setting);
+    // win.setIcon(uIconSize.x, uIconSize.y, fr.getFramePtr());
+    // win.setVerticalSyncEnabled(true);
+    // win.setActive(false);
+    // win.clear();
+    // win.display();
 
-    texture.create(uSize.x, uSize.y);
+    // texture.create(uSize.x, uSize.y);
 
-    const Frame &cros(storage_manager->get<Frame>("crosshair"));
-    Vector<unsigned> crossPosition(uSize / 2 - cros.getSize() / 2);
-    extraSprites.emplace_back();
-    {
-        sf::Texture &tex = std::get<0>(extraSprites.back());
-        sf::Sprite &spr = std::get<1>(extraSprites.back());
-        tex.create(cros.getSize().x, cros.getSize().y);
-        tex.update(cros.getFramePtr());
-        spr.setPosition(crossPosition.x, crossPosition.y);
-        spr.setTexture(tex);
-    }
+    // const Frame &cros(storage_manager->get<Frame>("crosshair"));
+    // Vector<unsigned> crossPosition(uSize / 2 - cros.getSize() / 2);
+    // extraSprites.emplace_back();
+    //{
+    //    sf::Texture &tex = std::get<0>(extraSprites.back());
+    //    sf::Sprite &spr = std::get<1>(extraSprites.back());
+    //    tex.create(cros.getSize().x, cros.getSize().y);
+    //    tex.update(cros.getFramePtr());
+    //    spr.setPosition(crossPosition.x, crossPosition.y);
+    //    spr.setTexture(tex);
+    //}
+    glfwSetWindowUserPointer(window, this);
+    glfwSetKeyCallback(window, [](GLFWwindow *w, int key, int, int action, int) {
+        switch (action) {
+            case GLFW_PRESS: {
+                switch (key) {
+                    case GLFW_KEY_ESCAPE: glfwSetWindowShouldClose(w, true); break;
+                    default: break;
+                }
+            } break;
+            default: break;
+        }
+    });
+    vulkan.init(window);
 }
 
 void GameInstance::run()
 {
     float secs = 0;
     float fElapsedTime = 0;
-    while (win.isOpen()) {
+    FrameLimiter<60> limiter;
+    while (!glfwWindowShouldClose(window)) {
         auto tp1 = std::chrono::high_resolution_clock::now();
 
         secs += fElapsedTime;
-        if (secs >= 0.10f) {
-            win.setTitle(std::to_string(1.0f / fElapsedTime));
-            secs = 0;
-        }
+        // if (secs >= 0.10f) {
+        //    win.setTitle(std::to_string(1.0f / fElapsedTime));
+        //    secs = 0;
+        //}
 
-        this->handleInput(fElapsedTime);
-        object_manager->update(fElapsedTime);
-        texture.update(render_manager->update(0));
-        sprite.setTexture(texture);
+        glfwPollEvents();
+        // this->handleInput(fElapsedTime);
+        // object_manager->update(fElapsedTime);
+        // texture.update(render_manager->update(0));
+        // sprite.setTexture(texture);
 
-        win.draw(sprite);
-        for (const auto &[_, i]: extraSprites) { win.draw(i); }
-        win.display();
+        // win.draw(sprite);
+        // for (const auto &[_, i]: extraSprites) { win.draw(i); }
+        // win.display();
         auto tp2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsedTime(tp2 - tp1);
         fElapsedTime = elapsedTime.count();
+        limiter.sleep();
     }
 }
 
@@ -115,70 +140,70 @@ void GameInstance::populateMap(const Map &map)
 
 void GameInstance::handleInput(const float &fElapsedTime)
 {
-    sf::Event event;
-    Player *player = nullptr;
+    // sf::Event event;
+    // Player *player = nullptr;
 
-    if ((player = dynamic_cast<Player *>(object_manager->at(0).get())) == nullptr) {
-        logger->err("GAME_INSTANCE") << "Player not valid, aborting";
-        logger->endl();
-        std::abort();
-    }
+    // if ((player = dynamic_cast<Player *>(object_manager->at(0).get())) == nullptr) {
+    //    logger->err("GAME_INSTANCE") << "Player not valid, aborting";
+    //    logger->endl();
+    //    std::abort();
+    //}
 
-    if (!win.hasFocus()) return;
-    while (win.pollEvent(event)) {
-        switch (event.type) {
-            case sf::Event::Closed: win.close(); break;
-            case sf::Event::Resized:
-                render_manager->resize(Vector(event.size.width, event.size.height));
-                break;
-            case sf::Event::KeyPressed: {
-                switch (event.key.code) {
-                    case sf::Keyboard::Escape: win.close(); break;
-                    case sf::Keyboard::H: {
-                        logger->debug() << "Screenshot !";
-                        logger->endl();
-                        texture.copyToImage().saveToFile("capture.png");
-                    } break;
-                    case sf::Keyboard::P: {
-                        logger->msg("PLAYER")
-                            << player->getPosition() << ": " << player->getAngle();
-                        logger->endl();
-                    } break;
-                    case sf::Keyboard::R: {
-                        object_manager->getObjects().at(0)->setPosition(
-                            map_manager->get().getSize() / 2);
-                        object_manager->getObjects().at(0)->setAngle(0.0f);
-                    } break;
-                    case sf::Keyboard::M: {
-                        ++(*map_manager);
-                        object_manager->getObjects().at(0)->setPosition(
-                            map_manager->get().getSize() / 2);
-                        object_manager->getObjects().at(0)->setAngle(0.0f);
-                    } break;
-                    case sf::Keyboard::Space: player->shoot(); break;
-                    case sf::Keyboard::LShift: player->fSpeedModifier = 0.5; break;
-                    default: break;
-                }
-            } break;
-            case sf::Event::KeyReleased: {
-                switch (event.key.code) {
-                    case sf::Keyboard::LShift: player->fSpeedModifier = 1; break;
-                    default: break;
-                }
-            } break;
-            default: break;
-        }
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        player->rotate(Movement::Rotation::CounterClockwise, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-        player->rotate(Movement::Rotation::Clockwise, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-        player->move(Movement::Move::Forward, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        player->move(Movement::Move::Backward, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-        player->move(Movement::Move::Left, fElapsedTime);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        player->move(Movement::Move::Right, fElapsedTime);
+    // if (!win.hasFocus()) return;
+    // while (win.pollEvent(event)) {
+    //    switch (event.type) {
+    //        case sf::Event::Closed: win.close(); break;
+    //        case sf::Event::Resized:
+    //            render_manager->resize(Vector(event.size.width, event.size.height));
+    //            break;
+    //        case sf::Event::KeyPressed: {
+    //            switch (event.key.code) {
+    //                case sf::Keyboard::Escape: win.close(); break;
+    //                case sf::Keyboard::H: {
+    //                    logger->debug() << "Screenshot !";
+    //                    logger->endl();
+    //                    texture.copyToImage().saveToFile("capture.png");
+    //                } break;
+    //                case sf::Keyboard::P: {
+    //                    logger->msg("PLAYER")
+    //                        << player->getPosition() << ": " << player->getAngle();
+    //                    logger->endl();
+    //                } break;
+    //                case sf::Keyboard::R: {
+    //                    object_manager->getObjects().at(0)->setPosition(
+    //                        map_manager->get().getSize() / 2);
+    //                    object_manager->getObjects().at(0)->setAngle(0.0f);
+    //                } break;
+    //                case sf::Keyboard::M: {
+    //                    ++(*map_manager);
+    //                    object_manager->getObjects().at(0)->setPosition(
+    //                        map_manager->get().getSize() / 2);
+    //                    object_manager->getObjects().at(0)->setAngle(0.0f);
+    //                } break;
+    //                case sf::Keyboard::Space: player->shoot(); break;
+    //                case sf::Keyboard::LShift: player->fSpeedModifier = 0.5; break;
+    //                default: break;
+    //            }
+    //        } break;
+    //        case sf::Event::KeyReleased: {
+    //            switch (event.key.code) {
+    //                case sf::Keyboard::LShift: player->fSpeedModifier = 1; break;
+    //                default: break;
+    //            }
+    //        } break;
+    //        default: break;
+    //    }
+    //}
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    //    player->rotate(Movement::Rotation::CounterClockwise, fElapsedTime);
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+    //    player->rotate(Movement::Rotation::Clockwise, fElapsedTime);
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+    //    player->move(Movement::Move::Forward, fElapsedTime);
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    //    player->move(Movement::Move::Backward, fElapsedTime);
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    //    player->move(Movement::Move::Left, fElapsedTime);
+    // if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    //    player->move(Movement::Move::Right, fElapsedTime);
 }

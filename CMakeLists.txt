@@ -29,11 +29,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE lib/glfw/)
 target_include_directories(${PROJECT_NAME} PRIVATE lib/glm/)
 target_include_directories(${PROJECT_NAME} PRIVATE lib/vma/)
 target_include_directories(${PROJECT_NAME} PRIVATE lib/stb)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Vulkan)
 target_link_libraries(${PROJECT_NAME} PRIVATE raycaster)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics
-                                              sfml-window
-                                              sfml-system)
+#target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics
+#                                              sfml-window
+#                                              sfml-system)
 
 add_subdirectory(lib)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw
