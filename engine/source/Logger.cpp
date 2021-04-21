@@ -50,14 +50,14 @@ void Logger::endl()
 std::stringstream &Logger::warn(const std::string &msg)
 {
     auto &buf = this->raw();
-    buf << "\e[33m[" << msg << "]: ";
+    buf << "[\e[33m" << msg << "\e[0m]: ";
     return buf;
 }
 
 std::stringstream &Logger::err(const std::string &msg)
 {
     auto &buf = this->raw();
-    buf << "\e[31m[" << msg << "]: ";
+    buf << "[\e[31m" << msg << "\e[0m]: ";
     return buf;
 }
 
@@ -71,7 +71,7 @@ std::stringstream &Logger::info(const std::string &msg)
 std::stringstream &Logger::debug(const std::string &msg)
 {
     auto &buf = this->raw();
-    buf << "\e[36m[" << msg << "]: ";
+    buf << "[\e[36m" << msg << "\e[0m]: ";
     return buf;
 }
 
