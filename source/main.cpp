@@ -6,7 +6,7 @@
 #include "ThreadManager.hpp"
 #include "Vector.hpp"
 
-constexpr const char sAssetsPath[] = "./assets/";
+constexpr const char sAssetsPath[] = "./../assets/";
 constexpr const char sBaseMap[] = "main";
 
 constexpr const unsigned WindowWidth = 1280;
