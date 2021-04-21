@@ -16,8 +16,8 @@ constexpr const Vector<unsigned> uSize(WindowWidth, WindowHeight);
 int main()
 try {
     logger->start();
-    thread_manager->start();
     storage_manager->load_directory(sAssetsPath);
+    thread_manager->start();
     map_manager->start(sBaseMap);
     render_manager->resize(uSize);
     GameInstance game(uSize);
@@ -28,5 +28,5 @@ try {
 } catch (const std::exception &e) {
     logger->err() << e.what();
     logger->endl();
-    return 84;
+    return 1;
 }
