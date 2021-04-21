@@ -10,6 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(engine)
 add_executable(${PROJECT_NAME} source/GameInstance.cpp
+                               source/VulkanWrapper.cpp
+                               source/DeletionQueue.cpp
                                source/main.cpp
                                source/objects/Barrel.cpp
                                source/objects/Fireball.cpp
