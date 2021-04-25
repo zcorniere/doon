@@ -15,14 +15,16 @@
 #include <random>
 
 constexpr const char tIcon[] = "pogger";
+constexpr const char shaderFragPath[] = "shaders/simple_shader.frag.spv";
+constexpr const char shaderVertPath[] = "shaders/simple_shader.vert.spv";
 
-GameInstance::GameInstance(const Vector<unsigned> &u): uSize(u), vulkan(u)
+GameInstance::GameInstance(const Vector<unsigned> &u)
+    : window("N/A", u.x, u.y),
+      device(window),
+      pipeline(device, shaderVertPath, shaderFragPath,
+               vulak::Pipeline::defaultPipelineConfigInfo(u.x, u.y)),
+      uSize(u)
 {
-    glfwInit();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    window = glfwCreateWindow(uSize.x, uSize.y, "N/A", nullptr, nullptr);
-
     // Player is always the object placed at index 0
     // object_manager->addObject(std::make_unique<Player>(map_manager->get().getSize() /
     // 2)); logger->info("GAME_INSTANCE")
@@ -31,11 +33,7 @@ GameInstance::GameInstance(const Vector<unsigned> &u): uSize(u), vulkan(u)
     // if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(map_manager->get());
 }
 
-GameInstance::~GameInstance()
-{
-    if (window != nullptr) { glfwDestroyWindow(window); }
-    glfwTerminate();
-}
+GameInstance::~GameInstance() {}
 
 void GameInstance::init()
 {
@@ -64,19 +62,6 @@ void GameInstance::init()
     //    spr.setPosition(crossPosition.x, crossPosition.y);
     //    spr.setTexture(tex);
     //}
-    glfwSetWindowUserPointer(window, this);
-    glfwSetKeyCallback(window, [](GLFWwindow *w, int key, int, int action, int) {
-        switch (action) {
-            case GLFW_PRESS: {
-                switch (key) {
-                    case GLFW_KEY_ESCAPE: glfwSetWindowShouldClose(w, true); break;
-                    default: break;
-                }
-            } break;
-            default: break;
-        }
-    });
-    vulkan.init(window);
 }
 
 void GameInstance::run()
@@ -84,7 +69,7 @@ void GameInstance::run()
     float secs = 0;
     float fElapsedTime = 0;
     FrameLimiter<60> limiter;
-    while (!glfwWindowShouldClose(window)) {
+    while (!window.shouldClose()) {
         auto tp1 = std::chrono::high_resolution_clock::now();
 
         secs += fElapsedTime;

@@ -6,7 +6,9 @@
 #include "Frame.hpp"
 #include "Map.hpp"
 #include "Vector.hpp"
-#include "VulkanWrapper.hpp"
+#include "vulak/Device.hpp"
+#include "vulak/Pipeline.hpp"
+#include "vulak/Window.hpp"
 #include <tuple>
 #include <vector>
 
@@ -24,8 +26,10 @@ private:
     void handleInput(const float &);
 
 private:
+    vulak::Window window;
+    vulak::Device device;
+
+    vulak::Pipeline pipeline;
     Vector<unsigned> uSize;
-    VulkanWrapper vulkan;
     // std::vector<std::tuple<sf::Texture, sf::Sprite>> extraSprites;
-    GLFWwindow *window = nullptr;
 };
