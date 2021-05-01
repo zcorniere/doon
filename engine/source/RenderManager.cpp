@@ -75,32 +75,25 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
     float fFloor = size.y - fCeiling;
 
     float fShade = 1.0f - std::min(ray.fDistance / fDepth, 1.0f);
+    Vector<float> fSample(ray.fSample);
+    Pixel sampled;
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
             float fPlaneZ = (size.y >> 1) / ((size.y >> 1) - float(y));
             Vector<float> fPlanePoint =
                 ray.fOrigin + ray.fDirection * fPlaneZ * 2.0f / ray.fFish;
-            Vector<unsigned> uPlane(fPlanePoint);
-            Vector<float> fSample = fPlanePoint - uPlane;
-            Vector<unsigned> uSampled = this->sampleVector(fSample, uSkySize);
-            Pixel sampled(iSky.getPixel(uSampled));
-            img.setPixel(x, y, sampled);
+            sampled = iSky.getPixel(this->sampleVector(fPlanePoint.modf(), uSkySize));
         } else if (y > fCeiling && y <= fFloor) {
-            ray.fSample.y = (y - fCeiling) / (fFloor - fCeiling);
-            Vector<unsigned> uSampled = this->sampleVector(ray.fSample, uWallSize);
-            Pixel sampled(iWall.getPixel(uSampled));
+            fSample.y = (y - fCeiling) / (fFloor - fCeiling);
+            sampled = iWall.getPixel(this->sampleVector(fSample, uWallSize));
             sampled.shade(fShade);
-            img.setPixel(x, y, sampled);
         } else {
             float fPlaneZ = (size.y >> 1) / (float(y) - (size.y >> 1));
             Vector<float> fPlanePoint =
                 ray.fOrigin + ray.fDirection * fPlaneZ * 2.0f / ray.fFish;
-            Vector<unsigned> uPlane(fPlanePoint);
-            Vector<float> fSample = fPlanePoint - uPlane;
-            Vector<unsigned> uSampled = this->sampleVector(fSample, uFloorSize);
-            Pixel sampled(iFloor.getPixel(uSampled));
-            img.setPixel(x, y, sampled);
+            sampled = iFloor.getPixel(this->sampleVector(fPlanePoint.modf(), uFloorSize));
         }
+        img.setPixel(x, y, sampled);
     }
 }
 

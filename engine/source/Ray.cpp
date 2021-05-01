@@ -45,11 +45,11 @@ void Ray::sample() noexcept
     float fTestAngle =
         std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
     if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-        this->fSample.x = fIntersection.y - this->uMap.y;
+        this->fSample = fIntersection.y - this->uMap.y;
     else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-        this->fSample.x = fIntersection.x - this->uMap.x;
+        this->fSample = fIntersection.x - this->uMap.x;
     else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-        this->fSample.x = fIntersection.x - this->uMap.x;
+        this->fSample = fIntersection.x - this->uMap.x;
     else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-        this->fSample.x = fIntersection.y - this->uMap.y;
+        this->fSample = fIntersection.y - this->uMap.y;
 }

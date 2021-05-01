@@ -53,9 +53,13 @@ struct Vector {
     {
         return T(this->x * other.x + this->y * other.y);
     };
+    constexpr Vector<T> modf()
+    {
+        float n;
+        return {std::modf(this->x, &n), std::modf(this->y, &n)};
+    }
 
     constexpr std::strong_ordering operator<=>(const Vector &) const noexcept = default;
-
     constexpr Vector operator+(const Vector &other) const noexcept
     {
         return {this->x + other.x, this->y + other.y};

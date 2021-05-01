@@ -83,6 +83,7 @@ Map StorageManager::load(const std::filesystem::path &path)
 try {
     Map cur;
     std::ifstream file(path);
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
     if (!file.is_open()) { throw std::runtime_error("Can't open file"); }
     cur.map = std::string(std::istreambuf_iterator<char>(file), {});

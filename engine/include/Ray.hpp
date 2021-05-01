@@ -28,7 +28,7 @@ public:
     Vector<float> fDirection;
     Vector<unsigned> uMap;
     float fDistance = 0.0f;
-    Vector<float> fSample;
+    float fSample;
     char cHit;
     float fFish = 0.0f;
 };
