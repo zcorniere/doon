@@ -23,7 +23,7 @@ public:
     }
     constexpr void setPixel(const unsigned &x, const unsigned &y, Pixel px)
     {
-        data.at(y * size.x + x) = std::move(px);
+        setPixel({x, y}, px);
     }
 
     constexpr const uint8_t *getFramePtr() const noexcept
@@ -37,7 +37,7 @@ public:
     }
     constexpr const Pixel &getPixel(const unsigned x, const unsigned y) const
     {
-        return data.at(y * size.x + x);
+        return getPixel({x, y});
     }
 
 private:
