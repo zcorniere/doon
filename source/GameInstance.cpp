@@ -60,6 +60,7 @@ void GameInstance::run()
 {
     float secs = 0;
     float fElapsedTime = 0;
+
     while (win.isOpen()) {
         auto tp1 = std::chrono::high_resolution_clock::now();
 
@@ -71,12 +72,13 @@ void GameInstance::run()
 
         this->handleInput(fElapsedTime);
         object_manager->update(fElapsedTime);
-        texture.update(render_manager->update(0));
+        texture.update(render_manager->update(0).getFramePtr());
         sprite.setTexture(texture);
 
         win.draw(sprite);
         for (const auto &[_, i]: extraSprites) { win.draw(i); }
         win.display();
+
         auto tp2 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> elapsedTime(tp2 - tp1);
         fElapsedTime = elapsedTime.count();

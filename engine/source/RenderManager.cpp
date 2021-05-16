@@ -16,7 +16,7 @@ RenderManager::RenderManager() {}
 
 RenderManager::~RenderManager() {}
 
-const uint8_t *RenderManager::update(const unsigned uPovIndex)
+const Frame &RenderManager::update(const unsigned uPovIndex)
 {
     const auto &pPov = object_manager->at(uPovIndex);
     const auto &map = map_manager->get();
@@ -29,14 +29,16 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
     for (unsigned x = 0; x < size.x; ++x) {
         fur.at(x) = thread_manager->push(
             [this, &map, x](int, const float fAngle, Ray rayDef) {
+                float fSample = 0;
                 float fRayAngle = (fAngle - (fFOV / 2.0f)) + (float(x) / size.x) * fFOV;
                 rayDef.setRayDirection(fRayAngle);
                 rayDef.fFish = std::cos(fRayAngle - fAngle);
                 rayDef.shoot(map);
-                rayDef.sample();
+                fSample = sampleColumn(rayDef);
+
                 rayDef.fDistance *= rayDef.fFish;
                 qDepthBuffer.fill(x, rayDef.fDistance);
-                this->drawColumn(map, x, rayDef);
+                this->drawColumn(map, x, rayDef, fSample);
             },
             pPov->getAngle(), ray);
     }
@@ -52,7 +54,7 @@ const uint8_t *RenderManager::update(const unsigned uPovIndex)
     }
     std::for_each(qObj.begin(), qObj.end(), [](auto &i) { i.get(); });
 
-    return img.getFramePtr();
+    return img;
 }
 
 void RenderManager::resize(Vector<unsigned> fNewVector)

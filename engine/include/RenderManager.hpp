@@ -19,7 +19,7 @@ public:
     RenderManager(RenderManager &) = delete;
     ~RenderManager();
 
-    const uint8_t *update(const unsigned);
+    const Frame &update(const unsigned);
     void resize(Vector<unsigned>);
 
 private:
