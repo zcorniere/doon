@@ -31,8 +31,8 @@ private:
                 std::min(Si(fSample.y * fSize.y), Si(fSize.y) - 1)};
     }
 
-    void sampleColumn(Ray &) const;
-    void drawColumn(const Map &, const unsigned, Ray &);
+    static float sampleColumn(const Ray &) noexcept;
+    void drawColumn(const Map &, const unsigned, const Ray &, const float);
     void drawObject(const std::unique_ptr<AObject> &, const Vector<float> &,
                     const float &);
 

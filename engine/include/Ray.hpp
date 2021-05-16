@@ -21,14 +21,12 @@ public:
         fDirection.y = std::cos(fA);
     }
     void shoot(const Map &);
-    void sample() noexcept;
 
 public:
     Vector<float> fOrigin;
     Vector<float> fDirection;
     Vector<unsigned> uMap;
     float fDistance = 0.0f;
-    float fSample;
     char cHit;
     float fFish = 0.0f;
 };

@@ -62,7 +62,26 @@ void RenderManager::resize(Vector<unsigned> fNewVector)
     img.create(size);
 }
 
-void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
+float RenderManager::sampleColumn(const Ray &ray) noexcept
+{
+    Vector<float> fIntersection(ray.fOrigin + ray.fDirection * ray.fDistance);
+    Vector<float> fBlockMid(ray.uMap);
+    fBlockMid += 0.5f;
+    float fTestAngle =
+        std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
+    if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
+        return fIntersection.y - ray.uMap.y;
+    else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
+        return fIntersection.x - ray.uMap.x;
+    else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
+        return fIntersection.x - ray.uMap.x;
+    else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
+        return fIntersection.y - ray.uMap.y;
+    return 1.0f;
+}
+
+void RenderManager::drawColumn(const Map &map, const unsigned x, const Ray &ray,
+                               const float sample)
 {
     const Frame &iSky(storage_manager->get<Frame>(sSkyTexture));
     const Vector<unsigned> uSkySize(iSky.getSize());
@@ -75,7 +94,7 @@ void RenderManager::drawColumn(const Map &map, const unsigned x, Ray &ray)
     float fFloor = size.y - fCeiling;
 
     float fShade = 1.0f - std::min(ray.fDistance / fDepth, 1.0f);
-    Vector<float> fSample(ray.fSample);
+    Vector<float> fSample(sample);
     Pixel sampled;
     for (unsigned y = 0; y < size.y; ++y) {
         if (y <= fCeiling) {
@@ -128,9 +147,7 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
 
     for (float y = 0; y < fObjectSize.y; y++) {
         for (float x = 0; x < fObjectSize.x; x++) {
-            Vector<float> fSample;
-            fSample.x = x / fObjectSize.x;
-            fSample.y = y / fObjectSize.y;
+            Vector<float> fSample(x / fObjectSize.x, y / fObjectSize.y);
 
             Pixel sample = iSprite.getPixel(this->sampleVector(fSample, uImgSize));
             Vector<unsigned> a(fObjectTopLeft.x + x, fObjectTopLeft.y + y);

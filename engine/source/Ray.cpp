@@ -36,20 +36,3 @@ void Ray::shoot(const Map &map)
     }
     this->cHit = map.at(this->uMap);
 }
-
-void Ray::sample() noexcept
-{
-    Vector<float> fIntersection(this->fOrigin + this->fDirection * this->fDistance);
-    Vector<float> fBlockMid(this->uMap);
-    fBlockMid += 0.5f;
-    float fTestAngle =
-        std::atan2((fIntersection.y - fBlockMid.y), (fIntersection.x - fBlockMid.x));
-    if (fTestAngle >= -M_PI * 0.25f && fTestAngle < M_PI * 0.25f)
-        this->fSample = fIntersection.y - this->uMap.y;
-    else if (fTestAngle >= M_PI * 0.25f && fTestAngle < M_PI * 0.75f)
-        this->fSample = fIntersection.x - this->uMap.x;
-    else if (fTestAngle < -M_PI * 0.25f && fTestAngle >= -M_PI * 0.75f)
-        this->fSample = fIntersection.x - this->uMap.x;
-    else if (fTestAngle >= M_PI * 0.75f || fTestAngle < -M_PI * 0.75f)
-        this->fSample = fIntersection.y - this->uMap.y;
-}
