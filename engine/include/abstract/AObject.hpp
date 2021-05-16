@@ -22,7 +22,7 @@ public:
 
     virtual Vector<float> update(const float) = 0;
 
-    const std::optional<std::string> &getTextureName() const noexcept
+    constexpr const std::optional<std::string> &getTextureName() const noexcept
     {
         return sTexture;
     };
