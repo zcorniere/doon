@@ -69,3 +69,10 @@ void Player::shoot()
         logger->endl();
     }
 }
+
+std::ostream &operator<<(std::ostream &os, const Player &play)
+{
+    os << "Player { position = " << play.getPosition() << ", angle = " << play.getAngle()
+       << "}";
+    return os;
+}

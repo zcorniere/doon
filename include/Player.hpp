@@ -31,4 +31,6 @@ public:
     float fCooldown = 0.0f;
 };
 
+std::ostream &operator<<(std::ostream &, const Player &);
+
 #endif    //_PLAYER_HPP_
