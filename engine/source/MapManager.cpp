@@ -40,6 +40,9 @@ MapManager &MapManager::operator--()
 
 const std::string &MapManager::getName() const { return mapList.at(idx); }
 
-const Map &MapManager::get() const { return storage_manager->get<Map>(this->getName()); }
+const Map &MapManager::get() const
+{
+    return storage_manager->get<const Map>(this->getName());
+}
 
 Map &MapManager::get() { return storage_manager->get<Map>(this->getName()); }
