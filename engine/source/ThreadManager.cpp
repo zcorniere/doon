@@ -26,10 +26,11 @@ void ThreadManager::resize(const unsigned size)
     }
 }
 
-void ThreadManager::new_thread(const unsigned id)
+void ThreadManager::new_thread(const unsigned id) noexcept
 {
     std::function<void(int)> work;
-    logger->info("THREAD_POOL") << "New thread: " << id;
+
+    LOGGER_INFO << "New thread: " << id;
     logger->endl();
     while (1) {
         try {
@@ -43,13 +44,13 @@ void ThreadManager::new_thread(const unsigned id)
             }
             if (work) work(id);
         } catch (const std::exception &e) {
-            logger->err("THREAD_POOL") << id << " : " << e.what();
+            LOGGER_ERR << id << " : " << e.what();
             logger->endl();
         } catch (...) {
-            logger->err("THREAD_POOL") << "Unkown error on thread " << id;
+            LOGGER_ERR << "Unkown error on thread " << id;
             logger->endl();
         }
     };
-    logger->info("THREAD_POOL") << "End thread: " << id;
+    LOGGER_INFO << "End thread: " << id;
     logger->endl();
 }

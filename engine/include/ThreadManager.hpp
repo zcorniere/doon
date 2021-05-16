@@ -36,7 +36,7 @@ public:
     }
 
 private:
-    void new_thread(const unsigned i);
+    void new_thread(const unsigned i) noexcept;
 
 private:
     std::mutex q_mut;

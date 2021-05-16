@@ -20,8 +20,7 @@ GameInstance::GameInstance(const Vector<unsigned> &u): uSize(u), win()
 {
     // Player is always the object placed at index 0
     object_manager->addObject(std::make_unique<Player>(map_manager->get().getSize() / 2));
-    logger->info("GAME_INSTANCE")
-        << "Spawned Player at " << object_manager->at(0)->getPosition();
+    LOGGER_INFO << "Spawned Player at " << object_manager->at(0)->getPosition();
     logger->endl();
     if (!std::getenv("DOON_NO_POGGERS")) this->populateMap(map_manager->get());
 }
@@ -88,7 +87,7 @@ void GameInstance::populateMap(const Map &map)
 {
     for (const auto &i: map.getChars('P')) {
         Vector<float> fi = static_cast<Vector<float>>(i) + 0.5f;
-        logger->info("GAME_INSTANCE") << "New Map Pogger: " << fi;
+        LOGGER_INFO << "New Map Pogger: " << fi;
         logger->endl();
         object_manager->addObject(std::make_unique<Poggers>(fi));
     }
@@ -98,7 +97,7 @@ void GameInstance::populateMap(const Map &map)
         if (map.at(roll) == '#' || map.at(roll) == 'P') {
             i--;
         } else {
-            logger->info("GAME_INSTANCE") << "New Pogger: " << roll;
+            LOGGER_INFO << "New Pogger: " << roll;
             logger->endl();
             object_manager->addObject(std::make_unique<Poggers>(roll));
         }
@@ -107,7 +106,7 @@ void GameInstance::populateMap(const Map &map)
     for (const auto &i: map.getChars('B')) {
         Vector<float> fVector(i);
         fVector += 0.5f;
-        logger->info("GAME_INSTANCE") << "New Barrel: " << fVector;
+        LOGGER_INFO << "New Barrel: " << fVector;
         logger->endl();
         object_manager->addObject(std::make_unique<Barrel>(fVector));
     }
@@ -119,7 +118,7 @@ void GameInstance::handleInput(const float &fElapsedTime)
     Player *player = nullptr;
 
     if ((player = dynamic_cast<Player *>(object_manager->at(0).get())) == nullptr) {
-        logger->err("GAME_INSTANCE") << "Player not valid, aborting";
+        LOGGER_ERR << "Player not valid, aborting";
         logger->endl();
         std::abort();
     }
@@ -135,13 +134,12 @@ void GameInstance::handleInput(const float &fElapsedTime)
                 switch (event.key.code) {
                     case sf::Keyboard::Escape: win.close(); break;
                     case sf::Keyboard::H: {
-                        logger->debug() << "Screenshot !";
+                        LOGGER_DEBUG << "Screenshot !";
                         logger->endl();
                         texture.copyToImage().saveToFile("capture.png");
                     } break;
                     case sf::Keyboard::P: {
-                        logger->msg("PLAYER")
-                            << player->getPosition() << ": " << player->getAngle();
+                        LOGGER_INFO << *player;
                         logger->endl();
                     } break;
                     case sf::Keyboard::R: {

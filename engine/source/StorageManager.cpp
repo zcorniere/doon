@@ -21,14 +21,14 @@ unsigned StorageManager::load_directory(const std::filesystem::path &path,
                 Map m = this->load<Map>(f);
                 stor.insert({f.path().stem(), std::move(m)});
             } else {
-                logger->warn("STORAGE") << "Unknown extension : " << ext.c_str();
+                LOGGER_WARN << "Unknown extension : " << ext.c_str();
                 logger->endl();
                 continue;
             }
-            logger->info("STORAGE") << "Loaded " << f.path();
+            LOGGER_INFO << "Loaded " << f.path();
             logger->endl();
         } catch (const std::exception &e) {
-            logger->warn("STORAGE") << e.what();
+            LOGGER_ERR << e.what();
             logger->endl();
         }
     }
