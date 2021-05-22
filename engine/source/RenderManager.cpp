@@ -12,7 +12,11 @@ constexpr const float fFOV = M_PI / 4.0f;
 constexpr const char sSkyTexture[] = "sky";
 constexpr const char sFloorTexture[] = "greystone";
 
-RenderManager::RenderManager() {}
+RenderManager::RenderManager(): bDrawDebug(std::getenv("DOON_BUG_BOX"))
+{
+    logger->warn("RenderManager") << "Starting in debug mode";
+    logger->endl();
+}
 
 RenderManager::~RenderManager() {}
 
@@ -139,7 +143,7 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
     fFloorPoint.y =
         (size.y >> 1) + (size.y / fDistanceToPlayer) / std::cos(fObjectAngle / 2.0f);
 
-    Vector<float> fObjectSize(obj->getSize());
+    Vector<float> fObjectSize((bDrawDebug) ? (obj->getRadius()) : (obj->getSize()));
     fObjectSize *= size.y << 1;
     fObjectSize /= fDistanceToPlayer;
 
@@ -147,11 +151,15 @@ void RenderManager::drawObject(const std::unique_ptr<AObject> &obj,
     fObjectTopLeft.x = fFloorPoint.x - fObjectSize.x / 2.0f;
     fObjectTopLeft.y = fFloorPoint.y - fObjectSize.y;
 
-    for (float y = 0; y < fObjectSize.y; y++) {
-        for (float x = 0; x < fObjectSize.x; x++) {
-            Vector<float> fSample(x / fObjectSize.x, y / fObjectSize.y);
-
-            Pixel sample = iSprite.getPixel(this->sampleVector(fSample, uImgSize));
+    Pixel sample;
+    for (float y = 0; y < fObjectSize.y; ++y) {
+        for (float x = 0; x < fObjectSize.x; ++x) {
+            if (bDrawDebug) {
+                sample = Color::Red;
+            } else {
+                Vector<float> fSample(x / fObjectSize.x, y / fObjectSize.y);
+                sample = iSprite.getPixel(this->sampleVector(fSample, uImgSize));
+            }
             Vector<unsigned> a(fObjectTopLeft.x + x, fObjectTopLeft.y + y);
             if (a.x >= 0 && a.x < size.x && a.y >= 0 && a.y < size.y && sample.a == 255)
                 if (qDepthBuffer.at(a) >= fDistanceToPlayer) {

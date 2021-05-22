@@ -37,6 +37,7 @@ private:
                     const float &);
 
 private:
+    bool bDrawDebug = false;
     Frame img;
     Vector<unsigned> size;
 
