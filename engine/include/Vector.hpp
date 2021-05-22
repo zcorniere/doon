@@ -154,7 +154,7 @@ namespace std
 template <typename E>
 constexpr bool isnan(Vector<E> &o)
 {
-    return isnan(o.x) && isnan(o.y);
+    return isnan(o.x) || isnan(o.y);
 };
 }    // namespace std
 
