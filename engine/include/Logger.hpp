@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ThreadedQ.hpp"
-#include "Vector.hpp"
 #include <atomic>
 #include <iostream>
 #include <memory>
@@ -33,6 +32,7 @@ public:
     void endl();
 
 private:
+    void thread_loop();
     std::mutex mutBuffer;
     std::atomic_bool bExit = false;
     std::thread msgT;

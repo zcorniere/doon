@@ -4,22 +4,22 @@ Logger::Logger() {}
 
 Logger::~Logger() { this->stop(); }
 
-void Logger::start()
+void Logger::thread_loop()
 {
-    msgT = std::thread([this]() {
-        while (!bExit) {
-            try {
-                qMsg.wait();
-                while (!qMsg.empty()) {
-                    auto i = qMsg.pop_front();
-                    if (i) { std::cerr << *i << "\e[0m" << std::endl; }
-                }
-            } catch (const std::exception &e) {
-                std::cerr << "LOGGER ERROR:" << e.what() << std::endl;
+    while (!bExit) {
+        try {
+            qMsg.wait();
+            while (!qMsg.empty()) {
+                auto i = qMsg.pop_front();
+                if (i) { std::cerr << *i << "\e[0m" << std::endl; }
             }
+        } catch (const std::exception &e) {
+            std::cerr << "LOGGER ERROR:" << e.what() << std::endl;
         }
-    });
+    }
 }
+
+void Logger::start() { msgT = std::thread(&Logger::thread_loop, this); }
 
 void Logger::stop()
 {
@@ -42,7 +42,7 @@ void Logger::flush()
 
 void Logger::endl()
 {
-    std::string msg(mBuffers.at(std::this_thread::get_id()).str());
+    std::string msg(this->raw().str());
     qMsg.push_back(msg);
     mBuffers.at(std::this_thread::get_id()) = std::stringstream();
 }
@@ -78,14 +78,14 @@ std::stringstream &Logger::debug(const std::string &msg)
 std::stringstream &Logger::msg(const std::string &msg)
 {
     auto &buf = this->raw();
-    buf << "[" << msg << "] ";
+    buf << BRACKETS(0, msg);
     return buf;
 }
 
 std::stringstream &Logger::raw()
 {
-    std::unique_lock<std::mutex> lBuffers(mutBuffer);
     if (!mBuffers.contains(std::this_thread::get_id())) {
+        std::unique_lock<std::mutex> lBuffers(mutBuffer);
         mBuffers.insert({std::this_thread::get_id(), std::stringstream()});
     }
     return mBuffers.at(std::this_thread::get_id());
