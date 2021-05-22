@@ -27,7 +27,7 @@ cmdOption getCmdLineOption(int ac, char **av)
     cmdOption opt{};
     int c;
 
-    while ((c = getopt(ac, av, "m:t:")) != -1) {
+    while ((c = getopt(ac, av, "m:t:h")) != -1) {
         switch (c) {
             case 'm': opt.base_map = optarg; break;
             case 't': opt.nb_thread = atoi(optarg); break;
@@ -35,9 +35,12 @@ cmdOption getCmdLineOption(int ac, char **av)
                 if (optopt == 'c')
                     std::cerr << "Option -" << optopt << " requires an argument."
                               << std::endl;
-                std::abort();
+                std::exit(1);
             } break;
-            default: std::abort(); break;
+            default:
+                std::cout << "./doon [-t NB_THREAD] [-m STARTING_MAP]" << std::endl;
+                std::exit(0);
+                break;
         }
     }
     return opt;
