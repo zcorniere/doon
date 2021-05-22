@@ -18,6 +18,7 @@ constexpr const unsigned WindowHeight = 960;
 constexpr const Vector<unsigned> uSize(WindowWidth, WindowHeight);
 
 struct cmdOption {
+    const char *assets_path = sAssetsPath;
     const char *base_map = sBaseMap;
     int nb_thread = iDefaultThreadNb;
 };
@@ -27,8 +28,9 @@ cmdOption getCmdLineOption(int ac, char **av)
     cmdOption opt{};
     int c;
 
-    while ((c = getopt(ac, av, "m:t:h")) != -1) {
+    while ((c = getopt(ac, av, "a:m:t:h")) != -1) {
         switch (c) {
+            case 'a': opt.assets_path = optarg; break;
             case 'm': opt.base_map = optarg; break;
             case 't': opt.nb_thread = atoi(optarg); break;
             case '?': {
@@ -38,7 +40,7 @@ cmdOption getCmdLineOption(int ac, char **av)
                 std::exit(1);
             } break;
             default:
-                std::cout << "./doon [-t NB_THREAD] [-m STARTING_MAP]" << std::endl;
+                std::cout << "./doon [-a ASSETS_PATH] [-t NB_THREAD] [-m STARTING_MAP]" << std::endl;
                 std::exit(0);
                 break;
         }
@@ -51,7 +53,7 @@ try {
     cmdOption opt = getCmdLineOption(ac, av);
 
     logger->start();
-    storage_manager->load_directory(sAssetsPath);
+    storage_manager->load_directory(opt.assets_path);
     thread_manager->start(opt.nb_thread);
     map_manager->start(opt.base_map);
     render_manager->resize(uSize);
