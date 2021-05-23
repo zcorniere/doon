@@ -23,27 +23,19 @@ class ThreadedQ
 public:
     ThreadedQ() = default;
     ThreadedQ(const size_t size): q(size) {}
+
     ThreadedQ(const ThreadedQ<T> &) = delete;
+    ThreadedQ(const ThreadedQ<T> &&) = delete;
+    ThreadedQ &operator=(const ThreadedQ &) = delete;
+
     virtual ~ThreadedQ() { this->clear(); }
 
-    const std::optional<std::reference_wrapper<T &>> front()
-    {
-        std::scoped_lock lock(q_mut);
-        if (q.size() == 0) return std::nullopt;
-        return q.front();
-    }
-    const std::optional<std::reference_wrapper<T &>> back()
-    {
-        std::scoped_lock lock(q_mut);
-        if (q.size() == 0) return std::nullopt;
-        return q.back();
-    }
-    bool empty()
+    bool empty() const
     {
         std::scoped_lock lock(q_mut);
         return q.empty();
     }
-    size_t size()
+    size_t size() const
     {
         std::scoped_lock lock(q_mut);
         return q.size();
@@ -107,7 +99,7 @@ public:
     }
 
 private:
-    std::mutex q_mut;
+    mutable std::mutex q_mut;
     std::deque<T> q;
 
     std::atomic_bool bWait = true;

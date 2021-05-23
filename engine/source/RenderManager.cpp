@@ -14,8 +14,10 @@ constexpr const char sFloorTexture[] = "greystone";
 
 RenderManager::RenderManager(): bDrawDebug(std::getenv("DOON_BUG_BOX"))
 {
-    logger->warn("RenderManager") << "Starting in debug mode";
-    logger->endl();
+    if (bDrawDebug) {
+        logger->warn("RenderManager") << "Starting in debug mode";
+        logger->endl();
+    }
 }
 
 RenderManager::~RenderManager() {}

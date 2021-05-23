@@ -10,6 +10,8 @@ void ThreadManager::start(const unsigned i) { this->resize(i); }
 void ThreadManager::stop()
 {
     bExit = true;
+    qWork.setWaitMode(false);
+    qWork.notify();
     for (auto &i: thread_p) {
         if (i.joinable()) i.join();
     }
@@ -28,21 +30,16 @@ void ThreadManager::resize(const unsigned size)
 
 void ThreadManager::new_thread(const unsigned id) noexcept
 {
-    std::function<void(int)> work;
+    std::optional<WorkUnits> work;
 
     LOGGER_INFO << "New thread: " << id;
     logger->endl();
     while (1) {
         try {
-            std::this_thread::yield();
             if (this->bExit) break;
-            {
-                const std::scoped_lock lock(q_mut);
-                if (this->qWork.empty()) continue;
-                work = std::move(this->qWork.front());
-                this->qWork.pop();
-            }
-            if (work) work(id);
+            qWork.wait();
+            work = qWork.pop_front();
+            if (work) (*(*work))(id);
         } catch (const std::exception &e) {
             LOGGER_ERR << id << " : " << e.what();
             logger->endl();

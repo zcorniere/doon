@@ -7,9 +7,12 @@
 #include <queue>
 #include <thread>
 #include <type_traits>
+#include <ThreadedQ.hpp>
+
 
 class ThreadManager
 {
+using WorkUnits = std::shared_ptr<std::packaged_task<void(int)>>;
 public:
     ThreadManager();
     ThreadManager(const ThreadManager &) = delete;
@@ -26,12 +29,7 @@ public:
         auto packagedFunction =
             std::make_shared<std::packaged_task<decltype(f(0, args...))(int)>>(std::bind(
                 std::forward<F>(f), std::placeholders::_1, std::forward<Args>(args)...));
-        std::function<void(int id)> storageFunc(
-            [packagedFunction](int id) { (*packagedFunction)(id); });
-        {
-            const std::scoped_lock lock(q_mut);
-            qWork.push(storageFunc);
-        }
+        qWork.push_back(packagedFunction);
         return packagedFunction->get_future();
     }
 
@@ -39,11 +37,10 @@ private:
     void new_thread(const unsigned i) noexcept;
 
 private:
-    std::mutex q_mut;
-    std::queue<std::function<void(int)>> qWork;
+    ThreadedQ<WorkUnits> qWork;
 
     std::atomic_bool bExit = false;
-    std::deque<std::thread> thread_p;
+    std::vector<std::thread> thread_p;
 };
 
 extern ThreadManager *thread_manager;
