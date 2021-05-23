@@ -26,3 +26,7 @@ Having fun, really. In more pratical term, the goal of this projet is to make so
 make
 ```
 
+# Running
+```bash
+./doon [-h]
+```
