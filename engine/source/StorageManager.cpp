@@ -7,7 +7,18 @@ constexpr const char image_ext[] = ".png";
 unsigned StorageManager::load_directory(const std::filesystem::path &path,
                                         const bool bEmpty)
 {
-    if (bEmpty) stor.clear();
+    if (bEmpty) {
+        LOGGER_WARN << "Clearing storage manager";
+        logger->endl();
+        stor.clear();
+    }
+    auto iterator = std::filesystem::directory_iterator(path);
+    auto distance = std::distance(begin(iterator), end(iterator));
+    LOGGER_INFO << "Loading " << distance << " item from directory " << path;
+    stor.reserve(stor.size() + distance);
+    logger->endl();
+
+    // must recreate the iterator, because it is consumed by std::distance
     for (auto &f: std::filesystem::directory_iterator(path)) {
         try {
             const auto &ext = f.path().extension();
