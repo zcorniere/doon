@@ -10,20 +10,30 @@ Frame::Frame(const uint8_t *ptr, const Vector<unsigned> &uSize)
 {
     this->create(uSize);
     if (ptr)
-        std::memcpy(data.data(), ptr, uSize.x * uSize.y * 4);
+        std::memcpy(data, ptr, uSize.x * uSize.y * 4);
     else {
         logger->err("FRAME") << "Invalid pixel ptr";
         logger->endl();
     }
 }
 
-Frame::~Frame() {}
+Frame::Frame(const Frame &f)
+{
+    this->create(f.getSize());
+    std::memcpy(data, f.data, size.x * size.y * 4);
+}
+
+Frame::~Frame()
+{
+    if (data != nullptr) delete data;
+}
 
 void Frame::create(const Vector<unsigned> &nSize, const Pixel pFill)
 {
     size = nSize;
-    data.clear();
-    data.resize(size.x * size.y, pFill);
+    if (data != nullptr) delete data;
+    data = new Pixel[(size.x * size.y)];
+    std::fill(data, data + (size.x * size.y), pFill);
 }
 
 void Frame::rotate()
