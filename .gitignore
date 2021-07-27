@@ -1,29 +1,18 @@
-# Object files
-**/.object/
+# Ignore the deps and obj files
 *.o
-
-# Libraries
-*.a
-
-# Executables
-*.out
-doon
-a.out
-unit_tests
-vgcore.*
-
-# Garbage
-*~
-compile_commands.json
-compile_flags.txt
+*.d
 .clangd/
 .cache/
 .ccls-cache/
-gmon.out
-gmon.sum
-capture.png
+compile_commands.json
 
-# Dependencies
-**/.deps/
-*.d
 
+# Ignore the CMake build file
+CMakeFiles
+CMakeCache.txt
+*.cmake
+Makefile
+
+# Ignore the build directory
+build/
+cmake-build-*

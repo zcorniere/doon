@@ -14,7 +14,7 @@ RenderManager *render_manager = nullptr;
 
 __attribute__((constructor)) void init()
 {
-    logger = new Logger();
+    logger = new Logger(std::cout);
     thread_manager = new ThreadManager();
     storage_manager = new StorageManager();
     map_manager = new MapManager();

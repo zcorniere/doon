@@ -1,0 +1,3 @@
+[submodule "lib/logger-cpp"]
+	path = lib/logger-cpp
+	url = git@github.com:zcorniere/logger-cpp.git
