@@ -15,6 +15,9 @@ unsigned StorageManager::load_directory(const std::filesystem::path &path,
     auto iterator = std::filesystem::directory_iterator(path);
     auto distance = std::distance(begin(iterator), end(iterator));
     LOGGER_INFO << "Loading " << distance << " item from directory " << path;
+
+    auto &bar = logger->newProgressBar("Loading", distance);
+
     stor.reserve(stor.size() + distance);
     logger->endl();
 
@@ -42,7 +45,9 @@ unsigned StorageManager::load_directory(const std::filesystem::path &path,
             LOGGER_ERR << e.what();
             logger->endl();
         }
+        ++bar;
     }
+    logger->deleteProgressBar(bar);
     return stor.size();
 }
 
