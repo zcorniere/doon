@@ -9,10 +9,10 @@ class DepthBuffer
 public:
     DepthBuffer();
     ~DepthBuffer();
-    constexpr auto &at(const unsigned &x) { return buf.at(x); }
-    constexpr float &at(const Vector<unsigned> &p) { return buf.at(p.x).at(p.y); }
-    constexpr float &at(const unsigned x, const unsigned y) { return buf.at(x).at(y); }
-    constexpr void fill(const unsigned x, const float value)
+    inline auto &at(const unsigned &x) { return buf.at(x); }
+    inline float &at(const Vector<unsigned> &p) { return buf.at(p.x).at(p.y); }
+    inline float &at(const unsigned x, const unsigned y) { return buf.at(x).at(y); }
+    inline void fill(const unsigned x, const float value)
     {
         std::fill(buf.at(x).begin(), buf.at(x).end(), value);
     }

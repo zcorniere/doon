@@ -11,5 +11,6 @@ add_library(raycaster source/lib.cpp
                       source/ThreadManager.cpp
 )
 
+target_compile_definitions(raycaster PRIVATE LOGGER_EXTERN_DECLARATION_PTR)
 target_include_directories(raycaster PUBLIC include/)
 target_link_libraries(raycaster PUBLIC logger)

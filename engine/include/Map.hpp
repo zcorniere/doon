@@ -12,11 +12,11 @@ public:
     ~Map();
     constexpr const Vector<unsigned> &getSize() const { return size; }
 
-    constexpr char &at(const Vector<unsigned> &idx)
+    inline char &at(const Vector<unsigned> &idx)
     {
         return map.at(idx.y * size.x + idx.x);
     }
-    constexpr const char &at(const Vector<unsigned> &idx) const
+    inline const char &at(const Vector<unsigned> &idx) const
     {
         return map.at(idx.y * size.x + idx.x);
     }

@@ -5,9 +5,9 @@ class ALife
 {
 public:
     ALife(int iHP): iLifePoint(iHP){};
-    int getHp() const { return iLifePoint; }
-    void damage(int iDmg) { iLifePoint -= iDmg; }
-    bool isAlive() const { return iLifePoint > 0; };
+    constexpr int getHp() const { return iLifePoint; }
+    constexpr void damage(int iDmg) { iLifePoint -= iDmg; }
+    constexpr bool isAlive() const { return iLifePoint > 0; };
 
 protected:
     int iLifePoint;

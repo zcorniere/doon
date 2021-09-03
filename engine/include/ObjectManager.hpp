@@ -13,8 +13,8 @@ public:
     ObjectManager(ObjectManager &) = delete;
 
     constexpr auto &getObjects() const { return qObjects; }
-    constexpr auto &at(const unsigned i) const { return qObjects.at(i); }
-    constexpr auto &at(const unsigned i) { return qObjects.at(i); }
+    inline auto &at(const unsigned i) const { return qObjects.at(i); }
+    inline auto &at(const unsigned i) { return qObjects.at(i); }
 
     template <std::derived_from<AObject> T>
     constexpr void addObject(std::unique_ptr<T> obj)

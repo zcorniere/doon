@@ -27,7 +27,7 @@ public:
         setPixel({x, y}, px);
     }
 
-    constexpr const uint8_t *getFramePtr() const noexcept { return (uint8_t *)data; }
+    inline const uint8_t *getFramePtr() const noexcept { return (uint8_t *)data; }
     constexpr const Vector<unsigned> &getSize() const noexcept { return size; }
     constexpr const Pixel &getPixel(const Vector<unsigned> &pos) const noexcept
     {

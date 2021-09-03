@@ -4,6 +4,8 @@ project(doon)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(Threads REQUIRED)
+
 message(STATUS "Looking for lld")
 find_program(LLD_FOUND lld)
 
@@ -34,11 +36,13 @@ else()
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE LOGGER_EXTERN_DECLARATION_PTR)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE raycaster logger)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics
                                               sfml-window
                                               sfml-system
                                               png
-                                              pthread
+                                              Threads::Threads
 )
 

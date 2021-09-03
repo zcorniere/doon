@@ -20,11 +20,11 @@ public:
     ~ThreadManager();
     void start(const unsigned = std::thread::hardware_concurrency());
     void stop();
-    constexpr size_t size() { return thread_p.size(); }
+    inline size_t size() { return thread_p.size(); }
     void resize(const unsigned size);
 
     template <class F, typename... Args>
-    inline auto push(F &&f, Args &&...args) -> std::future<decltype(f(0, args...))>
+    [[nodiscard]] auto push(F &&f, Args &&...args) -> std::future<decltype(f(0, args...))>
     {
         static_assert(std::is_invocable<F, int, Args...>(),
                       "The provided function must invocable with provided arguments !");

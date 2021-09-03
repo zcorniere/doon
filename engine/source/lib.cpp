@@ -12,7 +12,7 @@ MapManager *map_manager = nullptr;
 ObjectManager *object_manager = nullptr;
 RenderManager *render_manager = nullptr;
 
-__attribute__((constructor)) void init()
+[[gnu::constructor]] void init()
 {
     logger = new Logger(std::cout);
     thread_manager = new ThreadManager();
@@ -22,7 +22,7 @@ __attribute__((constructor)) void init()
     render_manager = new RenderManager();
 }
 
-__attribute__((destructor)) void stop()
+[[gnu::destructor]] void stop()
 {
     delete render_manager;
     delete object_manager;
