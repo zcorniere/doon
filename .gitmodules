@@ -1,3 +1,6 @@
 [submodule "lib/logger-cpp"]
 	path = lib/logger-cpp
 	url = git@github.com:zcorniere/logger-cpp.git
+[submodule "lib/SFML"]
+	path = lib/SFML
+	url = git@github.com:SFML/SFML.git

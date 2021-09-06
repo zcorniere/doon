@@ -1,4 +1,4 @@
-add_library(raycaster source/lib.cpp
+add_library(raycaster STATIC source/lib.cpp
                       source/DepthBuffer.cpp
                       source/ObjectManager.cpp
                       source/Frame.cpp

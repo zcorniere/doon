@@ -2,9 +2,9 @@ name: CMake
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   BUILD_TYPE: Release
@@ -16,18 +16,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: install dependencies
-      run: |
-        sudo apt update
-        sudo apt install libsfml-dev
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxrandr-dev libxcursor-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
 
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
