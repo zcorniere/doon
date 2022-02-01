@@ -1,6 +1,7 @@
 #pragma once
 
-#include <ThreadedQ.hpp>
+#include <ThreadSafeStorage.hpp>
+
 #include <atomic>
 #include <functional>
 #include <future>
@@ -39,7 +40,7 @@ private:
     void new_thread(const unsigned i) noexcept;
 
 private:
-    ThreadedQ<WorkUnits> qWork;
+    ThreadSafeStorage<WorkUnits> qWork;
 
     std::atomic_bool bExit = false;
     std::vector<std::thread> thread_p;

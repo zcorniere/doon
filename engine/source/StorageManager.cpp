@@ -4,22 +4,22 @@
 constexpr const char map_extention[] = ".map";
 constexpr const char image_ext[] = ".png";
 
+constexpr const char *storageManager = "Storage Manager";
 unsigned StorageManager::load_directory(const std::filesystem::path &path,
                                         const bool bEmpty)
 {
     if (bEmpty) {
-        LOGGER_WARN << "Clearing storage manager";
-        logger->endl();
+        logger->warn(storageManager) << "Clearing storage manager";
         stor.clear();
     }
     auto iterator = std::filesystem::directory_iterator(path);
     auto distance = std::distance(begin(iterator), end(iterator));
-    LOGGER_INFO << "Loading " << distance << " item from directory " << path;
+    logger->info(storageManager)
+        << "Loading " << distance << " item from directory " << path;
 
-    auto &bar = logger->newProgressBar("Loading", distance);
+    auto bar = logger->newProgressBar("Loading", distance);
 
     stor.reserve(stor.size() + distance);
-    logger->endl();
 
     // must recreate the iterator, because it is consumed by std::distance
     for (auto &f: std::filesystem::directory_iterator(path)) {
@@ -35,15 +35,14 @@ unsigned StorageManager::load_directory(const std::filesystem::path &path,
                 Map m = this->load<Map>(f);
                 stor.insert({f.path().stem(), std::move(m)});
             } else {
-                LOGGER_WARN << "Unknown extension : " << ext.c_str();
-                logger->endl();
+                logger->warn(storageManager) << "Unknown extension : " << ext.c_str();
+
                 continue;
             }
-            LOGGER_INFO << "Loaded " << f.path();
-            logger->endl();
+            logger->info(storageManager) << "Loaded " << f.path();
+
         } catch (const std::exception &e) {
-            LOGGER_ERR << e.what();
-            logger->endl();
+            logger->err(storageManager) << e.what();
         }
         ++bar;
     }

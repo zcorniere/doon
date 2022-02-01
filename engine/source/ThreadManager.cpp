@@ -1,6 +1,8 @@
 #include "ThreadManager.hpp"
 #include "Logger.hpp"
 
+constexpr const char *threadManager = "Thread Manager";
+
 ThreadManager::ThreadManager() {}
 
 ThreadManager::~ThreadManager() { this->stop(); }
@@ -32,8 +34,8 @@ void ThreadManager::new_thread(const unsigned id) noexcept
 {
     std::optional<WorkUnits> work;
 
-    LOGGER_INFO << "New thread: " << id;
-    logger->endl();
+    logger->info(threadManager) << "New thread: " << id;
+
     while (1) {
         try {
             if (this->bExit) break;
@@ -41,13 +43,11 @@ void ThreadManager::new_thread(const unsigned id) noexcept
             work = qWork.pop_front();
             if (work) (*(*work))(id);
         } catch (const std::exception &e) {
-            LOGGER_ERR << id << " : " << e.what();
-            logger->endl();
+            logger->err(threadManager) << id << " : " << e.what();
+
         } catch (...) {
-            LOGGER_ERR << "Unkown error on thread " << id;
-            logger->endl();
+            logger->err(threadManager) << "Unkown error on thread " << id;
         }
     };
-    LOGGER_INFO << "End thread: " << id;
-    logger->endl();
+    logger->info(threadManager) << "End thread: " << id;
 }

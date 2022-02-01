@@ -72,7 +72,7 @@ try {
     return frame;
 } catch (const std::runtime_error &re) {
     logger->err("LOADER_PNG") << re.what() << ", using panic texture";
-    logger->endl();
+
     Frame panic;
     panic.create({64, 64}, Color::Red);
     return panic;
@@ -99,6 +99,6 @@ try {
     return cur;
 } catch (const std::runtime_error &re) {
     logger->err("LOAD_MAP") << re.what() << ", using empty map";
-    logger->endl();
+
     return Map();
 }

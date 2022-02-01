@@ -1,9 +1,10 @@
-#include "Logger.hpp"
 #include "MapManager.hpp"
 #include "ObjectManager.hpp"
 #include "RenderManager.hpp"
 #include "StorageManager.hpp"
 #include "ThreadManager.hpp"
+
+#include <Logger.hpp>
 
 ThreadManager *thread_manager = nullptr;
 Logger *logger = nullptr;

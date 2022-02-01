@@ -13,7 +13,6 @@ Frame::Frame(const uint8_t *ptr, const Vector<unsigned> &uSize)
         std::memcpy(data, ptr, uSize.x * uSize.y * 4);
     else {
         logger->err("FRAME") << "Invalid pixel ptr";
-        logger->endl();
     }
 }
 
@@ -40,7 +39,7 @@ void Frame::rotate()
 {
     if (size.x != size.y) {
         logger->warn("FRAME") << "Can't rotate a non-square Frame";
-        logger->endl();
+
         return;
     }
     for (unsigned x = 0; x < size.x; ++x) {

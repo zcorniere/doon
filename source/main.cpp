@@ -5,6 +5,7 @@
 #include "StorageManager.hpp"
 #include "ThreadManager.hpp"
 #include "Vector.hpp"
+
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -64,6 +65,5 @@ try {
     return 0;
 } catch (const std::exception &e) {
     logger->err() << e.what();
-    logger->endl();
     return 1;
 }

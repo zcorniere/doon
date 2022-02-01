@@ -65,7 +65,6 @@ Vector<float> ObjectManager::resolveWallCollision(const Map &map,
                             << "fSolved is nan, thus stopping collsion "
                                "detection; fSolved defaulted to object's "
                                "previous position";
-                        logger->endl();
                         fSolved = obj->getPosition();
                     }
                 }

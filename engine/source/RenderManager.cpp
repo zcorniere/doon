@@ -14,10 +14,7 @@ constexpr const char sFloorTexture[] = "greystone";
 
 RenderManager::RenderManager(): bDrawDebug(std::getenv("DOON_BUG_BOX"))
 {
-    if (bDrawDebug) {
-        logger->warn("RenderManager") << "Starting in debug mode";
-        logger->endl();
-    }
+    if (bDrawDebug) { logger->warn("RenderManager") << "Starting in debug mode"; }
 }
 
 RenderManager::~RenderManager() {}
@@ -29,7 +26,6 @@ const Frame &RenderManager::update(const unsigned uPovIndex)
     Vector<float> fEye(std::sin(pPov->getAngle()), std::cos(pPov->getAngle()));
     float fEyeAngle = fEye.atan();
     std::deque<std::future<void>> fur(size.x);
-    std::deque<std::future<void>> qObj;
 
     Ray ray(pPov->getPosition());
     for (unsigned x = 0; x < size.x; ++x) {
@@ -48,18 +44,15 @@ const Frame &RenderManager::update(const unsigned uPovIndex)
             },
             pPov->getAngle(), ray);
     }
-    std::for_each(fur.begin(), fur.end(), [](auto &i) { i.get(); });
-
     for (const auto &i: object_manager->getObjects()) {
         if (pPov == i || !i->getTextureName()) continue;
-        qObj.push_back(thread_manager->push(
+        fur.push_back(thread_manager->push(
             [this, &i](int, const Vector<float> &fCamPosition, const float &fEyeAngle) {
                 this->drawObject(i, fCamPosition, fEyeAngle);
             },
             pPov->getPosition(), fEyeAngle));
     }
-    std::for_each(qObj.begin(), qObj.end(), [](auto &i) { i.get(); });
-
+    std::for_each(fur.begin(), fur.end(), [](auto &i) { i.get(); });
     return img;
 }
 

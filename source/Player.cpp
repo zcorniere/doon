@@ -66,7 +66,6 @@ void Player::shoot()
         fCooldown = fCooldownShoot;
     } else {
         logger->info("PLAYER") << "Shoot in cooldown ! (" << fCooldown << ")";
-        logger->endl();
     }
 }
 
